@@ -14,7 +14,7 @@
 
 .nav-item:hover{
     background-color: #F6CDE2;
-    
+
 }
 
 .sr-only{
@@ -53,4 +53,63 @@ h1{
 .card-body{
     color: white;
     background-color: #709874;
+}
+
+.card-body h2{
+  color: #F6CDE2;
+}
+
+.card-body a{
+  color: #2c5630;
+}
+
+.downloadbt{
+  background-color: #a0d4a6;
+  display:flex;
+}
+
+.downloadbt:hover{
+  background-color: #F6CDE2;
+}
+
+.downloadbt a{
+  color: #2c5630;
+
+}
+img{
+  max-width: inherit;
+  border-radius: 5px;
+  display: inline-flex;
+  object-fit: container;
+  width: 100%;
+  border: 10px solid;
+  border-color: #F6CDE2;
+  margin: 10px;
+}
+
+.function{
+  word-wrap: break-word;
+  max-width: inherit;
+}
+
+
+.codebg{
+  background-color: #a0d4a6;
+  border: 4px dotted;
+  border-color: #2c5630;
+  padding:8px;
+}
+
+.info{
+  background-color: #b67295;
+  color: #FFFFFF;
+  border-radius: 5%;
+  margin: 4%;
+  padding: 2%;
+}
+
+.remind{
+  font-size: 120%;
+  font-stretch: extra-expanded;
+  color: #a0d4a6;
 }

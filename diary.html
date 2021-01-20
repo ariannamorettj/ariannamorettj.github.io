@@ -8,15 +8,15 @@
     <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css" type="text/css">
-      
+
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>      
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <title>Hello, world!</title>
+    <title>Thesis Repository</title>
   </head>
-    
-    
+
+
   <body>
                  <nav class="navbar navbar-expand-lg navbar-light navbar-custom ">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,27 +47,80 @@
     </ul>
   </div>
 </nav>
-      
-      
+
+
     <h1>Diary</h1>
       <div id="accordion">
-          
+
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Week #1
+          Week #1 (01-14-20)
         </button>
       </h5>
     </div>
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+        <h2>UnitTest Introduction</h2>
+        <p>UnitTest is a test runner built into a python library, containing both a testing framework and a test runner.<br>
+        <em>Requirements:</em>
+        <ul>
+          <li>tests must be included into <em>classes</em> as <em>methods</em> </li>
+          <li>instead of the built-in statement "assert", the <em>special assertion methods in unittest.TestCase class </em> must be used </li>
+        </ul>
+      </p>
+      <h2>Example</h2>
+      <p>file test_sum_2.py</p>
+      <div class="codebg">
+        <code>
+          <pre>
+def test_sum():
+    assert sum([1, 2, 3]) == 6, "Should be 6"
+
+def test_sum_tuple():
+    assert sum((1, 2, 2)) == 6, "Should be 6"
+
+if __name__ == "__main__":
+    test_sum()
+    test_sum_tuple()
+    print("Everything passed")
+          </pre>
+        </code>
+      </div>
+  <p>Steps of the procedure to convert the aforementioned example into a unittest case:</p>
+  <ol>
+    <li> <em>import unittest</em> from the library</li>
+    <li>create a <em>TestSum class</em>, inherited from TestCase class</li>
+    <li>use <em>self</em> as first argument, so that functions are turned into methods</li>
+    <li>change assertions, so to use <em>self.assertEqual() method from the TestCase class</em></li>
+    <li>change the command-line entry point to call unittest.main()</li>
+  </ol>
+  <div class="container">
+    <img src="unittest1.png" alt="unittest1">
+
+  </div>
+    <div class="info"><p><span class="remind">assert</span><br>The assert keyword lets you test if a condition in your code returns True, if not, the program will raise an AssertionError.
+
+You can write a message to be written if the code returns False</p>
+      <div class="codebg">
+        <code><pre>
+x = "hello"
+
+#if condition returns True, then nothing happens:
+assert x == "hello"
+
+#if condition returns False, AssertionError is raised:
+assert x == "goodbye"
+        </pre></code></div>
+        <p>Source: <a href="https://www.w3schools.com/python/ref_keyword_assert.asp#:~:text=The%20assert%20keyword%20is%20used,False%2C%20check%20the%20example%20below.">w3school.com</a></p>
+      </div>
+    <p>Source:<a href="https://realpython.com/python-testing/">realpython.com</a></p>
       </div>
     </div>
   </div>
-          
+
   <div class="card">
     <div class="card-header" id="headingTwo">
       <h5 class="mb-0">

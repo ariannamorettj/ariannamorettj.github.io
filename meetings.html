@@ -8,15 +8,15 @@
     <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css" type="text/css">
-      
+
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>      
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <title>Hello, world!</title>
+    <title>Thesis Repository</title>
   </head>
-    
-    
+
+
   <body>
                   <nav class="navbar navbar-expand-lg navbar-light navbar-custom ">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,28 +47,139 @@
     </ul>
   </div>
 </nav>
-      
-      
+
+
     <h1>Meetings</h1>
-      
+
 <div id="accordion">
-          
+
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Week #1
+          Week #1 (01-14-20)
         </button>
       </h5>
     </div>
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+        <h2>Overview</h2>
+        <p>The first part of the work implies doing something similar to what has been developed for CROCI: we need a class to extend another class, which implements one method only and expects to receive a CSV. This CSV file defines some citations, and its form depends on the data provider (so we expect National Institute of Health to use a specific data format, probably a csv or a json)</p>
+        <h2>get_next_citation_data</h2>
+        <div class="container codebg">
+        <pre><code>
+ def get_next_citation_data(self):
+    row = self._get_next_in_file()
+
+    while row is not None:
+        citing = self.doi.normalise(row.get("citing_id"))
+        cited = self.doi.normalise(row.get("cited_id"))
+
+        if citing is not None and cited is not None:
+            created = row.get("citing_publication_date")
+            if not created:
+                created = None
+
+            cited_pub_date = row.get("cited_publication_date")
+            if not cited_pub_date:
+                timespan = None
+            else:
+                c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+                timespan = c.duration
+
+            self.update_status_file()
+            return citing, cited, created, timespan, None, None
+
+        self.update_status_file()
+        row = self._get_next_in_file()
+
+    remove(self.status_file)
+  </pre></code></div>
+        <p>This function is the last step of <a href="https://github.com/opencitations/index/blob/master/croci/crowdsourcedcitationsource.py">index/croci/crowdsourcedcitationsource.py /</a>.
+ It was developed to manage the particular CSV format that we expect for CROCI; it finds information to return. Indeed, the process expects a tuple of 6 values, derived from the citation source.
+ In particular:
+ <ol>
+   <li>citing</li>
+   <li>cited</li>
+   <li>created</li>
+   <li>timespan</li>
+   <li>None</li>
+   <li>None</li>
+ </ol>
+The last values are meant to represent additional info about whether the citation is a self citation and about citations between publications on the same journal. In both cases the value is "none" because in this moment we are not interested in this information.
+</p>
+<h2>The Project</h2>
+<p>We have to implement a class aimed at extending this CSV citation file implementing a get_next_citation_data tailored on NIH dataset (and related file formats).</p>
+<p>In the aforementioned function we have <em>c</em>: this is the python class managing the interaction with the datasource. Each class relates to a specific format (? "typology"), depending on the index to be created.</p>
+<p>We are going to work on an already-existing environment where the introduction of a new datasource requires the crearion of a new class, aimed at extracting from the new source the same set of information that the process is supposed to manage. The system is higly "parameterized": it always expects to receive a 6-values tuple, and exectutes a specific set of actions, depending on the given values.
+In particular, the plug-in to be developed should be able to extract form the NIH file format the same information required by the system, so to place it in the 6-element tuple. That's what also COCI does, but with JSON format.
+</p>
+<p>The 2 primary identifiers are aimed at identifying the citing and the cited entity, and they are not always doi. In this case, we may have PubMedID or PubMedCentralID.
+One of the problems to be handled is that some of these citations may already be present in <a href="https://opencitations.net/">Open Citations</a>. For example, in COCI we have only doi-to-doi; in the NIH dataset we are going to import some articles probably have a doi, but it is exposed in a different way.
+However, if they have a doi, it is should be specified among the article data; or, as an alternative, it is possible to go back to it through an external mapping dataset.</p>
+<p> Another consistent problem to be considered is that the 6-values-tuple doesn't expect (nor store) information about the DOI, since it is structured to manage only the 6 aforementioned aspects.</p>
+<p> We'll need to add the mapping information, since -once imported the dataset in Open Citations- the API used for the unification process needs to manage the identifiers. This issue has never been handled until now, since the already imported data didn't require to deal with it. </p>
+<h2>Phases Of The Project</h2>
+<ol>
+  <li>Develop a software to read the datasource. We need the aforementioned class, in order to manage the new datasource. In this phase the index is not supposed to disambiguate: it has just to work in its own field.</li>
+  <li>Develop a sub-index of indexes for the alignment phase, so to recognise and map possible resources referring to the same citation, despite having differen URLs. This plug-in is aimed at managing all the possible data sources, so that -in case we need to import a new dataset with a different identifier in future- we can reuse the same tool.</li>
+  <li>API</li>
+</ol>
+<h2>Test Driven Development</h2>
+<p>The 9th file in the test folder, <a href="https://github.com/opencitations/index/blob/master/test/09_croci.py">09_croci.py</a> provides a good example of the functioning of this kind of test. The procedure implies starting by creating a new class, which instantiates 2 functions: a set-up one and a test.</p>
+<div class="container codebg">
+<pre><code>
+  import unittest
+from index.coci.glob import process
+from os import sep, makedirs
+from os.path import exists
+from shutil import rmtree
+from index.storer.csvmanager import CSVManager
+from index.croci.crowdsourcedcitationsource import CrowdsourcedCitationSource
+from csv import DictReader
+
+
+class CROCITest(unittest.TestCase):
+
+    def setUp(self):
+        self.input_file = "index%stest_data%scroci_dump%ssource.csv" % (sep, sep, sep)
+        self.citations = "index%stest_data%scroci_dump%scitations.csv" % (sep, sep, sep)
+
+    def test_citation_source(self):
+        ccs = CrowdsourcedCitationSource(self.input_file)
+        new = []
+        cit = ccs.get_next_citation_data()
+        while cit is not None:
+            citing, cited, creation, timespan, journal_sc, author_sc = cit
+            new.append({
+                "citing": citing,
+                "cited": cited,
+                "creation": "" if creation is None else creation,
+                "timespan": "" if timespan is None else timespan,
+                "journal_sc": "no" if journal_sc is None else journal_sc,
+                "author_sc": "no" if author_sc is None else author_sc
+            })
+            cit = ccs.get_next_citation_data()
+
+        with open(self.citations) as f:
+            old = list(DictReader(f))
+
+        self.assertEqual(new, old)
+</pre></code></div>
+
+<h2>To do list</h2>
+<ul>
+  <li>create a repository, where the weekly report will be kept updated.</li>
+  <li>write an e-mail to DARCH and ask for an intership (object: first phase of the thesis project, concerning the interaction with datasource).</li>
+  <li>study the <a href="https://docs.python.org/3/library/unittest.html">unittest library</a> for tests and make some practice with it.</li>
+  <li>have a look at CROCI test, which is simple and deals with a class which is similar to the one to be developed. Start with <a href="https://comp-think.github.io/">CT exercises</a> and reproduce the functions using unittest. Before writing the functions that the class implements, make sure to have the test written. Learn how to launch the library, how to use it proficiently.</li>
+</ul>
+
       </div>
     </div>
   </div>
-          
+
   <div class="card">
     <div class="card-header" id="headingTwo">
       <h5 class="mb-0">

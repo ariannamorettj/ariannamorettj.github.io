@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css" type="text/css">
 
@@ -71,7 +69,7 @@
           <li>instead of the built-in statement "assert", the <em>special assertion methods in unittest.TestCase class </em> must be used </li>
         </ul>
       </p>
-      <h2>Example</h2>
+      <h2>Example 1</h2>
       <p>file test_sum_2.py</p>
       <div class="codebg">
         <code>
@@ -117,6 +115,334 @@ assert x == "goodbye"
         <p>Source: <a href="https://www.w3schools.com/python/ref_keyword_assert.asp#:~:text=The%20assert%20keyword%20is%20used,False%2C%20check%20the%20example%20below.">w3school.com</a></p>
       </div>
     <p>Source:<a href="https://realpython.com/python-testing/">realpython.com</a></p>
+    <h2>Example 2</h2>
+    <div class="codebg">
+      <code>
+        <pre>
+          import unittest
+
+          def add_fish_to_aquarium(fish_list):
+              if len(fish_list) > 10:
+                  raise ValueError("A maximum of 10 fish can be added to the aquarium")
+              return {"tank_a": fish_list}
+
+
+          class TestAddFishToAquarium(unittest.TestCase):
+              def test_add_fish_to_aquarium_success(self):
+                  actual = add_fish_to_aquarium(fish_list=["shark", "tuna"])
+                  expected = {"tank_a": ["shark", "tuna"]}
+                  self.assertEqual(actual, expected)
+        </pre>
+      </code>
+    </div>
+    <p>Procedure:</p>
+    <ol>
+      <li>Import unittest</li>
+      <li>Define the function to test, defining also cases in which the function raises errors</li>
+      <li>Define a class as a subclass of unittest.TestCase</li>
+      <li>Define one or more methods of the defined class (with self argument). This test function calls the function to test with a specific input and verifies whether the actual returned value matches the expected one</li>
+      <li>Execute the test (from command line: python -m unittest test_add_fish_to_aquarium.py)</li>
+    </ol>
+    <p>Source <a href="https://www.digitalocean.com/community/tutorials/how-to-use-unittest-to-write-a-test-case-for-a-function-in-python">https://www.digitalocean.com/</a></p>
+    <h2>Example 3</h2>
+    <div class="codebg">
+      <code>
+        <pre>
+          import unittest
+
+          class TestStringMethods(unittest.TestCase):
+
+              def test_upper(self):
+                  self.assertEqual('foo'.upper(), 'FOO')
+
+              def test_isupper(self):
+                  self.assertTrue('FOO'.isupper())
+                  self.assertFalse('Foo'.isupper())
+
+              def test_split(self):
+                  s = 'hello world'
+                  self.assertEqual(s.split(), ['hello', 'world'])
+                  # check that s.split fails when the separator is not a string
+                  with self.assertRaises(TypeError):
+                      s.split(2)
+
+          if __name__ == '__main__':
+              unittest.main()
+        </pre>
+      </code>
+    </div>
+    <p>Procedure:</p>
+    <ul>
+      <li>import unittest</li>
+      <li>a testcase is created by subclassing unittest.TestCase.</li>
+      <li>individual tests are defined with methods whose names start with the letters test, in order to inform the test runner about which methods represent tests.</li>
+      <li>each test is a call to assertEqual() to check for an expected result; assertTrue() or assertFalse() to verify a condition; or assertRaises() to verify that a specific exception gets raised. Differently from the simple assert statement, these methods allow the test runner to accumulate all test results and produce a report.</li>
+      <li>setUp() and tearDown() methods allow you to define instructions that will be executed before and after each test method.</li>
+      <li>unittest.main() is a simple way to run the tests. Provides a command-line interface to the test script. </li>
+      <li>Passing the -v option to your test script will instruct unittest.main() to enable a higher level of verbosity, so that each test's outcome can be seen individually.</li>
+      <div class="container">
+        <img src="prompt.png" alt="promptscreenshot">
+      </div>
+    </ul>
+    <p>Source <a href="https://docs.python.org/3/library/unittest.html">unittest documentation</a></p>
+
+    <h2>Classes and functions</h2>
+    <div class="info"><span class="remind">tearDown()</span><br>
+      <p>Method called immediately after the test method has been called and the result recorded. This is called even if the test method raised an exception, so the implementation in subclasses may need to be particularly careful about checking internal state. This method will only be called if the setUp() succeeds, regardless of the outcome of the test method.</p>
+      </div>
+
+    <div class="info"><span class="remind">setUp()</span><br>
+      <p>Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. </p>
+      </div>
+
+    <div class="info"><span class="remind">assertEqual(first, second, msg=None)</span><br>
+      <p>Test that first and second are not equal. If the values do compare equal, the test will fail. </p>
+      </div>
+
+    <div class="info"><span class="remind">assertNotEqual(first, second, msg=None)</span><br>
+      <p>Test that first and second are not equal. If the values do compare equal, the test will fail. </p>
+      </div>
+
+    <div class="info"><span class="remind">assertTrue(expr, second, msg=None) & assertFalse(expr, second, msg=None)</span><br>
+      <p>Test that expr is true (or false). </p>
+      </div>
+
+    <div class="info"><span class="remind">assertIs(first, second, msg=None) & assertIsNot(first, second, msg=None)</span><br>
+      <p>Test that first and second are (or are not) the same object. </p>
+      </div>
+
+    <div class="info"><span class="remind">assertIsNone(expr, msg=None) & assertIsNotNone(expr, msg=None)</span><br>
+      <p>Test that expr is (or is not) None </p>
+    </div>
+
+    <div class="info"><span class="remind">assertIn(member, container, msg=None) & assertNotIn(member, container, msg=None)</span><br>
+      <p>Test that member is (or is not) in container.</p>
+      </div>
+
+    <div class="info"><span class="remind">assertIsInstance(obj, cls, msg=None) & assertNotIsInstance(obj, cls, msg=None)</span><br>
+      <p>Test that obj is (or is not) an instance of cls (which can be a class or a tuple of classes, as supported by isinstance()). To check for the exact type, use assertIs(type(obj), cls). </p>
+      </div>
+
+    <div class="info"><span class="remind">assertCountEqual(first, second, msg=None)</span><br>
+      <p>Test that sequence first contains the same elements as second, regardless of their order.  </p>
+      </div>
+
+    <div class="info"><span class="remind">assertMultiLineEqual(first, second, msg=None)</span><br>
+      <p>Test that the multiline string first is equal to the string second. </p>
+      </div>
+
+    <div class="info"><span class="remind">assertListEqual(first, second, msg=None) & assertTupleEqual(first, second, msg=None)</span><br>
+      <p>Tests that two lists or tuples are equal. If not, an error message is constructed that shows only the differences between the two.</p>
+      </div>
+
+    <div class="info"><span class="remind">assertSetEqual(first, second, msg=None)</span><br>
+      <p>Tests that two sets are equal. If not, an error message is constructed that lists the differences between the sets. This method is used by default when comparing sets or frozensets with assertEqual().</p>
+      </div>
+
+    <div class="info"><span class="remind">assertDictEqual(first, second, msg=None)</span><br>
+      <p>Test that two dictionaries are equal. If not, an error message is constructed that shows the differences in the dictionaries. This method will be used by default to compare dictionaries in calls to assertEqual().</p>
+      </div>
+
+    <div class="info"><span class="remind">assertListEqual(first, second, msg=None) & assertTupleEqual(first, second, msg=None)</span><br>
+      <p>Tests that two lists or tuples are equal. If not, an error message is constructed that shows only the differences between the two.</p>
+      </div>
+
+    <p>Source <a href="https://docs.python.org/3/library/unittest.html">unittest documentation</a></p>
+
+    <h2>Organizing test code</h2>
+    <ul>
+      <li>In unittest, test cases are unittest.TestCase instances.</li>
+      <li>The testing code of a TestCase instance should be entirely self contained, in order to be runnable either in isolation or in combination</li>
+      <li>In order to test, the assert*() methods provided by the TestCase base class are used. When the test fails, an exception is raised with an explanatory message, and unittest identifies the test case as a failure.</li>
+      <li>When many tests with repetitive set ups have to be executed, setUP() method can be automatically called for every test run. </li>
+      <li>tearDown() method, similarly, tidies up after the test method has been run</li>
+      <li>Such a working environment for the testing code is called a test fixture. A new TestCase instance is created as a unique test fixture used to execute each individual test method. Thus setUp(), tearDown(), and __init__() will be called once per test.</li>
+      <li>Test suite, represented by unittest’s TestSuite class, is a mechanism to group TestCase implementations according to the features they test.</li>
+    </ul>
+    <p>Source <a href="https://docs.python.org/3/library/unittest.html">unittest documentation</a></p>
+
+    <h2>Reusing old test code</h2>
+    <p>FunctionTestCase class: TestCase subclass to wrap an existing test function. </p>
+    <div class="codebg">
+      <code>
+        <pre>
+          testcase = unittest.FunctionTestCase(testSomething,
+                                     setUp=makeSomethingDB,
+                                     tearDown=deleteSomethingDB)
+        </pre>
+      </code>
+
+    </div>
+    <p>Source <a href="https://docs.python.org/3/library/unittest.html">unittest documentation</a></p>
+
+    <h2>index/test/09_croci.py/</h2>
+    <div class="codebg">
+      <code>
+        <pre>
+          import unittest
+          from index.coci.glob import process
+          from os import sep, makedirs
+          from os.path import exists
+          from shutil import rmtree
+          from index.storer.csvmanager import CSVManager
+          from index.croci.crowdsourcedcitationsource import CrowdsourcedCitationSource
+          from csv import DictReader
+
+
+          class CROCITest(unittest.TestCase):
+
+              def setUp(self):
+                  self.input_file = "index%stest_data%scroci_dump%ssource.csv" % (sep, sep, sep)
+                  self.citations = "index%stest_data%scroci_dump%scitations.csv" % (sep, sep, sep)
+
+              def test_citation_source(self):
+                  ccs = CrowdsourcedCitationSource(self.input_file)
+                  new = []
+                  cit = ccs.get_next_citation_data()
+                  while cit is not None:
+                      citing, cited, creation, timespan, journal_sc, author_sc = cit
+                      new.append({
+                          "citing": citing,
+                          "cited": cited,
+                          "creation": "" if creation is None else creation,
+                          "timespan": "" if timespan is None else timespan,
+                          "journal_sc": "no" if journal_sc is None else journal_sc,
+                          "author_sc": "no" if author_sc is None else author_sc
+                      })
+                      cit = ccs.get_next_citation_data()
+
+                  with open(self.citations) as f:
+                      old = list(DictReader(f))
+
+                  self.assertEqual(new, old)
+        </pre>
+      </code>
+    </div>
+
+    <h2>Exercises</h2>
+    <h3>Beginners 1</h3>
+    <div class="codebg">
+      <pre>
+        <code>
+import unittest
+
+def t(x, y):
+    return x + y - 2
+
+class TestT(unittest.TestCase):
+    def test_t(self):
+        actual = t(x=5, y=6)
+        expected = 5+6-2
+        self.assertEqual(actual, expected)
+        </code>
+      </pre>
+    </div>
+<p>In this way it works</p>
+    <div class="codebg">
+      <pre>
+        <code>
+        import unittest
+
+        class TestT(unittest.TestCase):
+            def test_t(self):
+                result = t(x, y)
+                expected = x + y -2
+                self.assertEqual(result, expected)
+
+        def t(x, y):
+            return x + y - 2
+        </code>
+      </pre>
+    </div>
+<p>((In this way it doesn't. I think I know why but I'd like to clarify this point)) </p>
+<div class="codebg">
+  <code>
+    <pre>
+      def t(x, y):
+          return x + y - 2
+
+      import unittest
+
+      class TestT(unittest.TestCase):
+          def test_t(self):
+              self.assertEqual(t(5,9), 12)
+
+
+      if __name__ == "__main__":
+          unittest.main()
+    </pre>
+  </code>
+</div>
+<p>In this way it works and I also have the result displayed in Pycharm console</p>
+<h3>Beginners 2</h3>
+<div class="codebg">
+  <code>
+    <pre>
+def f(s1, s2):
+    if len(s1) > len(s2):
+        return -1
+    elif len(s1) < len(s2):
+        return 1
+    else:
+        return 0
+
+import unittest
+
+class TestF(unittest.TestCase):
+    def test_f(self):
+        self.assertEqual(f("dog","cat"), 0)
+        self.assertEqual(f("dog","monkey"), 1)
+        self.assertEqual(f("dog", "my"), -1)
+
+
+if __name__ == "__main__":
+    unittest.main()
+    </pre>
+  </code>
+</div>
+<h3>Beginners 3</h3>
+<div class="codebg">
+  <code>
+    <pre>
+      def f(s1, s2):
+          result = set()
+
+          for c in s1:
+              if c in s2:
+                  result.add(c)
+
+          return result
+
+      import unittest
+
+      class TestF(unittest.TestCase):
+          def test_f(self):
+              self.assertEqual(f("123","435"), {"3"})
+              self.assertEqual(f("126","435"), set()) #if I use {} it doesn't work
+              self.assertEqual(f("brother","sister"), {"r","t","e"})
+              self.assertEqual(f("cat","catsitter"), {"c","a","t"})
+
+      if __name__ == "__main__":
+          unittest.main()
+    </pre>
+  </code>
+
+</div>
+    <h2>Issues</h2>
+    <ol>
+      <li># check that s.split fails when the separator is not a string \\
+      with self.assertRaises(TypeError):\\
+          s.split(2)\\?</li>
+      <li>Why is unittest more efficient then other testing approaches?</li>
+      <li>In practice, when and how do we use assertRaises(TypeError)? </li>
+      <li>if __name__ == '__main__':\\
+          unittest.main()</li>
+      <li>In many of the tutorials I followed the code is launched through the command prompt. Is it necessary or suggested? Can I work with Pycharm only?</li>
+      <li>Is TestSuit necessary in our case? "In most cases, calling unittest.main() will do the right thing and collect all the module’s test cases for you and execute them."</li>
+      <li>Does the assertEqual have more or less the same function of the print part of the test case that we used in CTP course? (since -in order to make the test work- some values have to be assigned to the arguments of the tested function) </li>
+      <li>For now I'm only using assertEqual() since I have some troubles in understanding how all the other methods could be applied in tests (how can I do something more than testing if the result of the function matches the expected one? In OpenCitation which other ones are mainly used?).</li>
+      <li>SetUp(): real contexts of use (examples)?</li>
+    </ol>
       </div>
     </div>
   </div>

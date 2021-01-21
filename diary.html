@@ -318,6 +318,211 @@ assert x == "goodbye"
         </pre>
       </code>
     </div>
+    <div class="info"><span class="remind">from index.coci.glob import process</span><br>
+      <div class="codebg">
+        <code>
+          <pre>
+            def process(input_dir, output_dir):
+    if not exists(output_dir):
+        makedirs(output_dir)
+          </pre>
+        </code>
+      </div>
+      </div>
+
+      <div class="info"><span class="remind">from os import sep, makedirs</span><br>
+        <ol>
+          <li> <b>os.sep</b>: The character used by the operating system to separate pathname components. This is '/' for POSIX and '\\' for Windows. Note that knowing this is not sufficient to be able to parse or concatenate pathnames — use os.path.split() and os.path.join() — but it is occasionally useful. Also available via os.path. </li>
+          <li> <b>os.makedirs</b>: os.makedirs(name, mode=0o777, exist_ok=False) is a recursive directory creation function. Like mkdir(), but makes all intermediate-level directories needed to contain the leaf directory. </li>
+        </ol>
+        </div>
+
+        <div class="info"><span class="remind">from os.path import exists</span><br>
+          <p> <b>os.path.exists</b>:os.path.exists(path)
+return True if path refers to an existing path or an open file descriptor. Returns False for broken symbolic links. On some platforms, this function may return False if permission is not granted to execute os.stat() on the requested file, even if the path physically exists. In more recent versions (Python 3.3 and 3.6) path can be an integer (True is returned if it is an open file descriptor, False otherwise) and paths like objects are now accepted.  </p>
+          </div>
+
+          <div class="info"><span class="remind">from shutil import rmtree</span><br>
+            <p> <b>shutil.rmtree</b>: shutil.rmtree(path, ignore_errors=False, onerror=None)
+delete an entire directory tree; path must point to a directory (but not a symbolic link to a directory). If ignore_errors is true, errors resulting from failed removals will be ignored; if false or omitted, such errors are handled by calling a handler specified by onerror or, if that is omitted, they raise an exception. </p>
+            </div>
+
+            <div class="info"><span class="remind">from index.storer.csvmanager import CSVManager</span><br>
+              <div class="codebg">
+                <code>
+                  <pre>
+                    class CSVManager(object):
+                        """This class is able to load a simple CSV composed by two fields, 'id' and
+                        'value', and then to index all its items in a structured form so as to be
+                        easily queried. In addition, it allows one to store new information in the CSV,
+                        if needed."""
+
+                        def __init__(self, csv_path=None, line_threshold=10000, store_new=True):
+                            self.csv_path = csv_path
+                            self.data = {}
+                            self.store_new = store_new
+
+                            if csv_path is not None and exists(csv_path):
+                                CSVManager.__load_all_csv_files([csv_path], self.__load_csv, line_threshold=line_threshold)
+
+                        @staticmethod
+                        def load_csv_column_as_set(file_or_dir_path, key, line_threshold=10000):
+                            result = set()
+
+                            if exists(file_or_dir_path):
+                                file_to_process = []
+                                if isdir(file_or_dir_path):
+                                    for cur_dir, cur_subdir, cur_files in walk(file_or_dir_path):
+                                        for cur_file in cur_files:
+                                            if cur_file.endswith(".csv"):
+                                                file_to_process.append(cur_dir + sep + cur_file)
+                                else:
+                                    file_to_process.append(file_or_dir_path)
+
+                                for item in CSVManager.__load_all_csv_files(file_to_process, CSVManager.__load_csv_by_key,
+                                                                            line_threshold=line_threshold, key=key):
+                                    result.update(item)
+
+                            return result
+
+                        @staticmethod
+                        def __load_csv_by_key(csv_string, key):
+                            result = set()
+
+                            csv_metadata = DictReader(StringIO(csv_string), delimiter=',')
+                            for row in csv_metadata:
+                                result.add(row[key])
+
+                            return result
+
+                        @staticmethod
+                        def __load_all_csv_files(list_of_csv_files, fun, line_threshold, **params):
+                            result = []
+                            header = None
+
+                            for csv_path in list_of_csv_files:
+                                with open(csv_path, encoding="utf-8") as f:
+                                    csv_content = ""
+                                    for idx, line in enumerate(f.readlines()):
+                                        if header is None:
+                                            header = line
+                                            csv_content = header
+                                        else:
+                                            if idx % line_threshold == 0:
+                                                result.append(fun(csv_content, **params))
+                                                csv_content = header
+                                            csv_content += line
+
+                                result.append(fun(csv_content, **params))
+
+                            return result
+
+                        def get_value(self, id_string):
+                            """It returns the set of values associated to the input 'id_string',
+                            or None if 'id_string' is not included in the CSV."""
+                            if id_string in self.data:
+                                return set(self.data[id_string])
+
+                        def add_value(self, id_string, value):
+                            """It adds the value specified in the set of values associated to 'id_string'.
+                            If the object was created with the option of storing also the data in a CSV
+                            ('store_new' = True, default behaviour), then it also add new data in the CSV."""
+                            if id_string not in self.data:
+                                self.data[id_string] = set()
+
+                            if value not in self.data[id_string]:
+                                self.data[id_string].add(value)
+
+                                if self.csv_path is not None and self.store_new:
+                                    if not exists(self.csv_path):
+                                        with open(self.csv_path, "w") as f:
+                                            f.write('"id","value"\n')
+
+                                    with open(self.csv_path, "a") as f:
+                                        f.write('"%s","%s"\n' % (id_string.replace('"', '""'),
+                                                                 value.replace('"', '""')))
+
+                        def __load_csv(self, csv_string):
+                            csv_metadata = DictReader(StringIO(csv_string), delimiter=',')
+                            for row in csv_metadata:
+                                cur_id = row["id"]
+                                if cur_id not in self.data:
+                                    self.data[cur_id] = set()
+
+                                self.data[cur_id].add(row["value"])
+                  </pre>
+                </code>
+              </div>
+              </div>
+
+              <div class="info"><span class="remind">from index.croci.crowdsourcedcitationsource import CrowdsourcedCitationSource</span><br>
+                <div class="codebg">
+                  <code>
+                    <pre>
+                      class CrowdsourcedCitationSource(CSVFileCitationSource):
+                          def __init__(self, src, local_name=""):
+                              self.doi = DOIManager()
+                              super(CrowdsourcedCitationSource, self).__init__(src, local_name)
+
+                          def get_next_citation_data(self):
+                              row = self._get_next_in_file()
+
+                              while row is not None:
+                                  citing = self.doi.normalise(row.get("citing_id"))
+                                  cited = self.doi.normalise(row.get("cited_id"))
+
+                                  if citing is not None and cited is not None:
+                                      created = row.get("citing_publication_date")
+                                      if not created:
+                                          created = None
+
+                                      cited_pub_date = row.get("cited_publication_date")
+                                      if not cited_pub_date:
+                                          timespan = None
+                                      else:
+                                          c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+                                          timespan = c.duration
+
+                                      self.update_status_file()
+                                      return citing, cited, created, timespan, None, None
+
+                                  self.update_status_file()
+                                  row = self._get_next_in_file()
+
+                              remove(self.status_file)
+                    </pre>
+                  </code>
+                </div>
+                </div>
+
+                <div class="info"><span class="remind">from csv import DictReader</span><br>
+                  <p> <b>class csv.DictReader</b>(f, fieldnames=None, restkey=None, restval=None, dialect='excel', *args, **kwds)
+create an object that operates like a regular reader but maps the information in each row to a dict whose keys are given by the optional fieldnames parameter.
+The fieldnames parameter is a sequence. If fieldnames is omitted, the values in the first row of file f will be used as the fieldnames. Regardless of how the fieldnames are determined, the dictionary preserves their original ordering.
+If a row has more fields than fieldnames, the remaining data is put in a list and stored with the fieldname specified by restkey (which defaults to None). If a non-blank row has fewer fields than fieldnames, the missing values are filled-in with the value of restval (which defaults to None). </p>
+<p>Example:</p>
+              <div class="codebg">
+                    <code>
+                      <pre>
+                        >>> import csv
+                        >>> with open('names.csv', newline='') as csvfile:
+                        ...     reader = csv.DictReader(csvfile)
+                        ...     for row in reader:
+                        ...         print(row['first_name'], row['last_name'])
+                        ...
+                        Eric Idle
+                        John Cleese
+
+                        >>> print(row)
+                        {'first_name': 'John', 'last_name': 'Cleese'}
+                      </pre>
+                    </code>
+                  </div>
+                  </div>
+
+<p>Sources:<a href="https://docs.python.org/3/library/">The Python Standard Library</a> and <a href="https://github.com/opencitations/index">OpenCitations Index</a> </p>
+
+
 
     <h2>Exercises</h2>
     <h3>Beginners 1</h3>
@@ -427,6 +632,8 @@ if __name__ == "__main__":
     </pre>
   </code>
 
+<p>Original codes source: <a href="https://comp-think.github.io/">The CTP Book</a> </p>
+
 </div>
     <h2>Issues</h2>
     <ol>
@@ -441,7 +648,9 @@ if __name__ == "__main__":
       <li>Is TestSuit necessary in our case? "In most cases, calling unittest.main() will do the right thing and collect all the module’s test cases for you and execute them."</li>
       <li>Does the assertEqual have more or less the same function of the print part of the test case that we used in CTP course? (since -in order to make the test work- some values have to be assigned to the arguments of the tested function) </li>
       <li>For now I'm only using assertEqual() since I have some troubles in understanding how all the other methods could be applied in tests (how can I do something more than testing if the result of the function matches the expected one? In OpenCitation which other ones are mainly used?).</li>
-      <li>SetUp(): real contexts of use (examples)?</li>
+      <li>SetUp(): real contexts of use (examples)? In particular setUp in CrociTest <br> self.input_file = "index%stest_data%scroci_dump%ssource.csv" % (sep, sep, sep) <br>
+        self.citations = "index%stest_data%scroci_dump%scitations.csv" % (sep, sep, sep)</li>
+      <li></li>
     </ol>
       </div>
     </div>

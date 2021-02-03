@@ -1,6 +1,48 @@
+h1{
+  font: lighter 100px, sans-serif;
+  letter-spacing: 3px;
+  text-align: center;
+  color: #ffffff !important;
+  text-shadow: 2px 4px 4px rgba(0,0,0,0.2),
+                 0px -5px 10px rgba(255,255,255,0.15);
+}
+
+strong{
+    background-color: rgba(204,148,233,1);
+}
+
+body{
+    overflow-x: hidden !important;
+    background: linear-gradient(149deg, #5fbe86, #d75cba, #a66596, #5ff374, #f195f5, #226e30, #acfaba, #dcacfa);
+    background-size: 1600% 1600%;
+
+    -webkit-animation: backgroundAnimation 53s ease infinite;
+    -moz-animation: backgroundAnimation 53s ease infinite;
+    animation: backgroundAnimation 53s ease infinite;
+}
+
+@-webkit-keyframes backgroundAnimation {
+    0%{background-position:0% 74%}
+    50%{background-position:100% 27%}
+    100%{background-position:0% 74%}
+}
+@-moz-keyframes backgroundAnimation {
+    0%{background-position:0% 74%}
+    50%{background-position:100% 27%}
+    100%{background-position:0% 74%}
+}
+@keyframes backgroundAnimation {
+    0%{background-position:0% 74%}
+    50%{background-position:100% 27%}
+    100%{background-position:0% 74%}
+}
+
 .navbar-custom{
-    background-color: #a0d4a6;
-    color: aliceblue;
+    background-color: #39563c;
+}
+
+.navbar-custom a{
+    color: #ffffff !important;
 }
 
 .dropdown-menu{
@@ -14,6 +56,7 @@
 
 .nav-item:hover{
     background-color: #F6CDE2;
+    color:#709874 !important;
 
 }
 
@@ -25,10 +68,6 @@
     background-color: #D2A9BE;
 }
 
-h1{
-    color: #b67295;
-    text-align: center;
-}
 
 #accordion{
     margin-left: 10%;
@@ -64,8 +103,11 @@ h1{
 }
 
 .downloadbt{
-  background-color: #a0d4a6;
+  background-color: #39563c;
   display:flex;
+}
+.downloadbt a{
+  color: #F6CDE2 !important;
 }
 
 .downloadbt:hover{

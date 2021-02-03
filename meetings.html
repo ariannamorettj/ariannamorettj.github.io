@@ -184,13 +184,91 @@ class CROCITest(unittest.TestCase):
     <div class="card-header" id="headingTwo">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Week #2
+          Week #2 (01-21-21)
         </button>
       </h5>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>To do list</h2>
+          <ul>
+              <li>Extract ten examples of citational data from NIH library and try to understad the format of the data we are going to work with.</li>
+              <li>Start preparing the data mapping: analyse your information in order to understand the mapping.</li>
+              <li>Try to imagine how the main function has to be structured.</li>
+              <li>Develop the test case, which is going to fail, since the function to be tested doesn't exist yet.</li>
+              <li>Study basic commands of the command prompt (python -m unittest).</li>
+              <li>Clone locally OC index so to run tests.</li>
+              <li>Revise self citation aspect in COCI article (<a href="Heibi2019_Article_SoftwareReviewCOCITheOpenCitat.pdf">Software review: COCI, the OpenCitations Index of Crossref
+open DOI‑to‑DOI citations</a>)</li>
+          </ul>
+        <h2>Comments to unittest working frame</h2>
+          <p><strong>assertRaises():</strong> Checks whether a specific exception is raised by the execution of a specific code. Hoewever, in our case, even if we have exceptions, we don't need to test them, since our checks are strictly assertive, on data.
+          <p><strong>if __name__ == '__main__ ':</strong> When we make imports, we have the possibility to perform them totally, with <strong>import *</strong>. However, when we import everything, we include also some lines of code we don't really need, such as prints and tests (when we import we are generally interested in functions and methods, not in tests and prints). For this reason, we have a method that allows us to specify that some lines of the code belong locally to a specific file: we can for example specify if __name__ == '__main__ ': do something (which means "do something only if you are processing this specific file, otherwise don't execute the unittest. Unittest has to be executed only if the specific file is the one which is called by the python interpreter).
+          </p>
+          <p><strong>assertEqual(first, second, msg=None):</strong>
+Test that first and second are equal. If the values do not compare equal, the test will fail. This is the most widely used method of the unittesting framework. </p>
+          <p>In OC we use Unittest because it comes in default with python, and it is enough for our needs.
+          In the development of NOCI it will be necessary to mantain the same structure of the other tests, developing a test function for each method of the to be implemented (at least).</p>
+
+          
+        <h2> Analysis of get_next_citation_data test</h2>
+         <p><strong>Sep sep sep:</strong> In setUp(self) function "%" is the separator. The problem of the separator could be be solved also with the filepath class.</p>
+         <p><strong>setUp(self):</strong> In this function we take paths of the files that contain our sources and what we expect to obtain as a result. The input file is passed as a constructor: we want to take the source of the initial data. I pass this <strong>self.input_file</strong> as input to the <strong>CrowdsourcedCitationSource</strong> class in order to obtain initial data.</p>
+         <p>At this point, we can create the citations, adapting them to what we have in our source file.
+        <p><strong>cit = ccs.get_next_citation_data()</strong> bring us back to our 6-elements tuple.</p> 
+        <p>If one between creation and timespan is missing, or if both of them are missing,that's not a big problem, and the field stays empty(e.g.:"creation": "" if creation is None else creation). In the other cases, if an element is missing, we need to add "no" to specify the absence of the element, in order to stay compliant with the OC format.</p>
+          <p>One of the final steps implies saving the output file in the correct format( with open(self.citations) as f:
+              <strong>old</strong> = list(DictReader(f))).</p>
+         <p>At this point, we compare the old and new with the assertEqual method. We need to compare these 2 dictionaries in order to check if the sets are coherent.</p>
+        
+          <h2>Command Prompt</h2>
+          <p>We need to know how to use the command propmpt because the test has to be run from the command line.The reason is that it makes possible to execute tests one by one instead of making a unique big test calling all the individual parts. For example, if we clone locally a git repository, from the outside of an index folder we can call python -m package (location where the test is placed). In this way we can run the specific test only.</p>
+          
+          <h2>Open Citation Environment: NOCI</h2>
+          <p>The aim of this thesis project is to develop an extension of ocindex. For this reason, i need to clone locally oc index, so to be able to run tests. We will add a new directory, a package, that we can call "NOCI", that will be developed following CROCI structure. We will need a python file in order to interact with the input file containing NIH data (extend locally with a folder containing a python file named "nih citation source", or something similar). </p>
+          <p>Initially, this won't work: the first thing we need to do after having the structure set is developing the test case, so to check that the input returns a specific output. The form of the output has to be defined (emulate CROCI and COCI). This process forces us to think about the format of input and output materials of the functio to be developed.  </p>
+          <p>As we said, the output has to have the OC sextuple format (see test data croci dump citation). The only big difference is that the value that I'm going to insert in citing and cited won't be a doi, but the NIH id, which should be a PubMed ID. The DOI may be (and probably is) present; however, we can't rely on this. In this dataset we will have the "selfcitation" info, but we don't know yet whether it is useful or not for our purposes. 
+          <p>Remember that "Selfcitation" is set as "yes" if citing and cited either belong to the same journal or if there is at least a member in common between citing and cited authors. </p>
+          
+          
+        <h2>Support files</h2>
+            <p>Many of the information, if lacking, can be integrated in a further phase of the project, in which we can create support files in order to update the process.</p>
+          <p>A support file is a csv file with very simple structure. In coci there is a glob.py file that creates those support files. Its aims:</p>
+              <ul>
+                  <li>check whether the specified DOIs are valid</li>
+                  <li>map (id-pubdate; journal isn - other data; article id - related data </li>
+          </ul> 
+          <p>With the support file we try to understand if we can improve the quality of the info about the sextuple.</p>
+          <p>("id1", "id2", None, None, None, None) <br>
+id_date.csv:
+"id1","2019"
+"id2","2017"
+-> <br>
+("id1", "id2", "2019", <strong>"P2Y"</strong>, None, None)</p>
+          <p>Once we obtained somewhere else these data, we understand that the first id is associated with the date "2019", while the second one with the date "2017". In this way we can extend the citation data with the timespan info, that I didn't have before. </p>
+              
+          <p>However, the general process, when lacking a support file, tries to reconstruct the information using an API (the mechanism is like a switch: if we don't have the support file, we try with the API). All the tools that we have now were developed for the doi: now we have to do the same for the PubMed Ids. We may need another blob for NOCI, in order to generate additional csv, or maybe we can make request for already existing online API, so to obtain local files.  </p>
+          
+       <h2>Working process overview</h2>
+          <ul>
+              <li>Citation source works at least with 2 pieces of information: citing and cited. Also in the case it is the only material we have, we keep it.</li>
+              <li> The overall process, in case we lack some piece of information, uses precomputed files that allow to improve the starting material.</li>
+          </ul>
+          
+        <p>As first step, we have to understand what we have and what is missing. Then, we have to understand how to develop globs, global files. At this point we have to reason on PubMed Id structure, which is not handled by our OC general process, for now. All this stuff relates to the first phase. The following one is the alignment.</p>
+          
+        <h2>Links and References</h2>
+          <ul>
+              <li>index.test.01_csvmanager</li>
+              <li><a href="https://github.com/opencitations/index">https://github.com/opencitations/index</a></li>
+              <li><a href="https://github.com/opencitations/index/blob/master/test_data/croci_dump/citations.csv">https://github.com/opencitations/index/blob/master/test_data/croci_dump/citations.csv</a></li>
+              <li><a href="https://github.com/opencitations/index/blob/master/coci/glob.py">https://github.com/opencitations/index/blob/master/coci/glob.py</a></li>    
+          </ul>
+
+
+
+
+
       </div>
     </div>
   </div>

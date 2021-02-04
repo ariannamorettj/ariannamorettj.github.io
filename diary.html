@@ -693,7 +693,7 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
               <li>2368927,355650</li>
           </ol>
           <h3>Notes on format</h3>
-          <p>Before extracting data, we expected these to be either in PMCID or in PCID. The pure numeric format denotes that we are handling PMIDs.</p>
+          <p>Before extracting data, we expected these to be either PMCID or  PCID. The pure numeric format denotes that we are handling PMIDs.</p>
           <p>OC process is based on the use of a <strong>tuple of six values</strong> derived from the citation source(citing, cited, created, timespan, journal_sc, author_sc). However, here we just have two of these values, which are also the only indispensable ones (i.e. citing + referenced/cited).</p>
           
           <h2>Data mapping</h2>
@@ -880,12 +880,99 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
 </tbody>
 </table>
         
-<p>As we can see, results obtained by using different tools are not the same.</p>
+<p>As we can see, results obtained by using different tools are not the same. It is evident that the first tool obtains better results, but - most importantly - neither the one nor the other is able to match % of PMID-DOI couples. So, the mapping is incomplete.</p>
           
-          <h2>Notes on expected structure of the main function</h2>
+          <h2>Notes on expected structure of the main function</h2> 
+        <p>In order to understand what kind of input and output to expect, we can start from the model provided by CROCI.</p>
           <h3>Input</h3>
           <h3>Output</h3>
           <h2>Test Case development</h2>
+        <p>Reference Test Case:</p>
+        <h3>index/test/09_croci.py</h3>
+        <div class="codebg"><code><pre>          import unittest
+          from index.coci.glob import process
+          from os import sep, makedirs
+          from os.path import exists
+          from shutil import rmtree
+          from index.storer.csvmanager import CSVManager
+          from index.croci.crowdsourcedcitationsource import CrowdsourcedCitationSource
+          from csv import DictReader
+
+
+          class CROCITest(unittest.TestCase):
+
+              def setUp(self):
+                  self.input_file = "index%stest_data%scroci_dump%ssource.csv" % (sep, sep, sep)
+                  self.citations = "index%stest_data%scroci_dump%scitations.csv" % (sep, sep, sep)
+
+              def test_citation_source(self):
+                  ccs = CrowdsourcedCitationSource(self.input_file)
+                  new = []
+                  cit = ccs.get_next_citation_data()
+                  while cit is not None:
+                      citing, cited, creation, timespan, journal_sc, author_sc = cit
+                      new.append({
+                          "citing": citing,
+                          "cited": cited,
+                          "creation": "" if creation is None else creation,
+                          "timespan": "" if timespan is None else timespan,
+                          "journal_sc": "no" if journal_sc is None else journal_sc,
+                          "author_sc": "no" if author_sc is None else author_sc
+                      })
+                      cit = ccs.get_next_citation_data()
+
+                  with open(self.citations) as f:
+                      old = list(DictReader(f))
+
+                  self.assertEqual(new, old)</pre></code></div>
+        
+        <h3>On this base, a basic idea of index/test/(n?)_noci.py</h3>
+        <div class="codebg">
+            <code>
+                <pre>
+        
+        import unittest
+from index.coci.glob import process
+#lavora su orcid, issn, doi.. probabilmente da sostituire.
+from os import sep, makedirs
+from os.path import exists
+from shutil import rmtree
+from index.storer.csvmanager import CSVManager
+from index.noci.nationalinstitutehealthsource import NationalInstitutHealthSource #crowdsourcedcitationsource sostituito
+from csv import DictReader
+
+
+class NOCITest(unittest.TestCase):
+
+    def setUp(self):
+        self.input_file = "index%stest_data%snoci_dump%ssource.csv" % (sep, sep, sep) # %s è il separatore. source ha una tabella con i dati che compaiono nell source
+        self.citations = "index%stest_data%snoci_dump%scitations.csv" % (sep, sep, sep) #citations ha i dati disposti nella forma di tupla, quindi con riempitivi laddove il dato manca.
+#a differenxa di CROCI, NOCI non avrà quattro campi riempiti in source, ma solo due (non ha le date di pubblicazione né di citante né di citato)
+    def test_citation_source(self):
+        ns = NationalInstitutHealthSource(self.input_file)
+        new = []
+        cit = ns.get_next_citation_data_pmidversion() #controlla output e input di get next citation data
+        while cit is not None: #quindi finché non si esauriscono i dati citazionali a disposizione
+            citing, cited, creation, timespan, journal_sc, author_sc = cit #tutte queste variabili assumono lo stesso valore (?)
+            #riempimento della lista new con dizionari, ognuno corrispondente ad un dato citazionale estratto da get_next_citation_data, però nella versione che svilupperemo per i pmid
+            new.append({
+                "citing": citing,
+                "cited": cited,
+                "creation": "" if creation is None else creation, #dal momento che nessun dato possiede "creation" né "timespan", si lascia comunque la possibilità di gestire il caso, nel caso in cui in un secondo momento si potesse migliorare la qualità dei dati?
+                "timespan": "" if timespan is None else timespan,
+                "journal_sc": "no" if journal_sc is None else journal_sc,
+                "author_sc": "no" if author_sc is None else author_sc
+            })
+            cit = ns.get_next_citation_data_pmidversion()
+
+        with open(self.citations) as f: #open the file as a parameter of a function
+            old = list(DictReader(f)) #lista di dizionari ricavata da citations, quindi il file con i riempitivi in cui i dati erano disposti in forma di tupla
+
+
+        self.assertEqual(new, old)
+                </pre>
+            </code>
+        </div>
           <h2>Prompt: basic commands</h2>
           <h2>Clone locally OC index so to run tests.</h2>
           <h2>Self Citation</h2>
@@ -905,6 +992,8 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
                   <li>For some PMID,e.g. 4151790, I was able to find the correspondent DOI, i.e. 10.1083/jcb.61.3.688, both with <a href="https://www.pmid2cite.com/pmid-to-doi-converter">www.pmid2cite.com/pmid-to-doi-converter</a> and <a href="https://www.ncbi.nlm.nih.gov/pmc/pmctopmid/#api">www.ncbi.nlm.nih.gov/pmc/pmctopmid</a> coverter, (with this latter allowing the download of a generated file in the specified format -in my case I selected CSV*). However, I was not able to use the API service (it's the very first time I've tried to use an API service, so I really don't know where did I go wrong). I typed "service-root?ids=4145504" as required, and got back an error message. Maybe It's not necesary for me in this phase to learn how to use this tool, but I would like to understand why I can't make it work.</li>
                   <li>Is it possible/normal that pmid2cite tools performs better than NIH official tool? If so, why?</li>
               </ul>
+              <li>I still don't get fully the % separator issue. I tried reading the os documentation and analysing OC correspondent files and I still don't understand (a) why we use % specifying it as separator (instead of the simple slash) and (b)why we add an "s" after it in the path name. I know I asked a similar question last time, but I was pretty sure I understood, while I'm realizing I didn't. </li>
+              <li>I have some doubts concerning the general settings of the test function I should develop: It's like it stays really similar to the croci one, and that the only parts that have to be changed are called functions that are external to the test case itself. But maybe the point was just focusing on them, in order to uderstand which parts of the overall process I won't be able to reuse, since they were implementes for DOIs only. In this latter case, I'm not so far from understanding. Otherwise I'll try to study the function better and properly prepare it for next time.</li>
           </ol>
           <p>*</p>
           <div class="codebg">          <code><pre>"PMID","PMCID","DOI","Version","MID","IsCurrent","IsLive","ReleaseDate","Msg"

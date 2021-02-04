@@ -227,7 +227,7 @@ Test that first and second are equal. If the values do not compare equal, the te
           <h2>Open Citation Environment: NOCI</h2>
           <p>The aim of this thesis project is to develop an extension of ocindex. For this reason, i need to clone locally oc index, so to be able to run tests. We will add a new directory, a package, that we can call "NOCI", that will be developed following CROCI structure. We will need a python file in order to interact with the input file containing NIH data (extend locally with a folder containing a python file named "nih citation source", or something similar). </p>
           <p>Initially, this won't work: the first thing we need to do after having the structure set is developing the test case, so to check that the input returns a specific output. The form of the output has to be defined (emulate CROCI and COCI). This process forces us to think about the format of input and output materials of the functio to be developed.  </p>
-          <p>As we said, the output has to have the OC sextuple format (see test data croci dump citation). The only big difference is that the value that I'm going to insert in citing and cited won't be a doi, but the NIH id, which should be a PubMed ID. The DOI may be (and probably is) present; however, we can't rely on this. In this dataset we will have the "selfcitation" info, but we don't know yet whether it is useful or not for our purposes. 
+          <p>As we said, the output has to have the OC sixtuple format (see test data croci dump citation). The only big difference is that the value that I'm going to insert in citing and cited won't be a doi, but the NIH id, which should be a PubMed ID. The DOI may be (and probably is) present; however, we can't rely on this. In this dataset we will have the "selfcitation" info, but we don't know yet whether it is useful or not for our purposes. 
           <p>Remember that "Selfcitation" is set as "yes" if citing and cited either belong to the same journal or if there is at least a member in common between citing and cited authors. </p>
           
           
@@ -238,7 +238,7 @@ Test that first and second are equal. If the values do not compare equal, the te
                   <li>check whether the specified DOIs are valid</li>
                   <li>map (id-pubdate; journal isn - other data; article id - related data </li>
           </ul> 
-          <p>With the support file we try to understand if we can improve the quality of the info about the sextuple.</p>
+          <p>With the support file we try to understand if we can improve the quality of the info about the sixtuple.</p>
           <p>("id1", "id2", None, None, None, None) <br>
 id_date.csv:
 "id1","2019"

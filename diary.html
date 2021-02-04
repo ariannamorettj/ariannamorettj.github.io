@@ -62,13 +62,13 @@
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
         <h2>UnitTest Introduction</h2>
-        <p>UnitTest is a test runner built into a python library, containing both a testing framework and a test runner.<br>
-        <em>Requirements:</em>
+        <p>UnitTest is a test runner built into a python library, containing both a testing framework and a test runner.</p>
+        <p><em>Requirements:</em></p>
         <ul>
           <li>tests must be included into <em>classes</em> as <em>methods</em> </li>
           <li>instead of the built-in statement "assert", the <em>special assertion methods in unittest.TestCase class </em> must be used </li>
         </ul>
-      </p>
+      
       <h2>Example 1</h2>
       <p>file test_sum_2.py</p>
       <div class="codebg">
@@ -649,7 +649,6 @@ if __name__ == "__main__":
       <li>For now I'm only using assertEqual() since I have some troubles in understanding how all the other methods could be applied in tests (how can I do something more than testing if the result of the function matches the expected one? In OpenCitation which other ones are mainly used?).</li>
       <li>SetUp(): real contexts of use (examples)? In particular setUp in CrociTest <br> self.input_file = "index%stest_data%scroci_dump%ssource.csv" % (sep, sep, sep) <br>
         self.citations = "index%stest_data%scroci_dump%scitations.csv" % (sep, sep, sep)</li>
-      <li></li>
     </ol>
       </div>
     </div>
@@ -665,7 +664,252 @@ if __name__ == "__main__":
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>NIH library data</h2>
+          <h3>Ten examples</h3>
+          <p>I randomly extracted ten samples from the open_citation_collection.csv and I stored the data in a new csv file (open_citation_collection_sample.csv).</p>
+          <div class="codebg"><code><pre>C:\Users\arimoretti\Desktop\TESI\icite>pip install subsample
+Collecting subsample
+  Downloading https://files.pythonhosted.org/packages/21/86/ff247222b81baa8b47a9970c76e6f930662d7b9336e669f7e4b39857e674/subsample-0.0.6.tar.gz
+Installing collected packages: subsample
+  Running setup.py install for subsample ... done
+Successfully installed subsample-0.0.6
+WARNING: You are using pip version 19.2.3, however version 21.0.1 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Users\arimoretti\Desktop\TESI\icite>subsample -n 10 open_citation_collection.csv > open_citation_collection_sample.csv
+LOG 03:21 > Data begins at 0
+
+C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
+          <ol>
+              <li>2140506,2942070</li>
+              <li>1523579,7097569</li>
+              <li>1509982,6501574</li>
+              <li>1968312,13673087</li>
+              <li>2330868,3958380</li>
+              <li>1854174,3037997</li>
+              <li>2038824,2494239</li>
+              <li>2373284,7189714</li>
+              <li>3591292,4092853</li>
+              <li>2368927,355650</li>
+          </ol>
+          <h3>Notes on format</h3>
+          <p>Before extracting data, we expected these to be either in PMCID or in PCID. The pure numeric format denotes that we are handling PMIDs.</p>
+          <p>OC process is based on the use of a <strong>tuple of six values</strong> derived from the citation source(citing, cited, created, timespan, journal_sc, author_sc). However, here we just have two of these values, which are also the only indispensable ones (i.e. citing + referenced/cited).</p>
+          
+          <h2>Data mapping</h2>
+          <p>The 2 primary identifiers are not DOIs, but PubMedID. Since until now only DOIs have been managed by our process, some of these citations may already be present in Open Citations (COCI: doi to doi only). </p>
+          <p>In NIH dataset some articles probably have a doi, but exposed differently. So our options for the mapping are: </p>
+          <ol>
+              <li>use article additional data provided by icite</li>
+              <li>use external mapping datasets</li>
+          </ol>
+          <h3>External mapping tools</h3>
+          <h4>Results obtained with <a href="https://www.pmid2cite.com/pmid-to-doi-converter">www.pmid2cite.com</a></h4>
+          <table style="width: 117px;">
+<tbody>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">&nbsp;</td>
+<td style="height: 22px; width: 64.8px;">PMID citing</td>
+<td style="height: 22px; width: 36px;">&nbsp;DOI citing</td>
+<td style="height: 22px; width: 36px;">PMID referenced</td>
+<td style="height: 22px; width: 36px;">DOI referenced</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">1</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2140506</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1111/j.1445-5994.1990.tb01289.x" target="_blank">10.1111/j.1445-5994.1990.tb01289.x</a></td>
+<td style="height: 22px; width: 36px;">2942070</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.7326/0003-4819-105-2-173" target="_blank">10.7326/0003-4819-105-2-173</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">2</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1523579</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1002/tera.1420460305" target="_blank">10.1002/tera.1420460305</a></td>
+<td style="height: 22px; width: 36px;">7097569</td>
+<td style="height: 22px; width: 36px;">Unable to resolve the DOI&nbsp;</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">3</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1509982</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1007/BF01990957" target="_blank">10.1007/BF01990957</a></td>
+<td style="height: 22px; width: 36px;">6501574</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1172/JCI111604" target="_blank">10.1172/JCI111604</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">4</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1968312</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1016/0002-9149(90)90817-k" target="_blank">10.1016/0002-9149(90)90817-k</a></td>
+<td style="height: 22px; width: 36px;">13673087</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1172/JCI103906" target="_blank">10.1172/JCI103906</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">5</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2330868</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1016/s0002-8703(05)80240-6" target="_blank">10.1016/s0002-8703(05)80240-6</a></td>
+<td style="height: 22px; width: 36px;">3958380</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1016/s0735-1097(86)80214-5" target="_blank">10.1016/s0735-1097(86)80214-5</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">6</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1854174</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1128/aac.35.5.929" target="_blank">10.1128/aac.35.5.929</a></td>
+<td style="height: 22px; width: 36px;">3037997</td>
+<td style="height: 22px; width: 36px;">
+<div id="buttonHide" class="out">
+<p class="output"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1128/aac.31.4.497" target="_blank">10.1128/aac.31.4.497</a></p>
+</div>
+</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">7</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2038824</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1016/0165-2427(91)90031-7" target="_blank">10.1016/0165-2427(91)90031-7</a></td>
+<td style="height: 22px; width: 36px;">2494239</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.3168/jds.S0022-0302(89)79089-5" target="_blank">10.3168/jds.S0022-0302(89)79089-5</a></td>
+</tr>
+<tr style="height: 22.6px;">
+<td style="height: 22.6px; width: 15.2px;">8</td>
+<td style="height: 22.6px; width: 64.8px;">&nbsp;2373284</td>
+<td style="height: 22.6px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1111/j.1432-0436.1990.tb00437.x" target="_blank">10.1111/j.1432-0436.1990.tb00437.x</a></td>
+<td style="height: 22.6px; width: 36px;">7189714</td>
+<td style="height: 22.6px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1016/0014-4827(80)90437-1" target="_blank">10.1016/0014-4827(80)90437-1</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">9</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;3591292</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1111/j.1651-2227.1987.tb10456.x" target="_blank">10.1111/j.1651-2227.1987.tb10456.x</a></td>
+<td style="height: 22px; width: 36px;">4092853</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1111/j.1469-8749.1985.tb03805.x" target="_blank">10.1111/j.1469-8749.1985.tb03805.x</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">10</td>
+<td style="height: 22px; width: 64.8px;">2368927</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1002/ar.1092270109" target="_blank">10.1002/ar.1092270109</a></td>
+<td style="height: 22px; width: 36px;">355650</td>
+<td style="height: 22px; width: 36px;">Unable to resolve the DOI&nbsp;</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Results obtained with <a href="https://www.ncbi.nlm.nih.gov/pmc/pmctopmid/#api">/www.ncbi.nlm.nih.gov</a></h4>
+          
+          <table style="width: 117px;">
+<tbody>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">&nbsp;</td>
+<td style="height: 22px; width: 64.8px;">PMID citing</td>
+<td style="height: 22px; width: 36px;">&nbsp;DOI citing</td>
+<td style="height: 22px; width: 36px;">PMID referenced</td>
+<td style="height: 22px; width: 36px;">DOI referenced</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">1</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2140506</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">2942070</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">2</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1523579</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">7097569</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">3</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1509982</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">6501574</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1172/JCI111604" target="_blank">10.1172/JCI111604</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">4</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1968312</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">13673087</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1172/JCI103906" target="_blank">10.1172/JCI103906</a></td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">5</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2330868</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">3958380</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">6</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;1854174</td>
+<td style="height: 22px; width: 36px;"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1128/aac.35.5.929" target="_blank">10.1128/aac.35.5.929</a></td>
+<td style="height: 22px; width: 36px;">3037997</td>
+<td style="height: 22px; width: 36px;">
+<div id="buttonHide" class="out">
+<p class="output"><a title="Link by DOI for the given PMID" href="https://doi.org/10.1128/aac.31.4.497" target="_blank">10.1128/aac.31.4.497</a></p>
+</div>
+</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">7</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;2038824</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">2494239</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22.6px;">
+<td style="height: 22.6px; width: 15.2px;">8</td>
+<td style="height: 22.6px; width: 64.8px;">&nbsp;2373284</td>
+<td style="height: 22.6px; width: 36px;">""</td>
+<td style="height: 22.6px; width: 36px;">7189714</td>
+<td style="height: 22.6px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">9</td>
+<td style="height: 22px; width: 64.8px;">&nbsp;3591292</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">4092853</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+<tr style="height: 22px;">
+<td style="height: 22px; width: 15.2px;">10</td>
+<td style="height: 22px; width: 64.8px;">2368927</td>
+<td style="height: 22px; width: 36px;">""</td>
+<td style="height: 22px; width: 36px;">355650</td>
+<td style="height: 22px; width: 36px;">""</td>
+</tr>
+</tbody>
+</tbody>
+</table>
+        
+<p>As we can see, results obtained by using different tools are not the same.</p>
+          
+          <h2>Notes on expected structure of the main function</h2>
+          <h3>Input</h3>
+          <h3>Output</h3>
+          <h2>Test Case development</h2>
+          <h2>Prompt: basic commands</h2>
+          <h2>Clone locally OC index so to run tests.</h2>
+          <h2>Self Citation</h2>
+          <p> In COCI, 29,755,045 (6.7%) citations are journal self-citations, while 250,991 (0.06%)are author self-citations. In fact, the two cases in which we define a self-citation are:</p>
+          <ul>
+              <li>Citing and Cited articles belong to the same journal</li>
+              <li>There is at least one author in common between the group of citing authors and the group of cited authors</li>
+          </ul>
+              
+        <p>However, the second case is more difficult to handle, because of the problem of the sparsity of data about ORCID author identifers in Crossref database. </p>
+          <p>Source: <a href="Heibi2019_Article_SoftwareReviewCOCITheOpenCitat.pdf">Software review: COCI, the OpenCitations Index of Crossref open DOI‑to‑DOI citations</a></p>
+          <h2>Issues</h2>
+          <ol>
+              <li>From my notes in "Meetings": The <strong>DOI</strong> may be (and probably is) present; however, we can't rely on this + In this dataset we will probably have the <strong>"selfcitation" info</strong>. --> Since in the open_citation_collection.csv we only have citing and referenced, are those data supposed to be in icite_metadata.zip?</li>
+              <li>I tried to use a couple of mapping tools, one of which should be the one we discussed in the last meeting (they basically perform the same task, however).</li>
+              <ul>
+                  <li>For some PMID,e.g. 4151790, I was able to find the correspondent DOI, i.e. 10.1083/jcb.61.3.688, both with <a href="https://www.pmid2cite.com/pmid-to-doi-converter">www.pmid2cite.com/pmid-to-doi-converter</a> and <a href="https://www.ncbi.nlm.nih.gov/pmc/pmctopmid/#api">www.ncbi.nlm.nih.gov/pmc/pmctopmid</a> coverter, (with this latter allowing the download of a generated file in the specified format -in my case I selected CSV*). However, I was not able to use the API service (it's the very first time I've tried to use an API service, so I really don't know where did I go wrong). I typed "service-root?ids=4145504" as required, and got back an error message. Maybe It's not necesary for me in this phase to learn how to use this tool, but I would like to understand why I can't make it work.</li>
+                  <li>Is it possible/normal that pmid2cite tools performs better than NIH official tool? If so, why?</li>
+              </ul>
+          </ol>
+          <p>*</p>
+          <div class="codebg">          <code><pre>"PMID","PMCID","DOI","Version","MID","IsCurrent","IsLive","ReleaseDate","Msg"
+"4151790","PMC2109316","10.1083/jcb.61.3.688","","","",1,"",""</pre></code></div>
+
       </div>
     </div>
   </div>

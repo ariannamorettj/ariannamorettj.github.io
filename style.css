@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Charmonman&family=Dr+Sugiyama&family=Princess+Sofia&family=Sofia&display=swap');
+
 h1{
-  font: lighter 100px, sans-serif;
-  letter-spacing: 3px;
+  font-size: 100px ;
+  margin-top: 15px;
+  font-family: 'Sofia', cursive;
   text-align: center;
   color: #ffffff !important;
   text-shadow: 2px 4px 4px rgba(0,0,0,0.2),
@@ -11,8 +14,58 @@ strong{
     background-color: rgba(204,148,233,1);
 }
 
+table{
+    display: block;
+    justify-content: space-around;
+    min-width:70%;
+    max-width: 100%;
+    overflow-x: scroll;
+    border: 3px dotted #ffffff;
+    margin: auto;
+    background: linear-gradient(102deg, #da65d4, #713873, #c21bbb, #c799e9);
+    background-size: 800% 800%;
+
+    -webkit-animation: AnimationName 28s ease infinite;
+    -moz-animation: AnimationName 28s ease infinite;
+    animation: AnimationName 28s ease infinite;
+}
+
+@media (max-width:480px){
+    table{
+        min-width: 100%;
+    }
+}
+
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 45%}
+    50%{background-position:100% 56%}
+    100%{background-position:0% 45%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 45%}
+    50%{background-position:100% 56%}
+    100%{background-position:0% 45%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 45%}
+    50%{background-position:100% 56%}
+    100%{background-position:0% 45%}
+}
+
+table td a{
+    color: #5ff374!important;
+}
+
+td{
+    white-space: nowrap;
+    border: 1px solid #ffffff !important;
+    justify-content: space-between;
+}
+
 body{
     overflow-x: hidden !important;
+    justify-content: space-between;
     background: linear-gradient(149deg, #5fbe86, #d75cba, #a66596, #5ff374, #f195f5, #226e30, #acfaba, #dcacfa);
     background-size: 1600% 1600%;
 
@@ -97,6 +150,9 @@ body{
 .card-body h2{
   color: #F6CDE2;
 }
+.card-body h3{
+  color: #5FF374;
+}
 
 .card-body a{
   color: #2c5630;
@@ -104,10 +160,12 @@ body{
 
 .downloadbt{
   background-color: #39563c;
-  display:flex;
+  display:block;
+  margin: 10px auto;
 }
 .downloadbt a{
   color: #F6CDE2 !important;
+  padding: 5px;
 }
 
 .downloadbt:hover{
@@ -119,14 +177,12 @@ body{
 
 }
 img{
-  max-width: inherit;
+  max-width: 90%;
   border-radius: 5px;
-  display: inline-flex;
-  object-fit: container;
-  width: 100%;
+  display: block;
+  margin: auto;
   border: 10px solid;
   border-color: #F6CDE2;
-  margin: 10px;
 }
 
 .function{

@@ -693,7 +693,7 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
               <li>2368927,355650</li>
           </ol>
           <h3>Notes on format</h3>
-          <p>Before extracting data, we expected these to be either PMCID or  PCID. The pure numeric format denotes that we are handling PMIDs.</p>
+          <p>Before extracting data, we expected these to be either PMCID or  PMID. The pure numeric format denotes that we are handling PMIDs.</p>
           <p>OC process is based on the use of a <strong>tuple of six values</strong> derived from the citation source(citing, cited, created, timespan, journal_sc, author_sc). However, here we just have two of these values, which are also the only indispensable ones (i.e. citing + referenced/cited).</p>
           
           <h2>Data mapping</h2>
@@ -880,7 +880,7 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
 </tbody>
 </table>
         
-<p>As we can see, results obtained by using different tools are not the same. It is evident that the first tool obtains better results, but - most importantly - neither the one nor the other is able to match % of PMID-DOI couples. So, the mapping is incomplete.</p>
+<p>As we can see, results obtained by using different tools are not the same. It is evident that the first tool obtains better results, but - most importantly - neither the one nor the other is able to match 100% of PMID-DOI couples. So, the mapping is incomplete.</p>
           
           <h2>Notes on expected structure of the main function</h2> 
         <p>In order to understand what kind of input and output to expect, we can start from the model provided by CROCI.</p>
@@ -974,6 +974,88 @@ class NOCITest(unittest.TestCase):
             </code>
         </div>
           <h2>Prompt: basic commands</h2>
+        <h3>General</h3>
+        <ul>
+            <li>Lists Installed Drivers (<strong>driverquery</strong>): get a full list of installed drivers in your pc (driverquery -v to obtain more information). </li>
+            <li><strong>ipconfig</strong>: provides your ip address + your local network.</li>
+            <li><strong>systeminfo</strong>:  to know very basic information about your pc’s hardware, like – motherboard, processor, ram</li>
+            <li><strong>ping</strong>:sends packets of data to a specific IP address (or domain) on a network and then lets you know how long it took to transmit that data and get a response (ping + ip or domain).</li>
+            <li><strong>sfc /scannow</strong>scan and repare windown system files. But you must be run the console as an administrator</li>
+            <li><strong>tasklist</strong>: gets a list of all tasks running on your pc (tasklist -v). </li>
+            <li><strong>cd</strong>: </li>
+            <ol>
+                <li><strong>cd\</strong> to go to the top of the directory tree</li>
+                <li><strong>CD Folder</strong>to go to a specific folder from this drive. The subfolders must be separated by a backslash character: \.</li>
+                <li><strong>cd..</strong>to go one folder up.</li>
+            </ol>
+            <li>To change the drive from “C:” to “D:”, type d:</li>
+            <li><strong>mkdir</strong>:  (Make Directory) command. mkdir Folder creates a folder.</li>
+            <li><strong>cls</strong>: clear screen, to clear the command prompt screen.</li>
+        </ul>
+        <p>Source: <a href="https://dev.to/iamprogrammmer/command-prompt-basic-commands-you-should-know-cmd-4aj">dev.to</a></p>
+        <h3>Unittest</h3>
+        <p> Unittest from command line in order to make tests on modules, classes or specific methods</p>
+        <ul>
+            <li>python -m unittest test_module1 test_module2</li>
+            <li>python -m unittest test_module.TestClass</li>
+            <li>python -m unittest test_module.TestClass.test_method</li>
+        </ul>
+        <p>Test modules can be specified by file path, e.g.: python -m unittest tests/test_something.py</p>
+        <p>For additional information, we can obtain tests with more detail (higher verbosity) by passing in the -v flag: python -m unittest -v test_module</p>
+        <p>List of all command line options: python -m unittest -h</p>
+        <div class="codebg">
+            <code>
+                <pre>
+                C:\Users\arimoretti>python -m unittest -h
+usage: python.exe -m unittest [-h] [-v] [-q] [--locals] [-f] [-c] [-b] [-k TESTNAMEPATTERNS] [tests [tests ...]]
+
+positional arguments:
+  tests                a list of any number of test modules, classes and test methods.
+
+optional arguments:
+  -h, --help           show this help message and exit
+  -v, --verbose        Verbose output
+  -q, --quiet          Quiet output
+  --locals             Show local variables in tracebacks
+  -f, --failfast       Stop on first fail or error
+  -c, --catch          Catch Ctrl-C and display results so far
+  -b, --buffer         Buffer stdout and stderr during tests
+  -k TESTNAMEPATTERNS  Only run tests which match the given substring
+
+Examples:
+  python.exe -m unittest test_module               - run tests from test_module
+  python.exe -m unittest module.TestClass          - run tests from module.TestClass
+  python.exe -m unittest module.Class.test_method  - run specified test method
+  python.exe -m unittest path/to/test_file.py      - run tests from test_file.py
+
+usage: python.exe -m unittest discover [-h] [-v] [-q] [--locals] [-f] [-c] [-b] [-k TESTNAMEPATTERNS] [-s START]
+                                       [-p PATTERN] [-t TOP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose         Verbose output
+  -q, --quiet           Quiet output
+  --locals              Show local variables in tracebacks
+  -f, --failfast        Stop on first fail or error
+  -c, --catch           Catch Ctrl-C and display results so far
+  -b, --buffer          Buffer stdout and stderr during tests
+  -k TESTNAMEPATTERNS   Only run tests which match the given substring
+  -s START, --start-directory START
+                        Directory to start discovery ('.' default)
+  -p PATTERN, --pattern PATTERN
+                        Pattern to match tests ('test*.py' default)
+  -t TOP, --top-level-directory TOP
+                        Top level directory of project (defaults to start directory)
+
+For test discovery (python -m unittest) all test modules must be importable from the top level directory of the project.
+
+C:\Users\arimoretti>
+                </pre>
+            </code>
+
+        </div>
+<p>Source: <a href="https://docs.python.org/3/library/unittest.html">docs.python.org</a></p>
+
           <h2>Clone locally OC index so to run tests.</h2>
           <h2>Self Citation</h2>
           <p> In COCI, 29,755,045 (6.7%) citations are journal self-citations, while 250,991 (0.06%)are author self-citations. In fact, the two cases in which we define a self-citation are:</p>

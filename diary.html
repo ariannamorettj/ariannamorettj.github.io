@@ -884,8 +884,6 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
           
           <h2>Notes on expected structure of the main function</h2> 
         <p>In order to understand what kind of input and output to expect, we can start from the model provided by CROCI.</p>
-          <h3>Input</h3>
-          <h3>Output</h3>
           <h2>Test Case development</h2>
         <p>Reference Test Case:</p>
         <h3>index/test/09_croci.py</h3>
@@ -931,45 +929,43 @@ C:\Users\arimoretti\Desktop\TESI\icite></pre></code></div>
             <code>
                 <pre>
         
-        import unittest
-from index.coci.glob import process
-#lavora su orcid, issn, doi.. probabilmente da sostituire.
-from os import sep, makedirs
-from os.path import exists
-from shutil import rmtree
-from index.storer.csvmanager import CSVManager
-from index.noci.nationalinstitutehealthsource import NationalInstitutHealthSource #crowdsourcedcitationsource sostituito
+import unittest
+from index.coci.glob import process #something to be developed to perform the same task but with pmids
+from os import sep, makedirs  #Recursive directory creation function. Like mkdir(), but makes all intermediate-level directories needed to contain the leaf directory.
+from os.path import exists  #used to check whether the specified path exists or not.
+from shutil import rmtree #used to delete an entire directory tree, path must point to a directory (but not a symbolic link to a directory)
+from index.storer.csvmanager import CSVManager #This class is able to load a simple CSV composed by two fields, 'id' and'value', and then to index all its items in a structured form so as to be easily queried. In addition, it allows one to store new information in the CSV, if needed.
+from index.noci.nationalinstituteofhealthsource import NationalInstitutHealthSource #crowdsourcedcitationsource sostituito
 from csv import DictReader
 
 
 class NOCITest(unittest.TestCase):
 
-    def setUp(self):
-        self.input_file = "index%stest_data%snoci_dump%ssource.csv" % (sep, sep, sep) # %s è il separatore. source ha una tabella con i dati che compaiono nell source
-        self.citations = "index%stest_data%snoci_dump%scitations.csv" % (sep, sep, sep) #citations ha i dati disposti nella forma di tupla, quindi con riempitivi laddove il dato manca.
-#a differenxa di CROCI, NOCI non avrà quattro campi riempiti in source, ma solo due (non ha le date di pubblicazione né di citante né di citato)
+    def setUp(self): #The self parameter is a reference to the current instance of the class, and is used to access variables that belongs to the class.
+        self.input_file = "index%stest_data%snoci_dump%ssource.csv" % (sep, sep, sep) #without placeholders for the tuple format, data as provided by NIH
+        self.citations = "index%stest_data%snoci_dump%scitations.csv" % (sep, sep, sep) #adaptation for tuple format, with all 6 fields
     def test_citation_source(self):
-        ns = NationalInstitutHealthSource(self.input_file)
+        ns = NationalInstitutHealthSource(self.input_file) #class of nationalinstituteofhealthsource, where a version of get next citation handling pmid data will be defined.
         new = []
-        cit = ns.get_next_citation_data_pmidversion() #controlla output e input di get next citation data
-        while cit is not None: #quindi finché non si esauriscono i dati citazionali a disposizione
-            citing, cited, creation, timespan, journal_sc, author_sc = cit #tutte queste variabili assumono lo stesso valore (?)
-            #riempimento della lista new con dizionari, ognuno corrispondente ad un dato citazionale estratto da get_next_citation_data, però nella versione che svilupperemo per i pmid
+        cit = ns.get_next_citation_data_pmidversion() #will extract citational data from our input file, which is the source one, with just citing and cited
+        while cit is not None: #(which is: until we have citational data)
+            citing, cited, creation, timespan, journal_sc, author_sc = cit #related to the csv format (?) does the comma separator define the fields, so that cit becomes che full ciation divided by fields?
+            #we append each citational data to the new list (which will be a list of dictionaries), in the format required for the 6-elements tuple.
             new.append({
                 "citing": citing,
                 "cited": cited,
-                "creation": "" if creation is None else creation, #dal momento che nessun dato possiede "creation" né "timespan", si lascia comunque la possibilità di gestire il caso, nel caso in cui in un secondo momento si potesse migliorare la qualità dei dati?
+                "creation": "" if creation is None else creation, #in all our cases the last four fields will be "","","no","no"
                 "timespan": "" if timespan is None else timespan,
                 "journal_sc": "no" if journal_sc is None else journal_sc,
                 "author_sc": "no" if author_sc is None else author_sc
             })
-            cit = ns.get_next_citation_data_pmidversion()
+            cit = ns.get_next_citation_data_pmidversion() #cit variable is assigned the value of the subsequent citational datum from input_file (source.csv)
 
-        with open(self.citations) as f: #open the file as a parameter of a function
-            old = list(DictReader(f)) #lista di dizionari ricavata da citations, quindi il file con i riempitivi in cui i dati erano disposti in forma di tupla
+        with open(self.citations) as f: #open the file as a parameter of a function, this time the csv with the data compiled in the 6-elements tuple format
+            old = list(DictReader(f)) #a list of dictionaries is derived from data in citations.
 
 
-        self.assertEqual(new, old)
+        self.assertEqual(new, old) #check that the lists of dictionaries derived respectively from source and from citations are the equal.
                 </pre>
             </code>
         </div>
@@ -1248,6 +1244,21 @@ C:\Users\arimoretti\Documents\GitHub\index>git restore --source=HEAD :/
               <li>I still don't get fully the % separator issue. I tried reading the os documentation and analysing OC correspondent files and I still don't understand (a) why we use % specifying it as separator (instead of the simple slash) and (b)why we add an "s" after it in the path name. I know I asked a similar question last time, but I was pretty sure I understood, while I'm realizing I didn't. </li>
               <li>I have some doubts concerning the general settings of the test function I should develop: It's like it stays really similar to the croci one, and that the only parts that have to be changed are called functions that are external to the test case itself. But maybe the point was just focusing on them, in order to uderstand which parts of the overall process I won't be able to reuse, since they were implementes for DOIs only. In this latter case, I'm not so far from understanding. Otherwise I'll try to study the function better and properly prepare it for next time.</li>
               <li>I didn't succeed in locally cloning the oc index from github.</li>
+              <li> In the csv files I created i changed "referenced" with "cited" for uniformity purposes. Is it correct or should I keep the original label by NIH?</li>
+              <li> I have some doubts about this line of code in 09_croci.py : citing, cited, creation, timespan, journal_sc, author_sc = cit . Is it like defining the labels of the columns in the csv file? i.e. : is it related to the csv format, so that the comma separator define the fields, and cit becomes che full ciation divided by fields?</li>
+              <li>I don't get properly the value of the variable c in this part of the function of the class CrowdsourcedCitationSource in crowdsourcedcitationsource.py:</li>
+              <div class="codebg">
+                  <code>
+                      <pre>
+                      cited_pub_date = row.get("cited_publication_date")
+                if not cited_pub_date:
+                    timespan = None
+                else:
+                    c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+                    timespan = c.duration
+                      </pre>
+                  </code>
+              </div>
           </ol>
           <p>*</p>
           <div class="codebg">          <code><pre>"PMID","PMCID","DOI","Version","MID","IsCurrent","IsLive","ReleaseDate","Msg"

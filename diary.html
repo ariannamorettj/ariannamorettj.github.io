@@ -666,7 +666,7 @@ if __name__ == "__main__":
       <div class="card-body">
           <h2>NIH library data</h2>
           <h3>Ten examples</h3>
-          <p>I randomly extracted ten samples from the open_citation_collection.csv and I stored the data in a new csv file (open_citation_collection_sample.csv).</p>
+          <p>I randomly extracted ten samples from the open_citation_collection.csv and I stored the data in a new csv file (open_citation_collection_sample.csv, then renamed source.csv).</p>
           <div class="codebg"><code><pre>C:\Users\arimoretti\Desktop\TESI\icite>pip install subsample
 Collecting subsample
   Downloading https://files.pythonhosted.org/packages/21/86/ff247222b81baa8b47a9970c76e6f930662d7b9336e669f7e4b39857e674/subsample-0.0.6.tar.gz
@@ -1227,6 +1227,9 @@ error: invalid path 'test_data/tmp_workflow/prov/rdf/2020/05/2020-05-18T11:01:49
 C:\Users\arimoretti\Documents\GitHub\index>git restore --source=HEAD :/
 
         </pre></code></div>
+            <h3>Structure</h3>
+            <p>However, I created some folders on my pc, so to integrate them later, when I'll be able to clone the whole repository locally (an index folder containing 3 folders: noci (with nationalinstituteofhealthsource.py), test (with 10_noci.py) and test_data (with noci_dump, containing citations.csv and source.csv))</p>
+
             
           <h2>Self Citation</h2>
           <p> In COCI, 29,755,045 (6.7%) citations are journal self-citations, while 250,991 (0.06%)are author self-citations. In fact, the two cases in which we define a self-citation are:</p>

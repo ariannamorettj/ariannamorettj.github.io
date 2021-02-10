@@ -282,7 +282,32 @@ id_date.csv:
     </div>
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>Mapping</h2>
+          <h3>Reconstructing Information</h3>
+          <p> We can work out the selfcitation information later. It would be reasonable to follow the same process adopted for COCI: we have a preprocessing phase where each document is associated to some information extracted form a csv file containing metadata (e.g. journal issn, orcid..). The algorithm is supposed to receive some files, then used to extract the selfcitation information. The point is that the mapping represents a further phase of the process.         
+          </p>
+          <h3>NIH Mapping file</h3>
+          <p>NIH should provide a csv mapping file. We should then understand if it makes more sense using api ur existing files (we don't know the number of files to be managed, but probably there are many of them - they APIs could be overloaded and if the same information is already stored in csv files the process should be faster).</p>
+          
+          <h2>NIH dataset management</h2>
+          <p>The format we found for CROCI citational data was "citing" - "cited". While for NOCI it is "citing" - "referenced". The second part can't be changed, but muts be managed in the way it comes. Pay attention: <strong>the source file must stay as it is</strong>: the differring naming convention is to be managed in the 6-elements tuple.
+          <h2> citing, cited, creation, timespan, journal_sc, author_sc = cit </h2>
+          <p>The format of this assignment depends on the fact that I can associate tuples of variables to tuples of values, and cit is already a tuple of values, while citing, cited, creation, timespan, journal_sc, author_sc are the names of the variables.</p>
+
+          <h2>c in the class CrowdsourcedCitationSource (crowdsourcedcitationsource.py)</h2>
+          <p>Citations class. The passage with c is useful only because it tales the four main values. For example, Citations has in default the timespan step, and the constructor of the class makes calculations on its own. We keep only the part we need.</p>
+          <h2>NOCI main function</h2>
+          <p>Is to be developed on the base of the CROCI main function. It is the function that contains the NOCI class.</p>
+          <p>The first aim of this function is managing the new type of id. This should happen in cnc.py. We are supposed to manage the type of id so to iteract with the correct api. The most important aspect is that the conversion citation (source) -- information storing in the 6 columns format works. Once that we accomplish this aim, we have to understand how to improve the quality and the amount of data to be stored in the tuple. Use input files of CROCI to understand the functioning of the overall process. <strong>get_next_citation</strong> must mantain the same name in the new class to be implemented. </p>
+          
+          <h2>To do</h2>
+          <ul>
+              <li>Download Metadata File</li>
+              <li>Develop the main function</li>
+              <li>Correct the test function</li>
+              <li>Locally clone and launch OC index</li>
+              <li>Read Mail about mapping</li>
+          </ul>
       </div>
     </div>
   </div>

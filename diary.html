@@ -1285,10 +1285,114 @@ C:\Users\arimoretti\Documents\GitHub\index>git restore --source=HEAD :/
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
       <div class="card-body">
           <h2>Download Metadata File</h2>
-          <h2>Correct the test function</h2>
+          <p></p>
+          <h2>Correct the test function + restore original format of data source</h2>
+          <h3>Previous modified version</h3>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  citing_id,cited_id
+                    2140506,2942070
+                    1523579,7097569
+                    1509982,6501574
+                    1968312,13673087
+                    2330868,3958380
+                    1854174,3037997
+                    2038824,2494239
+                    2373284,7189714
+                    3591292,4092853
+                    2368927,355650
+                  </pre>
+              </code>
+ 
+          </div>
+          <h3>Restored original version</h3>
+          <div class="codebg">
+          <code>
+              <pre>
+                    citing,referenced
+                    2140506,2942070
+                    1523579,7097569
+                    1509982,6501574
+                    1968312,13673087
+                    2330868,3958380
+                    1854174,3037997
+                    2038824,2494239
+                    2373284,7189714
+                    3591292,4092853
+                    2368927,355650
+                  </pre>
+              </code>
+          </div>
+          <h2>Test Function with corrections</h2>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  import unittest
+from index.coci.glob import process 
+from os import sep, makedirs 
+from os.path import exists  
+from shutil import rmtree
+from index.storer.csvmanager import CSVManager 
+from index.noci.nationalinstituteofhealthsource import NationalInstitutHealthSource 
+from csv import DictReader
+
+
+class NOCITest(unittest.TestCase):
+
+    def setUp(self): 
+        self.input_file = "index%stest_data%snoci_dump%ssource.csv" % (sep, sep, sep) 
+        self.citations = "index%stest_data%snoci_dump%scitations.csv" % (sep, sep, sep) 
+    def test_citation_source(self):
+        ns = NationalInstitutHealthSource(self.input_file) 
+        new = []
+        cit = ns.get_next_citation_data()
+        while cit is not None:
+            citing, cited, creation, timespan, journal_sc, author_sc = cit 
+            new.append({
+                "citing": citing,
+                "cited": cited,
+                "creation": "" if creation is None else creation, 
+                "timespan": "" if timespan is None else timespan,
+                "journal_sc": "no" if journal_sc is None else journal_sc,
+                "author_sc": "no" if author_sc is None else author_sc
+            })
+            cit = ns.get_next_citation_data() 
+        with open(self.citations) as f: 
+            old = list(DictReader(f)) 
+
+        self.assertEqual(new, old) 
+                  </pre>
+              </code>
+          </div>
+          
+          <p></p>
           <h2>Develop the main function</h2>
+          <p></p>
           <h2>Locally clone and launch OC index</h2>
+          <p>OC Index locally cloned.</p>
           <h2>Read Mail about mapping</h2>
+          <h3>Kevin Boyack</h3>
+          <p>The DOI-PMID mapping is not in iCite.</p>
+          <p> Boyack built a mapping file from:</p> 
+          <ol>
+              <li><strong>PMC Europe's DOI-PMID-PMCID (csv) downloadable mapping file</strong>. Porblems: DOIs for old papers mapped to newer PMID.</li>
+              <li>DOI-PMID pairs from PubMed</li>
+          </ol>
+          <p> Then, he identified by logic the best DOI-PMID matches. </p>
+          <ol>
+              <li>pairs that appear in both sources are the most reliable.</li>
+              <li>for the remaining pairs, use first the ones from PubMed (that seem to be more reliable than PMC Europe's ones; then the ones from PMC-E. </li>
+          </ol>
+          <p>According to Boyack, <strong>once a DOI or PMID has been used, it is excluded from being used again</strong>: if a DOI-PMID pair exists in both datasets, any remaining pairs in either source containing those DOIs or PMIDs are removed. </p>
+          <p>N.B.:Several hundred thousand pairs are left over, as they are not unique to DOI or PMID: these are excluded entirely because there is no way to know which is correct. </p>
+          <p> Boyack's DOI-PMID file: (<a href="https://www.dropbox.com/s/rl63f1pfhym8l3r/doi_pmid.txt.gz?dl=0"> https://www.dropbox.com/s/rl63f1pfhym8l3r/doi_pmid.txt.gz?dl=0</a>) –  The third column denotes the source of the DOI-PMID pair.</p>
+          
+          <h2>Issues</h2>
+          <ol>
+              <li><p>According to Boyack, <strong>once a DOI or PMID has been used, it is excluded from being used again</strong>: if a DOI-PMID pair exists in both datasets, any remaining pairs in either source containing those DOIs or PMIDs are removed. --> I don't fully get the sense of this sentence.</li>
+          </ol>
+
 
       </div>
     </div>

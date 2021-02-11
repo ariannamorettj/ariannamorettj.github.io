@@ -1,5 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Charmonman&family=Dr+Sugiyama&family=Princess+Sofia&family=Sofia&display=swap');
 
+
+::-webkit-scrollbar {
+ width: 11px;
+ height: 11px;
+}
+::-webkit-scrollbar-thumb {
+ background: linear-gradient(48deg, #89D899 42%,#d9a5e0 69%);
+ border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover{
+ background: linear-gradient(13deg, #709874 14%,#f6cde2 64%);
+}
+::-webkit-scrollbar-track{
+ background: #ffffff;
+ border-radius: 10px;
+ box-shadow: inset 7px 10px 12px #f0f0f0;
+}
+
 h1{
   font-size: 7vw ;
   margin-top: 15px;

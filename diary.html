@@ -1368,9 +1368,75 @@ class NOCITest(unittest.TestCase):
           
           <p></p>
           <h2>Develop the main function</h2>
-          <p></p>
+          <h3>nationalinstitutehealthsource.py</h3>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  from index.identifier.identifiermanager import IdentifierManager
+from re import sub, match
+
+class PMIDManager(IdentifierManager):
+    def __init__(self):
+        self.p="pmid:"
+        super(PMIDManager, self).__init__()
+
+    def is_valid(self, id_string):
+        pmid = self.normalise(id_string)
+        return pmid is not None and match("^[0-9]{1,7}$", pmid) and PMIDManager.__check_digit(pmid) #Ancore ^ $ per definire inizio e fine della stringa
+    #exact function of check_digit?
+    def normalise(self, id_string, include_prefix=False):
+        try:
+            pmid_string = sub("[^X0-9]", "", id_string.upper()) #re.sub(pattern, repl, string, count=0, flags=0) -- Return the string obtained by replacing the leftmost non-overlapping occurrences of pattern in string by the replacement repl. If the pattern isn’t found, string is returned unchanged.
+            return "%s%s" % (self.p if include_prefix else "", pmid_string[:])  #is it required to use the separator here?
+        except:  # Any error in processing the PMID will return None
+            return None
+
+@staticmethod
+    def __check_digit(pmid):
+    #don't know exaclty how to proceed: I only know that the format of the pmid is from 1 to 7 digits
+                  
+                  </pre>
+              </code>
+          </div>
+          
+          <iframe src="https://trinket.io/embed/python/e9f4db5ca5" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          
+          
+          <h3>pmidmanager</h3>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  from index.identifier.identifiermanager import IdentifierManager
+from re import sub, match
+
+class PMIDManager(IdentifierManager):
+    def __init__(self):
+        self.p="pmid:"
+        super(PMIDManager, self).__init__()
+
+    def is_valid(self, id_string):
+        pmid = self.normalise(id_string)
+        return pmid is not None and match("^[0-9]{1,7}$", pmid) and PMIDManager.__check_digit(pmid) #Ancore ^ $ per definire inizio e fine della stringa
+    #exact function of check_digit?
+    def normalise(self, id_string, include_prefix=False):
+        try:
+            pmid_string = sub("[^X0-9]", "", id_string.upper()) #re.sub(pattern, repl, string, count=0, flags=0) -- Return the string obtained by replacing the leftmost non-overlapping occurrences of pattern in string by the replacement repl. If the pattern isn’t found, string is returned unchanged.
+            return "%s%s" % (self.p if include_prefix else "", pmid_string[:])  #is it required to use the separator here?
+        except:  # Any error in processing the PMID will return None
+            return None
+
+@staticmethod
+    def __check_digit(pmid):
+    #don't know exaclty how to proceed: I only know that the format of the pmid is from 1 to 7 digits
+                  </pre>
+              </code>
+          </div>
+          
+          <iframe src="https://trinket.io/embed/python/2ec315fe53" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          
+          
           <h2>Locally clone and launch OC index</h2>
-          <p>OC Index locally cloned.</p>
+          <p>OC Index locally cloned + NOCI files added.</p>
           <h2>Read Mail about mapping</h2>
           <h3>Kevin Boyack</h3>
           <p>The DOI-PMID mapping is not in iCite.</p>
@@ -1391,6 +1457,10 @@ class NOCITest(unittest.TestCase):
           <h2>Issues</h2>
           <ol>
               <li><p>According to Boyack, <strong>once a DOI or PMID has been used, it is excluded from being used again</strong>: if a DOI-PMID pair exists in both datasets, any remaining pairs in either source containing those DOIs or PMIDs are removed. --> I don't fully get the sense of this sentence.</li>
+              <li>Issues related to pmid manager (@staticmethod def __check_digit(pmid):)</li>
+              <li>pmid manager: pmid_string = sub("[^X0-9]", "", id_string.upper()) #re.sub(pattern, repl, string, count=0, flags=0) -- Return the string obtained by replacing the leftmost non-overlapping occurrences of pattern in string by the replacement repl. If the pattern isn’t found, string is returned unchanged.
+            return "%s%s" % (self.p if include_prefix else "", pmid_string[:])  #is it required to use the separator here?</li>
+              <li></li>
           </ol>
 
 

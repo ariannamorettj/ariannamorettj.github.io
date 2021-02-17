@@ -267,8 +267,6 @@ id_date.csv:
 
 
 
-
-
       </div>
     </div>
   </div>
@@ -315,13 +313,32 @@ id_date.csv:
     <div class="card-header" id="headingFour">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-          Week #4
+          Week #4 (2021-02-11)
         </button>
       </h5>
     </div>
     <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>Normaliser</h2>
+        <p><strong>Normaliser:</strong>Takes an ID assuming it is of a certain type. It then checks and uniforms it according to a unique scheme (which is slightly custumisable, but not so much). With dois, it takes as input a string and makes a normalisation by turning everything in lowercase and checks that there are no null charachters, which would break the id. So, in general, a normaliser takes as input an id ad gives back it in the normalised format.</p>
+         
+        <h2>Validator</h2>
+        <p><stong>Validator:</stong> When the normaliser doesn't return none, the following steps are managed by the validator, which is strictly dependent on the object it works on. Some IDs formats follow a progressive logic, which make them validable against a particular scheme. However, some other ids like DOIs can be validated only by an API. </p>
+        
+        <h2>PubMed Case</h2>
+          <p>^\d+$ --> 	^[1-9]\d*$ (non ^[0-9]{1,7}$)</p>
+        
+          <p> <strong>orcid_string = sub("[^X0-9]", "", id_string.upper())</strong>
+           --> It may happen that the url of the orcid is passed (instead of the pure orcid, for example). The same thing may happen with pubmed id, so it should be managed. In our case, since pubmed id are made of digits only, we have to leave out everything except for digits. The idea is to remove everything that is not a digit. Moreover, we have to leave out the hypotetical sequence of 0s that we may find before the id.  At this point we can normalise (we won't need upper/lowercases normalisation, since we are managing digits only). For the validation we will need the PubMed API, in order to know whether the id exists or not.</p>
+         
+          <h2>to do</h2>
+          <ol>
+          <li>Fix the second function developed last time (id case is built on the base of doi case) </li>
+          <li>Add a test case also for this latter function</li>
+          <li>Look at the overall functioning: where do we need additional code to manage pubmeds?</li>
+          <li>Run tests</li>
+          <li>Before checking the overall functioning, check the two tests</li>
+          </ol> 
       </div>
     </div>
   </div>
@@ -329,7 +346,7 @@ id_date.csv:
     <div class="card-header" id="headingFive">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-          Week #5
+          Week #5 (2021-02-18)
         </button>
       </h5>
     </div>

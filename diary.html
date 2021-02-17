@@ -1457,11 +1457,11 @@ class PMIDManager(IdentifierManager):
           <p>OC Index locally cloned + NOCI files added.</p>
           <h2>Read Mail about mapping</h2>
           <h3>Kevin Boyack</h3>
-          <p>The DOI-PMID mapping is not in iCite.</p>
+          <p>The DOI-PMID mapping is not in iCite. (FALSE --> is in metadata --> forse l'hannoe estesa nel frattempo)</p>
           <p> Boyack built a mapping file from:</p> 
           <ol>
               <li><strong>PMC Europe's DOI-PMID-PMCID (csv) downloadable mapping file</strong>. Porblems: DOIs for old papers mapped to newer PMID.</li>
-              <li>DOI-PMID pairs from PubMed</li>
+              <li>DOI-PMID pairs from PubMed (prob icite usa questo, essendo in nih che è responsabile di pubmed)</li>
           </ol>
           <p> Then, he identified by logic the best DOI-PMID matches. </p>
           <ol>
@@ -1469,6 +1469,7 @@ class PMIDManager(IdentifierManager):
               <li>for the remaining pairs, use first the ones from PubMed (that seem to be more reliable than PMC Europe's ones; then the ones from PMC-E. </li>
           </ol>
           <p>According to Boyack, <strong>once a DOI or PMID has been used, it is excluded from being used again</strong>: if a DOI-PMID pair exists in both datasets, any remaining pairs in either source containing those DOIs or PMIDs are removed. </p>
+          <p>Errori nei due dataset di partenza, ci sono occorrenze di coppie molteplici. trovando una doppia coppia, cancella tutte le altre, dovendo essere un matching uno a uno</p>
           <p>N.B.:Several hundred thousand pairs are left over, as they are not unique to DOI or PMID: these are excluded entirely because there is no way to know which is correct. </p>
           <p> Boyack's DOI-PMID file: (<a href="https://www.dropbox.com/s/rl63f1pfhym8l3r/doi_pmid.txt.gz?dl=0"> https://www.dropbox.com/s/rl63f1pfhym8l3r/doi_pmid.txt.gz?dl=0</a>) –  The third column denotes the source of the DOI-PMID pair.</p>
           
@@ -1489,7 +1490,7 @@ class PMIDManager(IdentifierManager):
     <div class="card-header" id="headingFour">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-          Week #4
+          Week #4 (2021-02-11)
         </button>
       </h5>
     </div>
@@ -1503,7 +1504,7 @@ class PMIDManager(IdentifierManager):
     <div class="card-header" id="headingFive">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-          Week #5
+          Week #5 (2021-02-18)
         </button>
       </h5>
     </div>
@@ -1517,7 +1518,7 @@ class PMIDManager(IdentifierManager):
     <div class="card-header" id="headingSix">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-          Week #6
+          Week #6 
         </button>
       </h5>
     </div>

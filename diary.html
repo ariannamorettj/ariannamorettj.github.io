@@ -1563,7 +1563,7 @@ class PMIDManager(IdentifierManager):
                     #urllib.parse.quote(string, safe='/', encoding=None, errors=None)
                     # Replace special characters in string using the %xx escape. Letters, digits, and the characters '_.-~'
                     # are never quoted. By default, this function is intended for quoting the path section of a URL.
-                    if r.status_code == 200:
+                    if r.status_code == 200: #the request was successful
                         r.encoding = "utf-8"
                         json_res = loads(r.text)
                         return json_res.get("responseCode") == 1
@@ -1579,11 +1579,25 @@ class PMIDManager(IdentifierManager):
           
           <iframe src="https://trinket.io/embed/python/93720538c0" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
         <h4>Notes</h4>
-          <ol>
+          <ul>
               <li><strong>https://pubmed.ncbi.nlm.nih.gov/</strong>: is the correct url for the request?</li>
               <li>r = get(self.api + quote(pmid) + <strong>"/?format=pmid"</strong>, headers=self.headers, timeout=30) #/?format=pmid --> to avoid articles research</li>
-          </ol>
+          </ul>
           
+          <h2>API Requests</h2>
+          <p><strong>API Requests: Get</strong>When we make a request, the response from the API comes with a response code which tells us whether our request was successful. Response codes are important because they immediately tell us if something went wrong. To make a ‘GET’ request, we’ll use the requests.get() function, which requires one argument — the URL we want to make the request to.</p>
+          <p>The get() function returns a response object. We can use the response.status_code attribute to receive the status code for our request.</p>
+          <h3>API Status Codes</h3>
+          <ol>
+              <li>200: Everything went okay, and the result has been returned (if any).</li>
+              <li>301: The server is redirecting you to a different endpoint. This can happen when a company switches domain names, or an endpoint name is changed.</li>
+              <li>400: The server thinks you made a bad request. This can happen when you don’t send along the right data, among other things.</li>
+              <li>401: The server thinks you’re not authenticated. Many APIs require login ccredentials, so this happens when you don’t send the right credentials to access an API.</li>
+              <li>403: The resource you’re trying to access is forbidden: you don’t have the right permissions to see it.</li>
+              <li>404: The resource you tried to access wasn’t found on the server.</li>
+              <li>503: The server is not ready to handle the request.</li>
+          </ol>
+
           
         <h2>PMIDmanager Test Case (02_identifiermanager.py)</h2>
         <h3>Develop a test case for this latter function</h3>
@@ -1730,6 +1744,65 @@ class IdentifierManagerTest(unittest.TestCase):
         <p></p>
         <h2>Issues</h2>
           <p>See "Notes"</p>
+          <ul>
+              <li>I definitely have problems in running tests, not only mine but tests in general. </li>
+              <ul>
+                  <li>When I try to run croci test, for example, I get this message:  C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\python.exe C:/Users/arimoretti/Documents/GitHub/index/test/09_croci.py ----
+Traceback (most recent call last): ---
+  File "C:/Users/arimoretti/Documents/GitHub/index/test/09_croci.py", line 18, in module ----
+    from index.coci.glob import process ----
+ModuleNotFoundError: No module named 'index'---- 
+
+Process finished with exit code 1 </li>
+              </ul>
+          </ul>
+<p>Running Noci test:</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  Testing started at 08:01 ...
+C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\python.exe "C:\Program Files\JetBrains\PyCharm Community Edition 2019.2.3\helpers\pycharm\_jb_unittest_runner.py" --path C:/Users/arimoretti/Documents/GitHub/index/test/10_noci.py
+Launching unittests with arguments python -m unittest C:/Users/arimoretti/Documents/GitHub/index/test/10_noci.py in C:\Users\arimoretti\Documents\GitHub\index\test
+
+
+
+Ran 1 test in 0.097s
+
+FAILED (errors=1)
+
+Error
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\case.py", line 60, in testPartExecutor
+    yield
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\case.py", line 676, in run
+    self._callTestMethod(testMethod)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\case.py", line 633, in _callTestMethod
+    method()
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 34, in testFailure
+    raise self._exception
+ImportError: Failed to import test module: 10_noci
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\10_noci.py", line 2, in <module>
+    from index.coci.glob import process #something to be developed to perform the same task but with pmids
+ModuleNotFoundError: No module named 'index'
+
+
+
+Assertion failed
+
+Assertion failed
+
+Process finished with exit code 1
+
+Assertion failed
+
+Assertion failed
+
+                  </pre>
+              </code>
+          </div>
           
       </div>
     </div>

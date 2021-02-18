@@ -1499,16 +1499,237 @@ class PMIDManager(IdentifierManager):
           
         <h2>PMIDmanager</h2>
         <h3>Fix the second function developed last time following the DOIs example</h3>
-        <p></p>
-        <h2>PMIDmanager Test Case</h2>
-        <h3>Develop a test case also for this latter function</h3>
-        <p></p>
+          <div class="codebg">
+              <code>
+                  <pre>
+from index.identifier.identifiermanager import IdentifierManager
+from re import sub, match
+from urllib.parse import unquote, quote #This module defines a standard interface to break Uniform Resource Locator (URL)
+# strings up in components (addressing scheme, network location, path etc.), to combine the components back into a URL
+# string, and to convert a “relative URL” to an absolute URL given a “base URL.”
+from requests import get
+from json import loads
+from index.storer.csvmanager import CSVManager
+from requests import ReadTimeout
+from requests.exceptions import ConnectionError
+from time import sleep
+
+class PMIDManager(IdentifierManager):
+    def __init__(self, valid_pmid=None, use_api_service=True):
+        if valid_pmid is None:
+            valid_pmid = CSVManager(store_new=False)
+
+        self.api = "https://pubmed.ncbi.nlm.nih.gov/"
+        self.valid_pmid = valid_pmid
+        self.use_api_service = use_api_service
+        self.p = "pmid:"
+        super(PMIDManager, self).__init__()
+
+    def set_valid(self, id_string):
+        pmid = self.normalise(id_string, include_prefix=True)
+        if self.valid_pmid.get_value(pmid) is None:
+            self.valid_pmid.add_value(pmid, "v")
+
+    def is_valid(self, id_string): #nothing here can self-validate the id
+        pmid = self.normalise(id_string, include_prefix=True) #it calls the normaliser and checks whether the pmid is none or it doesn't match (so it returns false)
+        if pmid is None or match("^[1-9]\d*$", pmid) is None: #anchors (^ $) to define start and stop of the string;  "is none" --> it isn't present in my database (Boolean answer)
+            return False
+        else: #after having checked the local database handling the class (in the case we already got the valid/invalid information for this id
+            if self.valid_pmid.get_value(pmid) is None: #In the case it returns None, it means we don't have it yet, so we have to understand if it is valid or not.
+                if self.__pmid_exists(pmid): #pmid exist (API call)
+                    self.valid_pmid.add_value(pmid, "v")
+                else:
+                    self.valid_pmid.add_value(pmid, "i")
+            return "v" in self.valid_pmid.get_value(pmid)
+
+
+
+    def normalise(self, id_string, include_prefix=False):
+        try:
+            pmid_string = sub("\0+", "", (sub("[^\d+]", "", id_string))) #is it correct?
+            return "%s%s" % (self.p if include_prefix else "", pmid_string.strip()[:]) #[:] --> è necessary?
+        except:  # Any error in processing the PMID will return None --> when the id can't be recognised as a pubmed
+            return None
+
+
+    def __pmid_exists(self, pmid_full):  # I try and use the api to check the existence, otherwise it returns "none" or False
+        pmid = self.normalise(pmid_full)
+        if self.use_api_service:
+            tentative = 3
+            while tentative:
+                tentative -= 1
+                try:
+                    r = get(self.api + quote(pmid) + "/?format=pmid", headers=self.headers, timeout=30) #/?format=pmid --> to avoid articles research
+                    #urllib.parse.quote(string, safe='/', encoding=None, errors=None)
+                    # Replace special characters in string using the %xx escape. Letters, digits, and the characters '_.-~'
+                    # are never quoted. By default, this function is intended for quoting the path section of a URL.
+                    if r.status_code == 200:
+                        r.encoding = "utf-8"
+                        json_res = loads(r.text)
+                        return json_res.get("responseCode") == 1
+                except ReadTimeout:
+                    pass  # Do nothing, just try again
+                except ConnectionError:
+                    sleep(5)  # Sleep 5 seconds, then try again
+
+        return False
+                  </pre>
+              </code>
+          </div>
+          
+          <iframe src="https://trinket.io/embed/python/93720538c0" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+        <h4>Notes</h4>
+          <ol>
+              <li><strong>https://pubmed.ncbi.nlm.nih.gov/</strong>: is the correct url for the request?</li>
+              <li>r = get(self.api + quote(pmid) + <strong>"/?format=pmid"</strong>, headers=self.headers, timeout=30) #/?format=pmid --> to avoid articles research</li>
+          </ol>
+          
+          
+        <h2>PMIDmanager Test Case (02_identifiermanager.py)</h2>
+        <h3>Develop a test case for this latter function</h3>
+
+          <div>
+              <code>
+                  <pre>               
+import unittest
+from os import sep
+from index.identifier.doimanager import DOIManager
+from index.identifier.issnmanager import ISSNManager
+from index.identifier.orcidmanager import ORCIDManager
+#pmid extension
+from index.identifier.pmidmanager import PMIDManager
+from index.storer.csvmanager import CSVManager
+
+
+class IdentifierManagerTest(unittest.TestCase):
+    """This class aim at testing the methods of the class CSVManager."""
+
+    def setUp(self):
+        self.valid_doi_1 = "10.1108/jd-12-2013-0166"
+        self.valid_doi_2 = "10.1130/2015.2513(00)"
+        self.invalid_doi_1 = "10.1108/12-2013-0166"
+        self.invalid_doi_2 = "10.1371"
+        self.valid_doi_path = "index%stest_data%svalid_doi.csv" % (sep, sep)
+
+        self.valid_issn_1 = "2376-5992"
+        self.valid_issn_2 = "1474-175X"
+        self.invalid_issn_1 = "2376-599C"
+        self.invalid_issn_2 = "2376-5995"
+        self.invalid_issn_3 = "2376-599"
+
+        self.valid_orcid_1 = "0000-0003-0530-4305"
+        self.valid_orcid_2 = "0000-0001-5506-523X"
+        self.invalid_orcid_1 = "0000-0003-0530-430C"
+        self.invalid_orcid_2 = "0000-0001-5506-5232"
+        self.invalid_orcid_3 = "0000-0001-5506-523"
+        self.invalid_orcid_4 = "1-5506-5232"
+
+#class extension for pubmedid
+        self.valid_pmid_1 = "2942070"
+        self.valid_pmid_2 = "1509982"
+        self.valid_pmid_3 = "7189714"
+        self.invalid_pmid_1 = "00673087"
+        self.invalid_pmid_2 = "pmid:174"
+        self.invalid_pmid_3 = "0000092"
+        self.valid_pmid_path = "index%stest_data%svalid_pmid.csv" % (sep, sep)
+
+
+    def test_doi_normalise(self):
+        dm = DOIManager()
+        self.assertEqual(self.valid_doi_1, dm.normalise(self.valid_doi_1.upper().replace("10.", "doi: 10. ")))
+        self.assertEqual(self.valid_doi_1, dm.normalise(self.valid_doi_1.upper().replace("10.", "doi:10.")))
+        self.assertEqual(self.valid_doi_1, dm.normalise(self.valid_doi_1.upper().replace("10.", "https://doi.org/10.")))
+
+    def test_doi_is_valid(self):
+        dm_nofile = DOIManager()
+        self.assertTrue(dm_nofile.is_valid(self.valid_doi_1))
+        self.assertTrue(dm_nofile.is_valid(self.valid_doi_2))
+        self.assertFalse(dm_nofile.is_valid(self.invalid_doi_1))
+        self.assertFalse(dm_nofile.is_valid(self.invalid_doi_2))
+
+        valid_doi = CSVManager(self.valid_doi_path)
+        dm_file = DOIManager(valid_doi=valid_doi, use_api_service=False)
+        self.assertTrue(dm_file.is_valid(self.valid_doi_1))
+        self.assertFalse(dm_file.is_valid(self.invalid_doi_1))
+
+        dm_nofile_noapi = DOIManager(use_api_service=False)
+        self.assertFalse(dm_nofile_noapi.is_valid(self.valid_doi_1))
+        self.assertFalse(dm_nofile_noapi.is_valid(self.invalid_doi_1))
+
+    def test_issn_normalise(self):
+        im = ISSNManager()
+        self.assertEqual(self.valid_issn_1, im.normalise(self.valid_issn_1.replace("-", "  ")))
+        self.assertEqual(self.valid_issn_2, im.normalise(self.valid_issn_2.replace("-", "  ")))
+        self.assertEqual(self.invalid_issn_3, im.normalise(self.invalid_issn_3.replace("-", "  ")))
+
+    def test_issn_is_valid(self):
+        im = ISSNManager()
+        self.assertTrue(im.is_valid(self.valid_issn_1))
+        self.assertTrue(im.is_valid(self.valid_issn_2))
+        self.assertFalse(im.is_valid(self.invalid_issn_1))
+        self.assertFalse(im.is_valid(self.invalid_issn_2))
+        self.assertFalse(im.is_valid(self.invalid_issn_3))
+
+    def test_orcid_normalise(self):
+        om = ORCIDManager()
+        self.assertEqual(self.valid_orcid_1, om.normalise(self.valid_orcid_1.replace("-", "  ")))
+        self.assertEqual(self.valid_orcid_1, om.normalise("https://orcid.org/" + self.valid_orcid_1))
+        self.assertEqual(self.valid_orcid_2, om.normalise(self.valid_orcid_2.replace("-", "  ")))
+        self.assertEqual(self.invalid_orcid_3, om.normalise(self.invalid_orcid_3.replace("-", "  ")))
+
+    def test_orcid_is_valid(self):
+        om = ORCIDManager()
+        self.assertTrue(om.is_valid(self.valid_orcid_1))
+        self.assertTrue(om.is_valid(self.valid_orcid_2))
+        self.assertFalse(om.is_valid(self.invalid_orcid_1))
+        self.assertFalse(om.is_valid(self.invalid_orcid_2))
+        self.assertFalse(om.is_valid(self.invalid_orcid_3))
+        self.assertFalse(om.is_valid(self.invalid_orcid_4))
+
+
+#class extension for pubmedid
+    def test_pmid_normalise(self):
+        pm = PMIDManager()
+        self.assertEqual(self.valid_pmid_1, pm.normalise(self.valid_pmid_1.replace("", "pmid:"))) #check other characters exclusion
+        self.assertEqual(self.valid_pmid_1, pm.normalise(self.valid_pmid_1.replace("", " "))) #check other characters (spaces) exclusion
+        self.assertEqual(self.valid_pmid_1, pm.normalise("https://pubmed.ncbi.nlm.nih.gov/"+self.valid_pmid_1)) #check other characters (url) exclusion
+        self.assertEqual(self.valid_pmid_2, pm.normalise("000"+self.valid_pmid_2)) #check initial 0s exclusion
+
+    def test_pmid_is_valid(self):
+        pm_nofile = PMIDManager()
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_1))
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_2))
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_3))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_1))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_2))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_3))
+
+        valid_pmid = CSVManager(self.valid_pmid_path)
+        pm_file = PMIDManager(valid_pmid=valid_pmid, use_api_service=False)
+        self.assertTrue(pm_file.is_valid(self.valid_pmid_1))
+        self.assertFalse(pm_file.is_valid(self.invalid_pmid_1))
+
+        pm_nofile_noapi = PMIDManager(use_api_service=False)
+        self.assertFalse(pm_nofile_noapi.is_valid(self.valid_pmid_1)) #Why not assert True?
+        self.assertFalse(pm_nofile_noapi.is_valid(self.invalid_pmid_1))
+                  </pre>
+              </code>
+          </div>
+        <iframe src="https://trinket.io/embed/python/a7977c33ce" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+        <h4>Notes</h4>
+          <ol>
+        pm_nofile_noapi = PMIDManager(use_api_service=False) <br>self.assertFalse(pm_nofile_noapi.is_valid(self.valid_pmid_1)) #Why not assert True?<br>
+        self.assertFalse(pm_nofile_noapi.is_valid(self.invalid_pmid_1))
+          </ol>
+
         <h2>Run Tests</h2>
         <h3>Check the correct functioning of the developed functions using their test cases</h3>
         <p></p>
         <h2>Overall Process</h2>
         <h3>Where do we need additional code to manage pubmedIDs?</h3>
         <p></p>
+        <h2>Issues</h2>
+          <p>See "Notes"</p>
           
       </div>
     </div>

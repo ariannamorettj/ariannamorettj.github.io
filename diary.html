@@ -1820,8 +1820,303 @@ Assertion failed
           <h2>Run all tests and correct the functions</h2>
           <h3>How to run tests</h3>
           <img src="img/LANCIARETERMINAL.PNG" class="myimg">
+          <p>All tests'launch</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.02_resourcefinder
+E
+======================================================================
+ERROR: 02_resourcefinder (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: 02_resourcefinder
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+ModuleNotFoundError: No module named 'index.test.02_resourcefinder'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.02_identifiermanager
+......FF
+======================================================================
+FAIL: test_pmid_is_valid (index.test.02_identifiermanager.IdentifierManagerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\02_identifiermanager.py", line 126, in test_pmid_is_valid
+    self.assertTrue(pm_nofile.is_valid(self.valid_pmid_1))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_pmid_normalise (index.test.02_identifiermanager.IdentifierManagerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\02_identifiermanager.py", line 122, in test_pmid_normalise
+    self.assertEqual(self.valid_pmid_2, pm.normalise("000"+self.valid_pmid_2)) #check initial 0s exclusion
+AssertionError: '1509982' != '0001509982'
+- 1509982
++ 0001509982
+? +++
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.348s
+
+FAILED (failures=2)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.03_resourcefinder
+...E......
+======================================================================
+ERROR: test_datacite_get_issn (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 88, in test_datacite_get_issn
+    self.assertIn("2197-6775", df_1.get_container_issn("10.14763/2019.1.1389"))
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\case.py", line 1176, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+----------------------------------------------------------------------
+Ran 10 tests in 19.386s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.04_oci
+.......E
+======================================================================
+ERROR: test_lookup (index.test.04_oci.CitationTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\04_oci.py", line 286, in test_lookup
+    oci_man = OCIManager(lookup_file="index%stest_data%slookup_full.csv" % (sep, sep))
+  File "C:\Users\arimoretti\Documents\GitHub\index\citation\oci.py", line 553, in __init__
+    for row in lookupcsv_reader:
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 110, in __next__
+    self.fieldnames
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 97, in fieldnames
+    self._fieldnames = next(self.reader)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 905: character maps to <undefined>
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.066s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.05_citationstorer
+EEEE
+======================================================================
+ERROR: test_load_citations_csv (index.test.05_citationstorer.CitationStorerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 75, in test_load_citations_csv
+    origin_citation_list, stored_citation_list = self.load_and_store_citations(
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 67, in load_and_store_citations
+    cs.store_citation(citation)
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 291, in store_citation
+    CitationStorer.__store_csv_on_file(data_csv_f_path, Citation.header_citation_data,
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 148, in __store_csv_on_file
+    with open(f_path, "a") as f:
+OSError: [Errno 22] Invalid argument: 'index\\test_data\\tmp_load\\data\\csv\\2021\\02\\2021-02-24T22:58:32_1.csv'
+
+======================================================================
+ERROR: test_load_citations_rdf (index.test.05_citationstorer.CitationStorerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 87, in test_load_citations_rdf
+    origin_citation_list, stored_citation_list = self.load_and_store_citations(
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 67, in load_and_store_citations
+    cs.store_citation(citation)
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 291, in store_citation
+    CitationStorer.__store_csv_on_file(data_csv_f_path, Citation.header_citation_data,
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 148, in __store_csv_on_file
+    with open(f_path, "a") as f:
+OSError: [Errno 22] Invalid argument: 'index\\test_data\\tmp_load\\data\\csv\\2021\\02\\2021-02-24T22:58:32_1.csv'
+
+======================================================================
+ERROR: test_load_citations_slx (index.test.05_citationstorer.CitationStorerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 107, in test_load_citations_slx
+    origin_citation_list, stored_citation_list = self.load_and_store_citations(
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 67, in load_and_store_citations
+    cs.store_citation(citation)
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 291, in store_citation
+    CitationStorer.__store_csv_on_file(data_csv_f_path, Citation.header_citation_data,
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 148, in __store_csv_on_file
+    with open(f_path, "a") as f:
+OSError: [Errno 22] Invalid argument: 'index\\test_data\\tmp_load\\data\\csv\\2021\\02\\2021-02-24T22:58:32_1.csv'
+
+======================================================================
+ERROR: test_store_citation (index.test.05_citationstorer.CitationStorerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\05_citationstorer.py", line 133, in test_store_citation
+    cs.store_citation(citation)
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 291, in store_citation
+    CitationStorer.__store_csv_on_file(data_csv_f_path, Citation.header_citation_data,
+  File "C:\Users\arimoretti\Documents\GitHub\index\storer\citationstorer.py", line 148, in __store_csv_on_file
+    with open(f_path, "a") as f:
+OSError: [Errno 22] Invalid argument: 'index\\test_data\\tmp_store\\data\\csv\\2021\\02\\2021-02-24T22:58:32_1.csv'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.098s
+
+FAILED (errors=4)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.06_citationsource
+E
+======================================================================
+ERROR: test_get_next_citation_data (index.test.06_citationsource.CitationSourceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\06_citationsource.py", line 33, in setUp
+    self.oci = OCIManager(lookup_file="index%stest_data%slookup_full.csv" % (sep, sep))
+  File "C:\Users\arimoretti\Documents\GitHub\index\citation\oci.py", line 553, in __init__
+    for row in lookupcsv_reader:
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 110, in __next__
+    self.fieldnames
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 97, in fieldnames
+    self._fieldnames = next(self.reader)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 905: character maps to <undefined>
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.07_cnc
+E
+======================================================================
+ERROR: test_execute_workflow (index.test.07_cnc.CreateNewCitationsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\07_cnc.py", line 79, in test_execute_workflow
+    execute_workflow(self.idbaseurl, self.baseurl, self.python, self.pclass, self.input, self.doi_file,
+  File "C:\Users\arimoretti\Documents\GitHub\index\cnc.py", line 69, in execute_workflow
+    return extract_citations(idbaseurl, baseurl, python, pclass, input, lookup, data, prefix,
+  File "C:\Users\arimoretti\Documents\GitHub\index\cnc.py", line 78, in extract_citations
+    oci_manager = OCIManager(lookup_file=lookup)
+  File "C:\Users\arimoretti\Documents\GitHub\index\citation\oci.py", line 553, in __init__
+    for row in lookupcsv_reader:
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 110, in __next__
+    self.fieldnames
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\csv.py", line 97, in fieldnames
+    self._fieldnames = next(self.reader)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 905: character maps to <undefined>
+
+----------------------------------------------------------------------
+Ran 1 test in 0.031s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.09_coci
+E
+======================================================================
+ERROR: 09_coci (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: 09_coci
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+ModuleNotFoundError: No module named 'index.test.09_coci'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.08_coci
+.
+
+# Add valid DOIs from Crossref metadata
+Open file 1 of 2
+Open file 2 of 2
+
+
+# Check cited DOIs from Crossref reference field
+Open file 1 of 2
+Open file 2 of 2
+.
+----------------------------------------------------------------------
+Ran 2 tests in 11.409s
+
+OK
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.09_croci
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+OK
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.10_noci
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 192, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\__main__.py", line 18, in <module>
+    main(module=None)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 100, in __init__
+    self.parseArgs(argv)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 147, in parseArgs
+    self.createTests()
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 158, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in <listcomp>
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\10_noci.py", line 7, in <module>
+    from index.noci.nationalinstituteofhealthsource import NationalInstituteHealthSource #crowdsourcedcitationsource sostituito
+  File "C:\Users\arimoretti\Documents\GitHub\index\noci\nationalinstituteofhealthsource.py", line 30
+    else:
+        ^
+IndentationError: unindent does not match any outer indentation level
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.test
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 192, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\__main__.py", line 18, in <module>
+    main(module=None)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 100, in __init__
+    self.parseArgs(argv)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 147, in parseArgs
+    self.createTests()
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 158, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in <listcomp>
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\test.py", line 15, in <module>
+    with open("/srv/data/glob/id_date.csv") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/srv/data/glob/id_date.csv'
+
+                  </pre>
+              </code>
+          </div>
           
-          
+          <h3>Functions corrections</h3>
           <h2>Study the execution process</h2>
           <h3>Required integrations</h3>
           <ol>

@@ -1817,7 +1817,162 @@ Assertion failed
     </div>
     <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>Run again all tests and correct the functions</h2>
+          <h3>How to run tests</h3>
+          <img src="img/LANCIARETERMINAL.PNG" class="myimg">
+          <h2>Study the execution process</h2>
+          <h3>Required integrations</h3>
+          <p>Cnc.py for now works with dois only. It neither checks whether the id is a doi or not. We need to make it work with pmid too, so the nature of the id will have to be specified.</p>
+          <h2>Dynamic requests for croci</h2>
+          <h2>Information provided specifying "?format=pubmed" in the api request</h2> 
+          <p>e.g.: <strong>https://pubmed.ncbi.nlm.nih.gov/47/?format=pubmed</strong></p>
+          <p>We are interested in Publication Date and in IS</p>
+                    <div class="codebg">
+              <code>
+                  <pre>
+PMID- 47
+OWN - NLM
+STAT- MEDLINE
+DCOM- 19760209
+LR  - 20190612
+IS  - 0006-2960 (Print)
+IS  - 0006-2960 (Linking)
+VI  - 14
+IP  - 24
+DP  - 1975 Dec 2
+TI  - The influence of pH on the interaction of inhibitors with triosephosphate isomerase 
+      and determination of the pKa of the active-site carboxyl group.
+PG  - 5274-9
+AB  - Ionization effects on the binding of the potential transition state analogues 
+      2-phosphoglycolate and 2-phosphoglycolohydroxamate appear to be attributable to the 
+      changing state of ionization of the ligands themselves, therefore it is unnecessary 
+      to postulate the additional involvement of an ionizing residue at the active site of 
+      triosephosphate isomerase to explain the influence of changing pH on Ki in the 
+      neutral range. The binding of the competitive inhibitor inorganic sulfate is 
+      insensitive to changing pH in the neutral range. 3-Chloroacetol sulfate, synthesized 
+      as an active-site-specific reagent for triosephosphate isomerase, is used to provide 
+      an indication of the pKa of the essential carboxyl group of this enzyme. Previously 
+      described active-site-specific reagents for the isomerase were phosphate esters, and 
+      their changing state of ionization (accompanied by possible changes in their 
+      affinity for the active site) may have complicated earlier attempts to determine the 
+      pKa of the essential carboxyl group from the pH dependence of the rate of 
+      inactivation. Being a strong monoprotic acid, chloroacetol sulfate is better suited 
+      to the determination of the pKa of the carboxyl group. Chloroacetol sulfate 
+      inactivates triosephosphate isomerase by the selective esterification of the same 
+      carboxyl group as that which is esterified by the phosphate esters described 
+      earlier. From the pH dependence of the rate of inactivation of yeast triosephosphate 
+      isomerase, the apparent pKa of the active-site carboxyl group is estimated as 3.9 
+      +/- 0.1.
+FAU - Hartman, F C
+AU  - Hartman FC
+FAU - LaMuraglia, G M
+AU  - LaMuraglia GM
+FAU - Tomozawa, Y
+AU  - Tomozawa Y
+FAU - Wolfenden, R
+AU  - Wolfenden R
+LA  - eng
+PT  - Journal Article
+PT  - Research Support, U.S. Gov't, Non-P.H.S.
+PT  - Research Support, U.S. Gov't, P.H.S.
+PL  - United States
+TA  - Biochemistry
+JT  - Biochemistry
+JID - 0370623
+RN  - 0 (Hydroxymercuribenzoates)
+RN  - 9BZQ3U62JX (Dithionitrobenzoic Acid)
+RN  - EC 5.1.3.- (Carbohydrate Epimerases)
+RN  - EC 5.3.1.1 (Triose-Phosphate Isomerase)
+SB  - IM
+MH  - Animals
+MH  - Binding Sites
+MH  - Carbohydrate Epimerases/*metabolism
+MH  - Dithionitrobenzoic Acid/pharmacology
+MH  - Hydrogen-Ion Concentration
+MH  - Hydroxymercuribenzoates/pharmacology
+MH  - Kinetics
+MH  - Muscles/enzymology
+MH  - Protein Binding
+MH  - Rabbits
+MH  - Saccharomyces cerevisiae/enzymology
+MH  - Triose-Phosphate Isomerase/*metabolism
+EDAT- 1975/12/02 00:00
+MHDA- 1975/12/02 00:01
+CRDT- 1975/12/02 00:00
+PHST- 1975/12/02 00:00 [pubmed]
+PHST- 1975/12/02 00:01 [medline]
+PHST- 1975/12/02 00:00 [entrez]
+AID - 10.1021/bi00695a007 [doi]
+PST - ppublish
+SO  - Biochemistry. 1975 Dec 2;14(24):5274-9. doi: 10.1021/bi00695a007.
+                  </pre>
+              </code>
+          </div>
+          <p>Another example:</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+PMID- 4700
+OWN - NLM
+STAT- MEDLINE
+DCOM- 19760706
+LR  - 20080226
+IS  - 0093-7061 (Print)
+IS  - 0093-7061 (Linking)
+VI  - 5
+IP  - 3
+DP  - 1976 Mar
+TI  - The issues have become legitimate.
+PG  - 104, 103
+FAU - Cunningham, R M Jr
+AU  - Cunningham RM Jr
+LA  - eng
+PT  - Journal Article
+PL  - United States
+TA  - Mod Healthc (Short Term Care)
+JT  - Modern healthcare. [Short-term care ed.]
+JID - 0417653
+SB  - IM
+MH  - *Delivery of Health Care
+MH  - Health Education
+MH  - Home Nursing
+MH  - Preventive Medicine
+MH  - United States
+EDAT- 1976/03/01 00:00
+MHDA- 2001/03/28 10:01
+CRDT- 1976/03/01 00:00
+PHST- 1976/03/01 00:00 [pubmed]
+PHST- 2001/03/28 10:01 [medline]
+PHST- 1976/03/01 00:00 [entrez]
+PST - ppublish
+SO  - Mod Healthc (Short Term Care). 1976 Mar;5(3):104, 103.
+                  </pre>
+              </code> 
+          </div>
+    <h2>?format=pmid: various cases</h2>
+          <h4>https://pubmed.ncbi.nlm.nih.gov/47/?format=pmid</h4>
+          <p><strong>Case 1</strong>: The pmid exists and is in its normal format</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  47
+                  </pre>
+              </code>
+          </div>
+          <h4>https://pubmed.ncbi.nlm.nih.gov/0047/?format=pmid</h4>
+          <p><strong>Case 2</strong>: The pmid exists but it is preceeded by 0s</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  0047
+                  </pre>
+              </code>
+          </div>
+          <p>The API gives back the number in the same format, but the request https://pubmed.ncbi.nlm.nih.gov/0047/ ends in "PMID 0047 is not available", which means the format of the number is not controlled. The api can give back an answer even if no article is related to the specified identifier. So, the format of the number must be checked and normalised before the request is done.</p>
+          
+          <h4>https://pubmed.ncbi.nlm.nih.gov/470d67/?format=pmid</h4>
+          <p><strong>Case 3</strong>: The pmid contains characters which are not digits</p>
+          <p>The requests resolves to https://pubmed.ncbi.nlm.nih.gov/470/, which means the id is broken before the first non digit character, and only the first part of the id is considered. Moreover, for the api request, /?format=pmid should be specified again. So, extra characted should be left off from the id before the api request is done.</p>
       </div>
     </div>
   </div>
@@ -1825,7 +1980,7 @@ Assertion failed
     <div class="card-header" id="headingSix">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-          Week #6 
+          Week #6 (02-25-2021)
         </button>
       </h5>
     </div>

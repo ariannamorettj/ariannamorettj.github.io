@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Charmonman&family=Dr+Sugiyama&family=Princess+Sofia&family=Sofia&display=swap');
 
+.myimg{
+    max-width: -webkit-fill-available;
+    display: inline-block;
+    margin-bottom: 3em;
+}
 
 ::-webkit-scrollbar {
  width: 11px;

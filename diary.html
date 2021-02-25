@@ -2118,10 +2118,10 @@ FileNotFoundError: [Errno 2] No such file or directory: '/srv/data/glob/id_date.
           
           <h3>Functions' corrections</h3>
           <h4>identifier.pmidmanager</h4>
-          <div>
+          <div class="codebg">
             <code>
                 <pre>
-                from index.identifier.identifiermanager import IdentifierManager
+from index.identifier.identifiermanager import IdentifierManager
 from re import sub, match
 from urllib.parse import unquote, quote #This module defines a standard interface to break Uniform Resource Locator (URL)
 # strings up in components (addressing scheme, network location, path etc.), to combine the components back into a URL
@@ -2258,11 +2258,11 @@ class NationalInstituteHealthSource(CSVFileCitationSource):
           </div>
           <iframe src="https://trinket.io/embed/python/5b49f453d6" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
           
-          <h4>test.noci</h4>
-          <div>
+          <h4>test.10_noci</h4>
+          <div class="codebg">
             <code>
                 <pre>
-                import unittest
+import unittest
 from index.coci.glob import process #something to be developed to perform the same task but with pmids
 from os import sep, makedirs  #Recursive directory creation function. Like mkdir(), but makes all intermediate-level directories needed to contain the leaf directory.
 from os.path import exists  #used to check whether the specified path exists or not.
@@ -2347,6 +2347,29 @@ IndentationError: unindent does not match any outer indentation level
                 </pre>
             </code>
           </div>
+          <h4>index.test.02_identifiermanager</h4>
+          <div>
+            <code>
+                <pre>
+                
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.02_identifiermanager
+......F.
+======================================================================
+FAIL: test_pmid_is_valid (index.test.02_identifiermanager.IdentifierManagerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\02_identifiermanager.py", line 126, in test_pmid_is_valid
+    self.assertTrue(pm_nofile.is_valid(self.valid_pmid_1))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.049s
+
+FAILED (failures=1)
+
+                </pre>
+            </code>
+          </div>
           <h2>Study the execution process</h2>
           <h3>Required integrations</h3>
           <ol>
@@ -2363,6 +2386,21 @@ IndentationError: unindent does not match any outer indentation level
                   </pre>
               </code>
           </div>
+          <p>I tried with:</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+                  C:\Users\arimoretti\Documents\GitHub>python -m index.cnc -ib "http://dx.doi.org/" -b "https://w3id.org/oc/index/croci/" -p "index/croci/crowdsourcedcitationsource.py" -c "CrowdsourcedCitationSource" -i "C:\Users\arimoretti\Documents\GitHub\index\test_data\croci_dump\source.csv" -l "C:\Users\arimoretti\Documents\GitHub\index\test_data\tmp_store\lookup_full.csv" -d " C:\Users\arimoretti\Documents" -px "050" -a "https://orcid.org/0000-0003-0530-4305" -s "https://doi.org/10.5281/zenodo.3832935" -sv "OpenCitations Index: CROCI" -o "0000-0003-0530-4305" -v
+                  </pre>
+              </code>
+          </div>
+          <p>Notes:</p>
+          <ul>
+          <li>Why a specific doi and Orcid are already specified?</li>
+          <li>What does ""[CHIAVE-PER-API-ORCID]"" correspond to? i tried with the orcid specified in the request but it didn't work, so I imagine I misunderstood its meaning</li>
+          </ul>
+          
+          
           <p>In particular:</p>
           <ul>
               <li>[PATH-ASSOLUTO-DATI-CSV-DI-PARTENZA] è il csv che contiene i dati iniziali nella tabella a quattro colone che il processo di CROCI si aspetta in input (vedi, per esempio, il file "index/test_data/croci_dump/source.csv"</li>

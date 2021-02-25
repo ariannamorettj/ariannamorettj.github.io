@@ -2373,7 +2373,57 @@ FAILED (failures=1)
           <h2>Study the execution process</h2>
           <h3>Required integrations</h3>
           <ol>
-              <li>Cnc.py for now works with dois only. It neither checks whether the id is a doi or not. We need to make it work with pmid too, so the nature of the id will have to be specified.</li>
+            <li>citation</li>
+                <ul>
+                    <li>citationsource.py: contains CitationSource class, that must be implemented for any source providing citations to be included in an OpenCitations Index (Coci, Croci, Noxi) -- OK</li>
+                    <li>oci.py: contains class Citation-- self.citing_pub_date = Citation.check_date(citing_pub_date[:10] if citing_pub_date else citing_pub_date)?? -> why :10? --        if "D" in duration or Citation.contains_days(creation_date):
+            cut = 10 // elif "M" in duration or Citation.contains_months(creation_date):
+            cut = 7 //else:
+            cut = 4 --? --OK</li>
+                </ul>
+            <li>coci</li>
+                <ul>
+                    <li>checkmetadata.py: --is it required also for noci?</li><li>crossrefcitationsource.py: -- works with doi only-- OK</li>
+                    <li>glob.py:-- NEEDS INTEGRATION (manages DOI, ISSN and ORCID only)</li>
+                    <li>trimdump.py: -- OK</li>
+                </ul>
+            <li>croci</li>
+                <ul>
+                    <li>crowdsourcedcitationsource.py: works with doi only --OK</li>
+                </ul>
+            <li>finder</li>
+                <ul>
+                    <li>crossrefresourcefinder.py: works with orcid + issn + doi -- NEEDS EXTENSION?</li>
+                    <li>dataciterefresourcefinder.py: " --NEEDS EXTENSION?</li>
+                    <li>orcidrefresourcefinder.py: " --NEEDS EXTENSION?</li>
+                    <li>resourcefinder.py:" --NEEDS EXTENSION?</li>
+                </ul>
+            <li>identifier</li>
+                <ul>
+                    <li>doimanager.py - OK</li>
+                    <li>identifiermanager.py -- general -OK</li>
+                    <li>issnmanager.py -OK</li>
+                    <li>orcidmanager.py -OK</li>
+                    <li>pmidmanager.py - OK (EXTENDED)</li>
+                </ul>
+            <li>storer</li>
+                <ul>
+                    <li>citationstorer.py :  @staticmethod
+    def load_citations_from_file(data_f_path, prov_f_path=None, oci="04201-04201", baseurl="",
+                                 service_name="CitationStorer", id_type="doi",
+                                 id_shape="http://dx.doi.org/([[XXX__decode]])",
+                                 citation_type="", agent="", source=""): ---> TO BE SPECIFIED?</li>
+                    <li>csvmanager.py : This class is able to load a simple CSV composed by two fields, 'id' and
+    'value', and then to index all its items in a structured form so as to be
+    easily queried. In addition, it allows one to store new information in the CSV,
+    if needed.-- general - OK</li>
+                    <li>updatetp.py -- general - OK</li>
+                </ul>
+            <li>support</li>
+            <li>test</li>
+            <li>test_data</li>
+            <li>__init__.py</li>
+            <li>cnc.py: Cnc.py for now works with dois only. It neither checks whether the id is a doi or not. We need to make it work with pmid too, so the nature of the id will have to be specified.</li>
           </ol>
           
           

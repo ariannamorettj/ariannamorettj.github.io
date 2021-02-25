@@ -2116,7 +2116,237 @@ FileNotFoundError: [Errno 2] No such file or directory: '/srv/data/glob/id_date.
               </code>
           </div>
           
-          <h3>Functions corrections</h3>
+          <h3>Functions' corrections</h3>
+          <h4>identifier.pmidmanager</h4>
+          <div>
+            <code>
+                <pre>
+                from index.identifier.identifiermanager import IdentifierManager
+from re import sub, match
+from urllib.parse import unquote, quote #This module defines a standard interface to break Uniform Resource Locator (URL)
+# strings up in components (addressing scheme, network location, path etc.), to combine the components back into a URL
+# string, and to convert a “relative URL” to an absolute URL given a “base URL.”
+from requests import get
+from json import loads
+from index.storer.csvmanager import CSVManager
+from requests import ReadTimeout
+from requests.exceptions import ConnectionError
+from time import sleep
+
+class PMIDManager(IdentifierManager):
+    def __init__(self, valid_pmid=None, use_api_service=True):
+        if valid_pmid is None:
+            valid_pmid = CSVManager(store_new=False) #crea csv come struttura locale senza salvare nulla sul file
+
+        self.api = "https://pubmed.ncbi.nlm.nih.gov/"
+        self.valid_pmid = valid_pmid
+        self.use_api_service = use_api_service
+        self.p = "pmid:"
+        super(PMIDManager, self).__init__()
+
+    def set_valid(self, id_string):
+        pmid = self.normalise(id_string, include_prefix=True)
+
+        if self.valid_pmid.get_value(pmid) is None:
+            self.valid_pmid.add_value(pmid, "v")
+
+    def is_valid(self, id_string): #non ho nessuna cosa che dovrebbe autovalidare l'identificativo
+        pmid = self.normalise(id_string, include_prefix=True) #it calls the normaliser and checks whether the pmid is none or it doesn't match (so it returns false)
+        if pmid is None or match("^[1-9]\d*$", pmid) is None: #anchors (^ $) to define start and stop of the string;  "is none" --> it isn't present in my database (Boolean answer)
+            return False
+        else: #after having checked the local database handling the class (in the case we already got the valid/invalid information for this id
+            if self.valid_pmid.get_value(pmid) is None: #In the case it returns None, it means we don't have it yet, so we have to understand if it is valid or not.
+                if self.__pmid_exists(pmid): #pmid exist (API call) --> non avendo informazione di api
+                    self.valid_pmid.add_value(pmid, "v")
+                else:
+                    self.valid_pmid.add_value(pmid, "i") #aggiunge al dizionario di invalid. se è anche esistente ma non c'è possibilità di verificarlo è false
+            return "v" in self.valid_pmid.get_value(pmid)
+
+
+
+    def normalise(self, id_string, include_prefix=False):
+        try:
+            pmid_string = sub("^0+", "", sub("\0+", "", (sub("[^\d+]", "", id_string)))) #tolto lettere, null, tolgo ^0+  --> tutto qullo che inizia con uno o più zero, non metto $ perché riguarda fine stringa
+            return "%s%s" % (self.p if include_prefix else "", pmid_string)
+        except:  # Any error in processing the PMID will return None --> when the id can't be recognised as a pubmed
+            return None
+
+
+    def __pmid_exists(self, pmid_full):  # I try and use the api to check the existence, otherwise it returns "none" or False
+        pmid = self.normalise(pmid_full) #normalise per sicurezza
+        if self.use_api_service:
+            tentative = 3
+            while tentative:
+                tentative -= 1
+                try:
+                    r = get(self.api + quote(pmid) + "/?format=pmid", headers=self.headers, timeout=30) #/?format=pmid --> to avoid articles research
+                    #urllib.parse.quote(string, safe='/', encoding=None, errors=None)
+                    # Replace special characters in string using the %xx escape. Letters, digits, and the characters '_.-~'
+                    # are never quoted. By default, this function is intended for quoting the path section of a URL.
+
+#dato che mi restituisce l'id devo assicurarmi che quello che mi restituisce lui sia uguale a quello che ho passato io (700000 =! 70) ---> deve superare status code + quello che restituisce uguale a input
+                    #funziona ma restituisce sempre un'html file
+                    if r == pmid and r.status_code == 200: #id identificato è valido. 404 -> errore, corretto r=pmid? ovvero, r è risultato della ricerca?
+                        r.encoding = "utf-8"
+                        json_res = loads(r.text)
+                        return json_res.get("responseCode") == 1
+                except ReadTimeout:
+                    pass  # Do nothing, just try again
+                except ConnectionError:
+                    sleep(5)  # Sleep 5 seconds, then try again
+
+        return False
+                </pre>
+            </code>
+          </div>
+          
+          <iframe src="https://trinket.io/embed/python/3f7dc20c98" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          
+          
+          <p>Notes:</p>
+          <ul>
+            <li>Is it correct to check that input == output like this --> r == pmid?</li>
+            <li>Is it correct this normalisation: pmid_string = sub("^0+", "", sub("\0+", "", (sub("[^\d+]", "", id_string)))) ?</li>
+          </ul>
+          
+          <h4>noci.nationalinstituteofhealthsource</h4>
+          <div class="codebg">
+            <code>
+                <pre>
+                from os import walk, sep, remove
+from os.path import isdir
+from json import load
+from csv import DictWriter
+from index.citation.citationsource import CSVFileCitationSource
+from index.identifier.pmidmanager import PMIDManager
+from index.citation.oci import Citation
+
+
+class NationalInstituteHealthSource(CSVFileCitationSource):
+    def __init__(self, src, local_name=""):
+        self.pmid = PMIDManager()
+        super(NationalInstituteHealthSource, self).__init__(src, local_name)
+
+    def get_next_citation_data(self):
+        row = self._get_next_in_file()
+
+        while row is not None:
+            citing = self.pmid.normalise(row.get("citing")) #substituted with NIH labels
+            cited = self.pmid.normalise(row.get("referenced"))
+
+            if citing is not None and cited is not None:
+                #created = row.get("citing_publication_date")
+                # if not created:
+                    created = None
+
+                #cited_pub_date = row.get("cited_publication_date")
+                #if not cited_pub_date:
+                    timespan = None
+                else:
+                    c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+                    timespan = c.duration
+
+                self.update_status_file()
+                return citing, cited, created, timespan, None, None
+
+            self.update_status_file()
+            row = self._get_next_in_file()
+
+        remove(self.status_file)
+                </pre>
+            </code>
+          </div>
+          <iframe src="https://trinket.io/embed/python/5b49f453d6" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          
+          <h4>test.noci</h4>
+          <div>
+            <code>
+                <pre>
+                import unittest
+from index.coci.glob import process #something to be developed to perform the same task but with pmids
+from os import sep, makedirs  #Recursive directory creation function. Like mkdir(), but makes all intermediate-level directories needed to contain the leaf directory.
+from os.path import exists  #used to check whether the specified path exists or not.
+from shutil import rmtree #used to delete an entire directory tree, path must point to a directory (but not a symbolic link to a directory)
+from index.storer.csvmanager import CSVManager #This class is able to load a simple CSV composed by two fields, 'id' and'value', and then to index all its items in a structured form so as to be easily queried. In addition, it allows one to store new information in the CSV, if needed.
+from index.noci.nationalinstituteofhealthsource import NationalInstituteHealthSource #crowdsourcedcitationsource sostituito
+from csv import DictReader
+
+
+class NOCITest(unittest.TestCase):
+
+    def setUp(self): #The self parameter is a reference to the current instance of the class, and is used to access variables that belongs to the class.
+        self.input_file = "index%stest_data%snoci_dump%ssource.csv" % (sep, sep, sep) #without placeholders for the tuple format, data as provided by NIH
+        self.citations = "index%stest_data%snoci_dump%scitations.csv" % (sep, sep, sep) #adaptation for tuple format, with all 6 fields
+    def test_citation_source(self):
+        ns = NationalInstituteHealthSource(self.input_file) #class of nationalinstituteofhealthsource, where a version of get next citation handling pmid data will be defined.
+        new = []
+        cit = ns.get_next_citation_data() #will extract citational data from our input file, which is the source one, with just citing and cited
+        while cit is not None: #(which is: until we have citational data)
+            citing, cited, creation, timespan, journal_sc, author_sc = cit
+            #we append each citational data to the new list (which will be a list of dictionaries), in the format required for the 6-elements tuple.
+            new.append({
+                "citing": citing,
+                "cited": cited,
+                "creation": "" if creation is None else creation, #in all our cases the last four fields will be "","","no","no"
+                "timespan": "" if timespan is None else timespan,
+                "journal_sc": "no" if journal_sc is None else journal_sc,
+                "author_sc": "no" if author_sc is None else author_sc
+            })
+            cit = ns.get_next_citation_data() #cit variable is assigned the value of the subsequent citational datum from input_file (source.csv)
+
+        with open(self.citations) as f: #open the file as a parameter of a function, this time the csv with the data compiled in the 6-elements tuple format
+            old = list(DictReader(f)) #a list of dictionaries is derived from data in citations.
+
+
+        self.assertEqual(new, old) #check that the lists of dictionaries derived respectively from source and from citations are the equal.
+                </pre>
+            </code>
+          </div>
+          <p>Notes:</p>
+          <ul>
+            <li>There was a typing error in the name of the imported class</li>
+            <li>Running the test, I got an "indentation error", even if it is indented in the exact same way as 09_croci, which instead works.</li>
+          </ul>
+          <div class="codebg">
+            <code>
+                <pre>
+                Microsoft Windows [Versione 10.0.18363.1379]
+(c) 2019 Microsoft Corporation. Tutti i diritti sono riservati.
+
+C:\Users\arimoretti>cd Documents
+
+C:\Users\arimoretti\Documents>cd GitHub
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.10_noci
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 192, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\__main__.py", line 18, in <module>
+    main(module=None)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 100, in __init__
+    self.parseArgs(argv)
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 147, in parseArgs
+    self.createTests()
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\main.py", line 158, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 220, in <listcomp>
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "C:\Users\arimoretti\AppData\Local\Programs\Python\Python38-32\lib\unittest\loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\10_noci.py", line 7, in <module>
+    from index.noci.nationalinstituteofhealthsource import NationalInstituteHealthSource
+  File "C:\Users\arimoretti\Documents\GitHub\index\noci\nationalinstituteofhealthsource.py", line 25
+    else:
+        ^
+IndentationError: unindent does not match any outer indentation level
+
+                </pre>
+            </code>
+          </div>
           <h2>Study the execution process</h2>
           <h3>Required integrations</h3>
           <ol>

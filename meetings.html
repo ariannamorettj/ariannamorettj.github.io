@@ -374,7 +374,41 @@ id_date.csv:
     </div>
     <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          <h2>Dynamic requests for croci</h2>
+          <ul>
+              <li><strong>-s</strong> : source I'm supposed to take data from. I specify where the data source is. In our case, it is an example and we don't speifically need to have the correct source. The command is just intended to start the tool. The source is then specified in provenance  info. The system also says where the raw data were taken from and who provided it (data that allowed the creation of the citation)S</li>
+              <li><strong>-a</strong> : identifies the responsible agent for these data.</li>
+              <li><strong>key for api-orcid</strong>: is personl and not strictly required. The command can be run even without it.</li>
+          </ul>
+          <div>
+              <code>
+                  <pre>
+                  C:\Users\arimoretti\Documents\GitHub>python -m index.cnc -ib "http://dx.doi.org/" -b "https://w3id.org/oc/index/croci/" -p "C:\Users\arimoretti\Documents\GitHub\index\croci\crowdsourcedcitationsource.py" -c "CrowdsourcedCitationSource" -i "C:\Users\arimoretti\Documents\GitHub\index\test_data\croci_dump\source.csv" -l "C:\Users\arimoretti\Documents\GitHub\index\test_data\tmp_store\lookup_full.csv" -d "C:\Users\arimoretti\Documents" -px "050" -a "https://orcid.org/0000-0003-0530-4305" -s "https://doi.org/10.5281/zenodo.3832935" -sv "OpenCitations Index: CROCI" -v
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1109/wi.2006.164' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.5210/fm.v11i11.1413' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.5210/fm.v8i12.1108' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.5210/fm.v11i9.1400' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1038/438900a' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.2307/2529310' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.2307/4486062' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.5210/fm.v12i4.1763' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1145/503376.503456' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1142/9789812701527_0009' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1145/1501434.1501445' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.1007/11839569_35' has been already processed
+WARNING: the citation between DOI '10.1002/asi.20755' and DOI '10.2307/1562247' has been already processed
+
+# Summary
+Number of new citations added to the OpenCitations Index: 0
+Number of citations already present in the OpenCitations Index: 13
+Number of citations with invalid DOIs: 0
+
+C:\Users\arimoretti\Documents\GitHub>
+                  </pre>
+              </code>
+          </div>
+          <h2>makedir</h2>
+          <p>Make some tries on a local file (on a python file locally generated and executed). There is something wrong and we have to understand what. </p>
       </div>
     </div>
   </div>

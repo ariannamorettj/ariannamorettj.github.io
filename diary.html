@@ -2978,8 +2978,45 @@ def __decode_inverse(self, doi):
 def get_oci(self, doi_1, doi_2, prefix):
     self.oci = "oci:%s%s-%s%s" % (prefix, self.__decode_inverse(doi_1), prefix, self.__decode_inverse(doi_2))
     return self.oci
+            </pre>
+        </code>
+      </div>
+      
+      <h4>Related problems in noci.nationalinstituteofhealthsource.py</h4>
+      <div class="codebg">
+        <code>
+            <pre>
+c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+timespan = c.duration
 
+#------------------------------------------------
+self.update_status_file()
+return citing, cited, created, timespan, None, None
 
+#-------------------------------------------------
+    self.update_status_file()
+    row = self._get_next_in_file()
+remove(self.status_file)
+
+            </pre>
+        </code>
+      <div/>
+      
+      <h3>test.test.py</h3>
+      <div class="codebg">
+        <code>
+            <pre>
+            with open("/srv/data/glob/id_date.csv") as f:
+            </pre>
+        </code>
+      </div>
+      <p>Output: FileNotFoundError: [Errno 2] No such file or directory: '/srv/data/glob/id_date.csv'</p>
+      
+      <h4>Correction</h4>
+      <div class="codebg">
+        <code>
+            <pre>
+            with open("index/test_data/crossref_glob/id_date.csv") as f:            
             </pre>
         </code>
       </div>

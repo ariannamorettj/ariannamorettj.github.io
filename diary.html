@@ -3025,7 +3025,8 @@ remove(self.status_file)
     </div>
   </div>
   
-<div class="card">
+  </div>
+  <div class="card">
     <div class="card-header" id="headingSeven">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="false" aria-controls="collapseThree">
@@ -3035,7 +3036,81 @@ remove(self.status_file)
     </div>
     <div id="collapseSeven" class="collapse" aria-labelledby="headingSeven" data-parent="#accordion">
       <div class="card-body">
+        <h2>GitHub Issues</h2>
+        <p>Make issues on GitHub (UnicodeDecodeError, Test 05_citationstorer fail)</p>
+        
+        <h2>ocy.py extension</h2>
+        <p>Check where ocy has to be extended, so to manage pmids</p>
+        
+        <h2>nationalinstituteofhealthsource.py</h2>
+        <p>Correct the indentation error</p>
+        <div class="codebg">
+            <code>
+                <pre>
+from os import walk, sep, remove
+from os.path import isdir
+from json import load
+from csv import DictWriter
+from index.citation.citationsource import CSVFileCitationSource
+from index.identifier.pmidmanager import PMIDManager
+from index.citation.oci import Citation
 
+
+class NationalInstituteHealthSource(CSVFileCitationSource):
+    def __init__(self, src, local_name=""):
+        self.pmid = PMIDManager()
+        super(NationalInstituteHealthSource, self).__init__(src, local_name)
+
+    def get_next_citation_data(self):
+        row = self._get_next_in_file()
+
+        while row is not None:
+            citing = self.pmid.normalise(row.get("citing"))
+            cited = self.pmid.normalise(row.get("referenced"))
+
+            if citing is not None and cited is not None:
+                created = row.get("citing_publication_date")
+                if not created:
+                    created = None
+
+                cited_pub_date = row.get("cited_publication_date")
+                if not cited_pub_date:
+                    timespan = None
+
+                else:
+                    c = Citation(None, None, created, None, cited_pub_date, None, None, None, None, "", None, None, None, None, None)
+                    timespan = c.duration
+
+                self.update_status_file()
+                return citing, cited, created, timespan, None, None
+
+            self.update_status_file()
+            row = self._get_next_in_file()
+
+        remove(self.status_file)
+                </pre>
+            </code>
+        </div>
+        <p>Test passed:</p>
+        <div class="codebg">
+            <code>
+                <pre>
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.10_noci
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.008s
+
+OK
+
+                </pre>
+            </code>
+        </div>
+        
+        <h2>Graphs serialization (g1 and g2 in 05_citationstorer)</h2>
+        <p>Use n-triple to print the serialization</p>
+        
+        <h2>pmidmanager.py</h2>
+        <p>Correct the function: api gives back an html and not a string</p>
       </div>
     </div>
   </div>

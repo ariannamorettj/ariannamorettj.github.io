@@ -3111,6 +3111,1102 @@ OK
         
         <h2>pmidmanager.py</h2>
         <p>Correct the function: api gives back an html and not a string</p>
+        <div class="codebg">
+            <code>
+                <pre>
+                from index.identifier.identifiermanager import IdentifierManager
+from re import sub, match
+from urllib.parse import unquote, quote
+from requests import get
+from json import loads
+from index.storer.csvmanager import CSVManager
+from requests import ReadTimeout
+from requests.exceptions import ConnectionError
+from time import sleep
+from bs4 import BeautifulSoup
+
+
+class PMIDManager(IdentifierManager):
+    def __init__(self, valid_pmid=None, use_api_service=True):
+        if valid_pmid is None:
+            valid_pmid = CSVManager(store_new=False)
+
+        self.api = "https://pubmed.ncbi.nlm.nih.gov/"
+        self.valid_pmid = valid_pmid
+        self.use_api_service = use_api_service
+        self.p = "pmid:"
+        super(PMIDManager, self).__init__()
+
+    def set_valid(self, id_string):
+        pmid = self.normalise(id_string, include_prefix=True)
+
+        if self.valid_pmid.get_value(pmid) is None:
+            self.valid_pmid.add_value(pmid, "v")
+
+    def is_valid(self, id_string):
+        pmid = self.normalise(id_string, include_prefix=True)
+        if pmid is None or match("^pmid:[1-9]\d*$", pmid) is None:
+            return False
+        else:
+            if self.valid_pmid.get_value(pmid) is None:
+                if self.__pmid_exists(pmid): #potrebbe essere qui
+                    self.valid_pmid.add_value(pmid, "v")
+                else:
+                    self.valid_pmid.add_value(pmid, "i")
+            return "v" in self.valid_pmid.get_value(pmid) #potrebbe restituire false anche qui
+        #probabilmente ..
+        #if 33 vede se il valore è giù incluso (potrebbe esserci già. se già incluso salta e va direttamente al return)
+        #il problema probabilmente è tra 34 34
+
+
+
+    def normalise(self, id_string, include_prefix=False):
+        try:
+            pmid_string = sub("^0+", "", sub("\0+", "", (sub("[^\d+]", "", id_string))))
+            return "%s%s" % (self.p if include_prefix else "", pmid_string)
+        except:
+            return None
+
+
+    def __pmid_exists(self, pmid_full):
+        pmid = self.normalise(pmid_full)
+        if self.use_api_service:
+            print("usa API?")
+            tentative = 3
+            while tentative:
+                tentative -= 1
+                try:
+                    print(self.api + quote(pmid) + "/?format=pmid")
+                    r = get(self.api + quote(pmid) + "/?format=pmid", headers=self.headers, timeout=30)
+                    if r.status_code == 200:
+                        r.encoding = "utf-8"
+                        print("Ho trovato l'ID?", r.text, pmid)
+
+                        #inserire
+                        soup = BeautifulSoup(r.content)
+                        print("THIS IS SOUP", soup)
+                        for i in soup.find_all("meta", {"name" : "uid"}):
+                            id = i["content"]
+                            print("THIS IS ID", id)
+                            print("THIS IS PMID", pmid)
+
+                            if id == pmid:
+                                print("EUREKAAAA")
+                                return True
+
+                except ReadTimeout:
+                    pass
+                except ConnectionError:
+                    sleep(5)
+
+        return False
+
+                </pre>
+            </code>
+        </div>
+        <h3>02_identifiermanager (test)</h3>
+        <div class="codebg">
+            <code>
+                <pre>
+                #class extension for pubmedid
+    def test_pmid_normalise(self):
+        pm = PMIDManager()
+        self.assertEqual(self.valid_pmid_1, pm.normalise(self.valid_pmid_1.replace("", "pmid:"))) #check other characters exclusion
+        self.assertEqual(self.valid_pmid_1, pm.normalise(self.valid_pmid_1.replace("", " "))) #check other characters (spaces) exclusion
+        self.assertEqual(self.valid_pmid_1, pm.normalise("https://pubmed.ncbi.nlm.nih.gov/"+self.valid_pmid_1)) #check other characters (url) exclusion --- aggiungi pmid
+        self.assertEqual(self.valid_pmid_2, pm.normalise("000"+self.valid_pmid_2)) #check initial 0s exclusion
+
+    def test_pmid_is_valid(self):
+        pm_nofile = PMIDManager()
+        print(pm_nofile.normalise(self.valid_pmid_1, include_prefix=True ))
+        print(pm_nofile.is_valid(self.valid_pmid_1))
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_1))
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_2))
+        self.assertTrue(pm_nofile.is_valid(self.valid_pmid_3))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_1))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_2))
+        self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_3))
+
+        valid_pmid = CSVManager(self.valid_pmid_path)
+        pm_file = PMIDManager(valid_pmid=valid_pmid, use_api_service=False)
+        self.assertTrue(pm_file.is_valid(self.valid_pmid_1)) #in input un csv manager che eventualmente punta a quel file.
+        self.assertFalse(pm_file.is_valid(self.invalid_pmid_1))
+
+        pm_nofile_noapi = PMIDManager(use_api_service=False)
+        self.assertFalse(pm_nofile_noapi.is_valid(self.valid_pmid_1)) #Why not assert True?
+        self.assertFalse(pm_nofile_noapi.is_valid(self.invalid_pmid_1))
+                </pre>
+            </code>
+        </div>
+        <h3>Test Run</h3>
+        <div>
+            <code>
+                <pre>
+                Microsoft Windows [Versione 10.0.18363.1379]
+(c) 2019 Microsoft Corporation. Tutti i diritti sono riservati.
+
+C:\Users\arimoretti\Documents\GitHub\index>cd..
+
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.02_identifiermanager
+......pmid:2942070
+usa API?
+https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid
+Ho trovato l'ID? <!DOCTYPE html>
+
+
+
+
+<html lang="en" >
+<head  itemscope itemtype="http://schema.org/WebPage"  prefix="og: http://ogp.me/ns#" >
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile properties -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <link rel="preconnect" href="https://cdn.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.google-analytics.com">
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" type="text/css">
+
+
+  <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" type="text/css">
+
+
+
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" type="text/css">
+
+
+
+
+
+    <title>2942070</title>
+
+
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" type="image/ico" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" />
+  <link rel="icon" type="image/png" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" />
+
+  <!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" />
+
+  <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+  <link rel="apple-touch-icon-precomposed" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png">
+  <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png">
+  <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png">
+  <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png">
+
+
+  <!-- For Pinger + Google Optimize integration (NS-820) -->
+  <meta name="ncbi_sg_optimize_id" content="">
+
+  <!-- Mobile browser address bar color -->
+  <meta name="theme-color" content="#20558a">
+
+  <!-- Preserve the Referrer when going from HTTPS to HTTP -->
+  <meta name="referrer" content="origin-when-cross-origin">
+
+  <!-- Logging params: Pinger defaults -->
+
+
+    <meta name="ncbi_app" content="pubmed" />
+
+
+
+    <meta name="ncbi_db" content="pubmed" />
+
+
+
+
+
+    <meta name="ncbi_phid" content="3DFF00018EE8084500002B206FDB7C44.1.m_2" />
+
+
+
+    <meta name="ncbi_pinger_stat_url" content="https://www.ncbi.nlm.nih.gov/stat" />
+
+
+
+    <meta name="log_category" content="literature" />
+
+
+
+    <meta name="ncbi_cost_center" content="pubmed" />
+
+
+
+
+  <!-- Logging params: Pinger custom -->
+
+    <meta name="ncbi_pdid" content="pmid" />
+
+    <meta name="log_op" content="retrieve" />
+
+    <meta name="uid" content="2942070" />
+
+    <meta name="ncbi_uid" content="2942070" />
+
+
+
+
+  <!-- Social meta tags for unfurling urls -->
+
+<meta name="description" content="2942070"><meta name="robots" content="index,nofollow,noarchive"><meta property="og:title" content="2942070"><meta property="og:url" content="https://pubmed.ncbi.nlm.nih.gov/294207
+0/?format=pmid"><meta property="og:description" content="2942070"><meta property="og:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:image:secure_url" conte
+nt="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:type" content="website"><meta property="og:site_name" content="PubMed"><meta name="twitter:domain" content="pubmed.ncbi.
+nlm.nih.gov"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="2942070"><meta name="twitter:url" content="https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid"><meta name="twitter:des
+cription" content="2942070"><meta name="twitter:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta itemprop="name" content="2942070"><meta itemprop="url" content="https://p
+ubmed.ncbi.nlm.nih.gov/2942070/?format=pmid"><meta itemprop="description" content="2942070"><meta itemprop="image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png">
+
+
+  <!-- OpenSearch XML -->
+  <link rel="search" type="application/opensearchdescription+xml" href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" title="PubMed search">
+
+  <!-- Disables severely broken elements when no JS -->
+  <noscript>
+    <link rel="stylesheet" type="text/css" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css">
+  </noscript>
+
+
+    <link rel="canonical" href="https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid" />
+
+
+
+</head>
+<body >
+
+
+  <div class="article-page" id="article-page">
+
+      <pre class="article-details" id="article-details">2942070</pre>
+
+  </div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+ 2942070
+C:\Users\arimoretti\Documents\GitHub\index\identifier\pmidmanager.py:70: GuessedAtParserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("lxml"). This usual
+ly isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 70 of the file C:\Users\arimoretti\Documents\GitHub\index\identifier\pmidmanager.py. To get rid of this warning, pass the additional argument 'features="lxml"' to the B
+eautifulSoup constructor.
+
+  soup = BeautifulSoup(r.content)
+THIS IS SOUP <!DOCTYPE html>
+<html lang="en">
+<head itemscope="" itemtype="http://schema.org/WebPage" prefix="og: http://ogp.me/ns#">
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<!-- Mobile properties -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.google-analytics.com" rel="preconnect"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" rel="stylesheet" type="text/css"/>
+<title>2942070</title>
+<!-- Favicons -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" rel="shortcut icon" type="image/ico"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" rel="icon" type="image/png"/>
+<!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png" rel="apple-touch-icon-precomposed"/>
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png" rel="apple-touch-icon-precomposed" sizes="72x72"/>
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png" rel="apple-touch-icon-precomposed" sizes="114x114"/>
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png" rel="apple-touch-icon-precomposed" sizes="144x144"/>
+<!-- For Pinger + Google Optimize integration (NS-820) -->
+<meta content="" name="ncbi_sg_optimize_id"/>
+<!-- Mobile browser address bar color -->
+<meta content="#20558a" name="theme-color"/>
+<!-- Preserve the Referrer when going from HTTPS to HTTP -->
+<meta content="origin-when-cross-origin" name="referrer"/>
+<!-- Logging params: Pinger defaults -->
+<meta content="pubmed" name="ncbi_app"/>
+<meta content="pubmed" name="ncbi_db"/>
+<meta content="3DFF00018EE8084500002B206FDB7C44.1.m_2" name="ncbi_phid"/>
+<meta content="https://www.ncbi.nlm.nih.gov/stat" name="ncbi_pinger_stat_url"/>
+<meta content="literature" name="log_category"/>
+<meta content="pubmed" name="ncbi_cost_center"/>
+<!-- Logging params: Pinger custom -->
+<meta content="pmid" name="ncbi_pdid"/>
+<meta content="retrieve" name="log_op"/>
+<meta content="2942070" name="uid"/>
+<meta content="2942070" name="ncbi_uid"/>
+<!-- Social meta tags for unfurling urls -->
+<meta content="2942070" name="description"/><meta content="index,nofollow,noarchive" name="robots"/><meta content="2942070" property="og:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid"
+ property="og:url"/><meta content="2942070" property="og:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image"/><meta content="https://cdn.ncbi.nlm.
+nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image:secure_url"/><meta content="website" property="og:type"/><meta content="PubMed" property="og:site_name"/><meta content="pubmed.ncbi.nlm.nih.gov"
+name="twitter:domain"/><meta content="summary" name="twitter:card"/><meta content="2942070" name="twitter:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid" name="twitter:url"/><meta cont
+ent="2942070" name="twitter:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" name="twitter:image"/><meta content="2942070" itemprop="name"/><meta content="https://
+pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid" itemprop="url"/><meta content="2942070" itemprop="description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" itemprop="image"/>
+
+<!-- OpenSearch XML -->
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" rel="search" title="PubMed search" type="application/opensearchdescription+xml"/>
+<!-- Disables severely broken elements when no JS -->
+<noscript>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css" rel="stylesheet" type="text/css"/>
+</noscript>
+<link href="https://pubmed.ncbi.nlm.nih.gov/2942070/?format=pmid" rel="canonical"/>
+</head>
+<body>
+<div class="article-page" id="article-page">
+<pre class="article-details" id="article-details">2942070</pre>
+</div>
+</body>
+</html>
+
+THIS IS ID 2942070
+THIS IS PMID 2942070
+EUREKAAAA
+True
+usa API?
+https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid
+Ho trovato l'ID? <!DOCTYPE html>
+
+
+
+
+<html lang="en" >
+<head  itemscope itemtype="http://schema.org/WebPage"  prefix="og: http://ogp.me/ns#" >
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile properties -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <link rel="preconnect" href="https://cdn.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.google-analytics.com">
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" type="text/css">
+
+
+  <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" type="text/css">
+
+
+
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" type="text/css">
+
+
+
+
+
+    <title>1509982</title>
+
+
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" type="image/ico" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" />
+  <link rel="icon" type="image/png" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" />
+
+  <!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" />
+
+  <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+  <link rel="apple-touch-icon-precomposed" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png">
+  <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png">
+  <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png">
+  <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png">
+
+
+  <!-- For Pinger + Google Optimize integration (NS-820) -->
+  <meta name="ncbi_sg_optimize_id" content="">
+
+  <!-- Mobile browser address bar color -->
+  <meta name="theme-color" content="#20558a">
+
+  <!-- Preserve the Referrer when going from HTTPS to HTTP -->
+  <meta name="referrer" content="origin-when-cross-origin">
+
+  <!-- Logging params: Pinger defaults -->
+
+
+    <meta name="ncbi_app" content="pubmed" />
+
+
+
+    <meta name="ncbi_db" content="pubmed" />
+
+
+
+
+
+    <meta name="ncbi_phid" content="BDFF00010138D7D5000030268D76E2C4.1.m_2" />
+
+
+
+    <meta name="ncbi_pinger_stat_url" content="https://www.ncbi.nlm.nih.gov/stat" />
+
+
+
+    <meta name="log_category" content="literature" />
+
+
+
+    <meta name="ncbi_cost_center" content="pubmed" />
+
+
+
+
+  <!-- Logging params: Pinger custom -->
+
+    <meta name="ncbi_pdid" content="pmid" />
+
+    <meta name="log_op" content="retrieve" />
+
+    <meta name="uid" content="1509982" />
+
+    <meta name="ncbi_uid" content="1509982" />
+
+
+
+
+  <!-- Social meta tags for unfurling urls -->
+
+<meta name="description" content="1509982"><meta name="robots" content="index,nofollow,noarchive"><meta property="og:title" content="1509982"><meta property="og:url" content="https://pubmed.ncbi.nlm.nih.gov/150998
+2/?format=pmid"><meta property="og:description" content="1509982"><meta property="og:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:image:secure_url" conte
+nt="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:type" content="website"><meta property="og:site_name" content="PubMed"><meta name="twitter:domain" content="pubmed.ncbi.
+nlm.nih.gov"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="1509982"><meta name="twitter:url" content="https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid"><meta name="twitter:des
+cription" content="1509982"><meta name="twitter:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta itemprop="name" content="1509982"><meta itemprop="url" content="https://p
+ubmed.ncbi.nlm.nih.gov/1509982/?format=pmid"><meta itemprop="description" content="1509982"><meta itemprop="image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png">
+
+
+  <!-- OpenSearch XML -->
+  <link rel="search" type="application/opensearchdescription+xml" href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" title="PubMed search">
+
+  <!-- Disables severely broken elements when no JS -->
+  <noscript>
+    <link rel="stylesheet" type="text/css" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css">
+  </noscript>
+
+
+    <link rel="canonical" href="https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid" />
+
+
+
+</head>
+<body >
+
+
+  <div class="article-page" id="article-page">
+
+      <pre class="article-details" id="article-details">1509982</pre>
+
+  </div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+ 1509982
+THIS IS SOUP <!DOCTYPE html>
+<html lang="en">
+<head itemscope="" itemtype="http://schema.org/WebPage" prefix="og: http://ogp.me/ns#">
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<!-- Mobile properties -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.google-analytics.com" rel="preconnect"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" rel="stylesheet" type="text/css"/>
+<title>1509982</title>
+<!-- Favicons -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" rel="shortcut icon" type="image/ico"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" rel="icon" type="image/png"/>
+<!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png" rel="apple-touch-icon-precomposed"/>
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png" rel="apple-touch-icon-precomposed" sizes="72x72"/>
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png" rel="apple-touch-icon-precomposed" sizes="114x114"/>
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png" rel="apple-touch-icon-precomposed" sizes="144x144"/>
+<!-- For Pinger + Google Optimize integration (NS-820) -->
+<meta content="" name="ncbi_sg_optimize_id"/>
+<!-- Mobile browser address bar color -->
+<meta content="#20558a" name="theme-color"/>
+<!-- Preserve the Referrer when going from HTTPS to HTTP -->
+<meta content="origin-when-cross-origin" name="referrer"/>
+<!-- Logging params: Pinger defaults -->
+<meta content="pubmed" name="ncbi_app"/>
+<meta content="pubmed" name="ncbi_db"/>
+<meta content="BDFF00010138D7D5000030268D76E2C4.1.m_2" name="ncbi_phid"/>
+<meta content="https://www.ncbi.nlm.nih.gov/stat" name="ncbi_pinger_stat_url"/>
+<meta content="literature" name="log_category"/>
+<meta content="pubmed" name="ncbi_cost_center"/>
+<!-- Logging params: Pinger custom -->
+<meta content="pmid" name="ncbi_pdid"/>
+<meta content="retrieve" name="log_op"/>
+<meta content="1509982" name="uid"/>
+<meta content="1509982" name="ncbi_uid"/>
+<!-- Social meta tags for unfurling urls -->
+<meta content="1509982" name="description"/><meta content="index,nofollow,noarchive" name="robots"/><meta content="1509982" property="og:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid"
+ property="og:url"/><meta content="1509982" property="og:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image"/><meta content="https://cdn.ncbi.nlm.
+nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image:secure_url"/><meta content="website" property="og:type"/><meta content="PubMed" property="og:site_name"/><meta content="pubmed.ncbi.nlm.nih.gov"
+name="twitter:domain"/><meta content="summary" name="twitter:card"/><meta content="1509982" name="twitter:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid" name="twitter:url"/><meta cont
+ent="1509982" name="twitter:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" name="twitter:image"/><meta content="1509982" itemprop="name"/><meta content="https://
+pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid" itemprop="url"/><meta content="1509982" itemprop="description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" itemprop="image"/>
+
+<!-- OpenSearch XML -->
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" rel="search" title="PubMed search" type="application/opensearchdescription+xml"/>
+<!-- Disables severely broken elements when no JS -->
+<noscript>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css" rel="stylesheet" type="text/css"/>
+</noscript>
+<link href="https://pubmed.ncbi.nlm.nih.gov/1509982/?format=pmid" rel="canonical"/>
+</head>
+<body>
+<div class="article-page" id="article-page">
+<pre class="article-details" id="article-details">1509982</pre>
+</div>
+</body>
+</html>
+
+THIS IS ID 1509982
+THIS IS PMID 1509982
+EUREKAAAA
+usa API?
+https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid
+Ho trovato l'ID? <!DOCTYPE html>
+
+
+
+
+<html lang="en" >
+<head  itemscope itemtype="http://schema.org/WebPage"  prefix="og: http://ogp.me/ns#" >
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile properties -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <link rel="preconnect" href="https://cdn.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.google-analytics.com">
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" type="text/css">
+
+
+  <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" type="text/css">
+
+
+
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" type="text/css">
+
+
+
+
+
+    <title>7189714</title>
+
+
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" type="image/ico" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" />
+  <link rel="icon" type="image/png" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" />
+
+  <!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" />
+
+  <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+  <link rel="apple-touch-icon-precomposed" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png">
+  <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png">
+  <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png">
+  <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png">
+
+
+  <!-- For Pinger + Google Optimize integration (NS-820) -->
+  <meta name="ncbi_sg_optimize_id" content="">
+
+  <!-- Mobile browser address bar color -->
+  <meta name="theme-color" content="#20558a">
+
+  <!-- Preserve the Referrer when going from HTTPS to HTTP -->
+  <meta name="referrer" content="origin-when-cross-origin">
+
+  <!-- Logging params: Pinger defaults -->
+
+
+    <meta name="ncbi_app" content="pubmed" />
+
+
+
+    <meta name="ncbi_db" content="pubmed" />
+
+
+
+
+
+    <meta name="ncbi_phid" content="BDFF00010138D7D500001D268DB69172.1.m_2" />
+
+
+
+    <meta name="ncbi_pinger_stat_url" content="https://www.ncbi.nlm.nih.gov/stat" />
+
+
+
+    <meta name="log_category" content="literature" />
+
+
+
+    <meta name="ncbi_cost_center" content="pubmed" />
+
+
+
+
+  <!-- Logging params: Pinger custom -->
+
+    <meta name="ncbi_pdid" content="pmid" />
+
+    <meta name="log_op" content="retrieve" />
+
+    <meta name="uid" content="7189714" />
+
+    <meta name="ncbi_uid" content="7189714" />
+
+
+
+
+  <!-- Social meta tags for unfurling urls -->
+
+<meta name="description" content="7189714"><meta name="robots" content="index,nofollow,noarchive"><meta property="og:title" content="7189714"><meta property="og:url" content="https://pubmed.ncbi.nlm.nih.gov/718971
+4/?format=pmid"><meta property="og:description" content="7189714"><meta property="og:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:image:secure_url" conte
+nt="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:type" content="website"><meta property="og:site_name" content="PubMed"><meta name="twitter:domain" content="pubmed.ncbi.
+nlm.nih.gov"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="7189714"><meta name="twitter:url" content="https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid"><meta name="twitter:des
+cription" content="7189714"><meta name="twitter:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta itemprop="name" content="7189714"><meta itemprop="url" content="https://p
+ubmed.ncbi.nlm.nih.gov/7189714/?format=pmid"><meta itemprop="description" content="7189714"><meta itemprop="image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png">
+
+
+  <!-- OpenSearch XML -->
+  <link rel="search" type="application/opensearchdescription+xml" href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" title="PubMed search">
+
+  <!-- Disables severely broken elements when no JS -->
+  <noscript>
+    <link rel="stylesheet" type="text/css" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css">
+  </noscript>
+
+
+    <link rel="canonical" href="https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid" />
+
+
+
+</head>
+<body >
+
+
+  <div class="article-page" id="article-page">
+
+      <pre class="article-details" id="article-details">7189714</pre>
+
+  </div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+ 7189714
+THIS IS SOUP <!DOCTYPE html>
+<html lang="en">
+<head itemscope="" itemtype="http://schema.org/WebPage" prefix="og: http://ogp.me/ns#">
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<!-- Mobile properties -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.google-analytics.com" rel="preconnect"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" rel="stylesheet" type="text/css"/>
+<title>7189714</title>
+<!-- Favicons -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" rel="shortcut icon" type="image/ico"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" rel="icon" type="image/png"/>
+<!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png" rel="apple-touch-icon-precomposed"/>
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png" rel="apple-touch-icon-precomposed" sizes="72x72"/>
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png" rel="apple-touch-icon-precomposed" sizes="114x114"/>
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png" rel="apple-touch-icon-precomposed" sizes="144x144"/>
+<!-- For Pinger + Google Optimize integration (NS-820) -->
+<meta content="" name="ncbi_sg_optimize_id"/>
+<!-- Mobile browser address bar color -->
+<meta content="#20558a" name="theme-color"/>
+<!-- Preserve the Referrer when going from HTTPS to HTTP -->
+<meta content="origin-when-cross-origin" name="referrer"/>
+<!-- Logging params: Pinger defaults -->
+<meta content="pubmed" name="ncbi_app"/>
+<meta content="pubmed" name="ncbi_db"/>
+<meta content="BDFF00010138D7D500001D268DB69172.1.m_2" name="ncbi_phid"/>
+<meta content="https://www.ncbi.nlm.nih.gov/stat" name="ncbi_pinger_stat_url"/>
+<meta content="literature" name="log_category"/>
+<meta content="pubmed" name="ncbi_cost_center"/>
+<!-- Logging params: Pinger custom -->
+<meta content="pmid" name="ncbi_pdid"/>
+<meta content="retrieve" name="log_op"/>
+<meta content="7189714" name="uid"/>
+<meta content="7189714" name="ncbi_uid"/>
+<!-- Social meta tags for unfurling urls -->
+<meta content="7189714" name="description"/><meta content="index,nofollow,noarchive" name="robots"/><meta content="7189714" property="og:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid"
+ property="og:url"/><meta content="7189714" property="og:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image"/><meta content="https://cdn.ncbi.nlm.
+nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image:secure_url"/><meta content="website" property="og:type"/><meta content="PubMed" property="og:site_name"/><meta content="pubmed.ncbi.nlm.nih.gov"
+name="twitter:domain"/><meta content="summary" name="twitter:card"/><meta content="7189714" name="twitter:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid" name="twitter:url"/><meta cont
+ent="7189714" name="twitter:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" name="twitter:image"/><meta content="7189714" itemprop="name"/><meta content="https://
+pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid" itemprop="url"/><meta content="7189714" itemprop="description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" itemprop="image"/>
+
+<!-- OpenSearch XML -->
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" rel="search" title="PubMed search" type="application/opensearchdescription+xml"/>
+<!-- Disables severely broken elements when no JS -->
+<noscript>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css" rel="stylesheet" type="text/css"/>
+</noscript>
+<link href="https://pubmed.ncbi.nlm.nih.gov/7189714/?format=pmid" rel="canonical"/>
+</head>
+<body>
+<div class="article-page" id="article-page">
+<pre class="article-details" id="article-details">7189714</pre>
+</div>
+</body>
+</html>
+
+THIS IS ID 7189714
+THIS IS PMID 7189714
+EUREKAAAA
+usa API?
+https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid
+Ho trovato l'ID? <!DOCTYPE html>
+
+
+
+
+<html lang="en" >
+<head  itemscope itemtype="http://schema.org/WebPage"  prefix="og: http://ogp.me/ns#" >
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile properties -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <link rel="preconnect" href="https://cdn.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.ncbi.nlm.nih.gov">
+  <link rel="preconnect" href="https://www.google-analytics.com">
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" type="text/css">
+
+
+  <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" type="text/css">
+
+
+
+
+
+
+    <link rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" type="text/css">
+
+
+
+
+
+    <title>673087</title>
+
+
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" type="image/ico" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" />
+  <link rel="icon" type="image/png" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" />
+
+  <!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" />
+
+  <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+  <link rel="apple-touch-icon-precomposed" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png">
+  <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png">
+  <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png">
+  <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png">
+
+
+  <!-- For Pinger + Google Optimize integration (NS-820) -->
+  <meta name="ncbi_sg_optimize_id" content="">
+
+  <!-- Mobile browser address bar color -->
+  <meta name="theme-color" content="#20558a">
+
+  <!-- Preserve the Referrer when going from HTTPS to HTTP -->
+  <meta name="referrer" content="origin-when-cross-origin">
+
+  <!-- Logging params: Pinger defaults -->
+
+
+    <meta name="ncbi_app" content="pubmed" />
+
+
+
+    <meta name="ncbi_db" content="pubmed" />
+
+
+
+
+
+    <meta name="ncbi_phid" content="3DFF00018EE8084500002E20708F535C.1.m_2" />
+
+
+
+    <meta name="ncbi_pinger_stat_url" content="https://www.ncbi.nlm.nih.gov/stat" />
+
+
+
+    <meta name="log_category" content="literature" />
+
+
+
+    <meta name="ncbi_cost_center" content="pubmed" />
+
+
+
+
+  <!-- Logging params: Pinger custom -->
+
+    <meta name="ncbi_pdid" content="pmid" />
+
+    <meta name="log_op" content="retrieve" />
+
+    <meta name="uid" content="673087" />
+
+    <meta name="ncbi_uid" content="673087" />
+
+
+
+
+  <!-- Social meta tags for unfurling urls -->
+
+<meta name="description" content="673087"><meta name="robots" content="index,nofollow,noarchive"><meta property="og:title" content="673087"><meta property="og:url" content="https://pubmed.ncbi.nlm.nih.gov/673087/?
+format=pmid"><meta property="og:description" content="673087"><meta property="og:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:image:secure_url" content="
+https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta property="og:type" content="website"><meta property="og:site_name" content="PubMed"><meta name="twitter:domain" content="pubmed.ncbi.nlm.
+nih.gov"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="673087"><meta name="twitter:url" content="https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid"><meta name="twitter:descripti
+on" content="673087"><meta name="twitter:image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png"><meta itemprop="name" content="673087"><meta itemprop="url" content="https://pubmed.nc
+bi.nlm.nih.gov/673087/?format=pmid"><meta itemprop="description" content="673087"><meta itemprop="image" content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png">
+
+
+  <!-- OpenSearch XML -->
+  <link rel="search" type="application/opensearchdescription+xml" href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" title="PubMed search">
+
+  <!-- Disables severely broken elements when no JS -->
+  <noscript>
+    <link rel="stylesheet" type="text/css" href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css">
+  </noscript>
+
+
+    <link rel="canonical" href="https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid" />
+
+
+
+</head>
+<body >
+
+
+  <div class="article-page" id="article-page">
+
+      <pre class="article-details" id="article-details">673087</pre>
+
+  </div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+ 673087
+THIS IS SOUP <!DOCTYPE html>
+<html lang="en">
+<head itemscope="" itemtype="http://schema.org/WebPage" prefix="og: http://ogp.me/ns#">
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<!-- Mobile properties -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.ncbi.nlm.nih.gov" rel="preconnect"/>
+<link href="https://www.google-analytics.com" rel="preconnect"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.35e8b192ea09.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.452c70ce66f7.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/CACHE/css/output.73ccd7b43a36.css" rel="stylesheet" type="text/css"/>
+<title>673087</title>
+<!-- Favicons -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.ico" rel="shortcut icon" type="image/ico"/>
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon.png" rel="icon" type="image/png"/>
+<!-- 192x192, as recommended for Android
+  http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
+  -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-57.png" rel="apple-touch-icon-precomposed"/>
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-72.png" rel="apple-touch-icon-precomposed" sizes="72x72"/>
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-114.png" rel="apple-touch-icon-precomposed" sizes="114x114"/>
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link href="https://cdn.ncbi.nlm.nih.gov/coreutils/nwds/img/favicons/favicon-144.png" rel="apple-touch-icon-precomposed" sizes="144x144"/>
+<!-- For Pinger + Google Optimize integration (NS-820) -->
+<meta content="" name="ncbi_sg_optimize_id"/>
+<!-- Mobile browser address bar color -->
+<meta content="#20558a" name="theme-color"/>
+<!-- Preserve the Referrer when going from HTTPS to HTTP -->
+<meta content="origin-when-cross-origin" name="referrer"/>
+<!-- Logging params: Pinger defaults -->
+<meta content="pubmed" name="ncbi_app"/>
+<meta content="pubmed" name="ncbi_db"/>
+<meta content="3DFF00018EE8084500002E20708F535C.1.m_2" name="ncbi_phid"/>
+<meta content="https://www.ncbi.nlm.nih.gov/stat" name="ncbi_pinger_stat_url"/>
+<meta content="literature" name="log_category"/>
+<meta content="pubmed" name="ncbi_cost_center"/>
+<!-- Logging params: Pinger custom -->
+<meta content="pmid" name="ncbi_pdid"/>
+<meta content="retrieve" name="log_op"/>
+<meta content="673087" name="uid"/>
+<meta content="673087" name="ncbi_uid"/>
+<!-- Social meta tags for unfurling urls -->
+<meta content="673087" name="description"/><meta content="index,nofollow,noarchive" name="robots"/><meta content="673087" property="og:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid" pr
+operty="og:url"/><meta content="673087" property="og:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" property="og:image"/><meta content="https://cdn.ncbi.nlm.nih.
+gov/pubmed/persistent/pubmed-meta-image.png" property="og:image:secure_url"/><meta content="website" property="og:type"/><meta content="PubMed" property="og:site_name"/><meta content="pubmed.ncbi.nlm.nih.gov" name
+="twitter:domain"/><meta content="summary" name="twitter:card"/><meta content="673087" name="twitter:title"/><meta content="https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid" name="twitter:url"/><meta content="6
+73087" name="twitter:description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" name="twitter:image"/><meta content="673087" itemprop="name"/><meta content="https://pubmed.n
+cbi.nlm.nih.gov/673087/?format=pmid" itemprop="url"/><meta content="673087" itemprop="description"/><meta content="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/pubmed-meta-image.png" itemprop="image"/>
+<!-- OpenSearch XML -->
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/persistent/opensearch.xml" rel="search" title="PubMed search" type="application/opensearchdescription+xml"/>
+<!-- Disables severely broken elements when no JS -->
+<noscript>
+<link href="https://cdn.ncbi.nlm.nih.gov/pubmed/d8399cad-ae60-401d-9eeb-8c7b65ac3d6f/core/no-script.css" rel="stylesheet" type="text/css"/>
+</noscript>
+<link href="https://pubmed.ncbi.nlm.nih.gov/673087/?format=pmid" rel="canonical"/>
+</head>
+<body>
+<div class="article-page" id="article-page">
+<pre class="article-details" id="article-details">673087</pre>
+</div>
+</body>
+</html>
+
+THIS IS ID 673087
+THIS IS PMID 673087
+EUREKAAAA
+F.
+======================================================================
+FAIL: test_pmid_is_valid (index.test.02_identifiermanager.IdentifierManagerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\02_identifiermanager.py", line 131, in test_pmid_is_valid
+    self.assertFalse(pm_nofile.is_valid(self.invalid_pmid_1))
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.765s
+
+FAILED (failures=1)
+
+C:\Users\arimoretti\Documents\GitHub>
+
+                </pre>
+            </code>
+        </div>
       </div>
     </div>
   </div>

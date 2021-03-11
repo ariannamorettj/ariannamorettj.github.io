@@ -3112,9 +3112,49 @@ OK
         
         <h2>Graphs serialization (g1 and g2 in 05_citationstorer)</h2>
         <p>Use n-triple to print the serialization</p>
+        <h3>Plugin serializers</h3>
+        <p>These serializers are available in default RDFLib, you can use them by passing the name to a graph’s serialize() method:</p>
+        <div class="codebg">
+            <code>
+                <pre>
+                graph.serialize(format='n3')
+                </pre>
+            </code>
+        </div>
+        <h3>rdflib.compare.isomorphic(graph1, graph2)</h3>
+        <p>Compare graph for equality. Uses an algorithm to compute unique hashes which takes bnodes into account. Examples:</p>
+        <div class="bgcode">
+            <code>
+                <pre>
+                >>> g1 = Graph().parse(format='n3', data='''
+...     @prefix : <http://example.org/ns#> .
+...     <http://example.org> :rel <http://example.org/a> .
+...     <http://example.org> :rel <http://example.org/b> .
+...     <http://example.org> :rel [ :label "A bnode." ] .
+... ''')
+>>> g2 = Graph().parse(format='n3', data='''
+...     @prefix ns: <http://example.org/ns#> .
+...     <http://example.org> ns:rel [ ns:label "A bnode." ] .
+...     <http://example.org> ns:rel <http://example.org/b>,
+...             <http://example.org/a> .
+... ''')
+>>> isomorphic(g1, g2)
+True
+
+>>> g3 = Graph().parse(format='n3', data='''
+...     @prefix : <http://example.org/ns#> .
+...     <http://example.org> :rel <http://example.org/a> .
+...     <http://example.org> :rel <http://example.org/b> .
+...     <http://example.org> :rel <http://example.org/c> .
+... ''')
+>>> isomorphic(g1, g3)
+False
+                </pre>
+            </code>
+        </div>
         
         
-        
+        <p>Sources: <a href="https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.compare.IsomorphicGraph">https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.compare.IsomorphicGrap</a>, <a href="https://rdflib.readthedocs.io/en/stable/plugin_serializers.html">https://rdflib.readthedocs.io/en/stable/plugin_serializers.html</a></p>
         
         
         

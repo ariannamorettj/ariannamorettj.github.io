@@ -3333,7 +3333,51 @@ FAILED (failures=1)
               <li>Check isomorphism between the two graph, and try to understand why do they differ</li>
               <li>Manage oci extension in order to manage pmid</li>
           </ul>
-          
+        
+        <h2>05_citationstorer.py - Check isomorphism between the two graph</h2>
+        <h3>Save serializations of the graphs in nt format</h3>
+        <div class="codebg">
+            <code>
+                <pre>
+        g1.serialize("rdf1.nt", format='nt')
+        g2.serialize("rdf2.nt", format='nt')
+                </pre>
+            </code>
+        </div>
+        
+        <h3>Sort lines of the two files</h3>
+        <p>sortcsv.py</p>
+        <div class="codebg">
+            <code>
+                <pre>
+f= open("rdf1.txt","w+")
+with open("rdf1.nt", 'r') as r:
+    for line in sorted(r):
+        print(line, end='')
+        f.write(line)
+
+f= open("rdf2.txt","w+")
+with open("rdf2.nt", 'r') as r:
+    for line in sorted(r):
+        print(line, end='')
+        f.write(line)
+                </pre>
+            </code>
+        </div>
+        
+        <h3>Compare the two text file to see in which point the triples differ</h3>
+        <p>Using <a href="https://text-compare.com/">https://text-compare.com/</a></p>
+        <div class="codebg">
+            <code>
+                <pre>
+                </pre>
+            </code>
+        </div>
+        
+        
+        
+        
+        
         <h2>valid_pmid.csv + 02_identifiermanager.py correction</h2>
         <h3>02_identifiermanager.py (pmid extension)</h3>
         <div class="codebg">

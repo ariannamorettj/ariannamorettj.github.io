@@ -3333,6 +3333,34 @@ FAILED (failures=1)
               <li>Check isomorphism between the two graph, and try to understand why do they differ</li>
               <li>Manage oci extension in order to manage pmid</li>
           </ul>
+          
+        <h2>oci.py extension</h2>
+        <p>Extend oci so to handle pmids (for now only dois are). Since pmids are already numeric strings, both encoding and decoding functions have to be skipped.</p>
+        
+        <div class="codebg">
+            <code>
+                <pre>
+    def __decode(self, s):
+        if match( "^[1-9]\d*$", s) is not None:
+            return s
+        else:
+            result = []
+
+            for code in findall("(9*[0-8][0-9])", s):
+                if code in self.lookup:
+                    result.append(self.lookup[code])
+                else:
+                    result.append(code)
+            return "10." + "".join(result)
+
+    def __decode_inverse(self, doi):
+        if match( "^[1-9]\d*$", doi) is not None: #pmid:?
+            return doi
+        else:
+            return self.__match_str_to_lookup(doi.replace("10.", ""))
+                </pre>
+            </code>
+        </div>
         
         <h2>05_citationstorer.py - Check isomorphism between the two graph</h2>
         <h3>Save serializations of the graphs in nt format</h3>
@@ -3367,9 +3395,15 @@ with open("rdf2.nt", 'r') as r:
         
         <h3>Compare the two text file to see in which point the triples differ</h3>
         <p>Using <a href="https://text-compare.com/">https://text-compare.com/</a></p>
+        <p>The following triple is not present in the second generted text file:</p>
+
         <div class="codebg">
+        
             <code>
                 <pre>
+                
+                <https://w3id.org/oc/index/coci/ci/02001000002361927283705040000-02001000002361927283705030002> <http://purl.org/spar/cito/hasCitationTimeSpan> "P6M"^^<http://www.w3.org/2001/XMLSchema#duration> .
+                
                 </pre>
             </code>
         </div>
@@ -3528,7 +3562,12 @@ class IdentifierManagerTest(unittest.TestCase):
                 </pre>
             </code>
         </div>
-
+        
+        <h2>Issues</h2>
+        <ul>
+            <li>Is "encode function" == __decode_inverse?</li>
+            <li>__decode_inverse(self, doi) --> Should "doi" parameter be left as it is or its name should be changed to be generally referable to both pmids and dois?</li>
+        </ul>
       </div>
     </div>
   </div>

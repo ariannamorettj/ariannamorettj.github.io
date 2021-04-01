@@ -3609,11 +3609,123 @@ the second identifier is the identifier for the cited bibliographic resource.</p
         <h2>oci.py extension</h2>
         <p>Extend oci so to handle pmids (and correct previous wrong extension). Since pmids are already numeric strings, both encoding and decoding functions have to be skipped (they both are specific for dois).</p>
         
-        <h2>Issues</h2>
-        <ul>
-            <li></li>
-            <li></li>
-        </ul>
+        <h3>APIManager class</h3>
+        <div class="codebg">
+            <code>
+                <pre>
+class APIManager(object):
+    doi_type = "doi"
+    pmid_type = "pmid"
+                </pre>
+            </code>
+        </div>
+        
+        <div class="codebg">
+            <code>
+                <pre>
+    def __decode(self, s):
+        result = []
+
+        for code in findall("(9*[0-8][0-9])", s):
+            if code in self.lookup:
+                result.append(self.lookup[code])
+            else:
+                result.append(code)
+
+        return "10." + "".join(result)
+
+    def __decode_inverse(self, doi):
+        return self.__match_str_to_lookup(doi.replace("10.", ""))
+
+    def get_oci(self, doi_1, doi_2, prefix, id_type):
+        if id_type == APIManager.doi_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, self.__decode_inverse(doi_1), prefix, self.__decode_inverse(doi_2)) 
+            return self.oci
+        elif id_type == APIManager.pmid_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, doi_1, doi_2)
+            return self.oci
+        else:
+            raise Exception("Only DOI or PMID can be handled")
+
+                </pre>
+            </code>
+        </div>
+        
+        <p>Note: I'm not sure doi_type and pmid_type were to be defined inside Citation class or not. However, reading the notes of last meeting I thought I was supposed to make a new class, defining the two class variables in it.</p>
+        <p>A second point which is not clear to me is the necessity to assign a string to the two variables, and the API function in this specific case. Should I import is_valid from pmidmanager (and the correspective from doimanager) or something similar to check the validity of what is passed as parameter in get_oci or the function of the id_type is conceived as a pattern matching (i.e. to verify the presence of the prefix string to understand if the user passed a doi or a pmid? ) </p>
+        <p>Last question about this issue: get_oci parameters should be changed into something more neutral like "id_1", "id_2"?</p>
+        
+                <div class="codebg">
+            <code>
+                <pre>
+    class OCIManager(object):
+    def __init__(self, oci_string=None, lookup_file=None, conf_file=None, doi_1=None, doi_2=None, prefix=""):
+        self.is_valid = None
+        self.messages = []
+        self.f = {
+            "decode": self.__decode,
+            "encode": quote,
+            "join": OCIManager.__join,
+            "shape": OCIManager.__shape,
+            "remove": OCIManager.__remove,
+            "normdate": OCIManager.__normdate,
+            "datestrings": OCIManager.__datestrings,
+            "api": OCIManager.__call_api,
+            "avoid_prefix_removal": OCIManager.__avoid_prefix_removal
+        }
+        self.lookup = {}
+        self.inverse_lookup = {}
+        self.lookup_file = lookup_file
+        self.lookup_code = -1
+        if self.lookup_file is not None:
+            if exists(self.lookup_file):
+                with open(self.lookup_file, 'r', encoding="utf8") as f:
+                    lookupcsv_reader = DictReader(f)
+                    code = -1
+                    for row in lookupcsv_reader:
+                        self.lookup[row["code"]] = row["c"]
+                        self.inverse_lookup[row["c"]] = row["code"]
+                        code = int(row['code'])
+                    self.lookup_code = code
+            else:
+                with open(self.lookup_file, 'w', encoding="utf8") as f:
+                    f.write('"c","code"')
+        else:
+            self.add_message("__init__", W, "No lookup file has been found (path: '%s')." % lookup_file)
+        self.conf = None
+        if conf_file is not None and exists(conf_file):
+            with open(conf_file, encoding="utf8") as f:
+                self.conf = load(f)
+        else:
+            self.add_message("__init__", W, "No configuration file has been found (path: '%s')." % conf_file)
+
+        if oci_string:
+            self.oci = oci_string.lower().strip()
+        elif doi_1 and doi_2:
+            self.oci = self.get_oci(doi_1, doi_2, prefix, id_type) #HERE!
+        else:
+            self.oci = None
+            self.add_message("__init__", W, "No OCI specified!")
+                </pre>
+            </code>
+        </div>
+        
+        <p>I added the id_type parameter also in the get_oci call inside the OCIManager class, was it correct?</p>
+        
+        
+        <h2>cnc.py integrations and issues</h2>
+        <h3>APIManager import</h3>
+        
+        <div class="codebg">
+            <code>
+                <pre>
+                from index.citation.oci import OCIManager, Citation, APIManager
+                </pre>
+            </code>
+        </div>
+        <h3>Prefix issue</h3>
+        <p>I have a doubt about this part of the code: prefix is a necessary part of the oci structure, but at the same time all PMIDs should come from the same provider. The answer should be "they will have all the same prefix" but just to be sure I ask you if it is necessary that also pmids get a prefix (since in the opposite case also this part of cnc should be modified to handle the case in which the prefix is null or something similar) </p>
+
       </div>
     </div>
   </div>

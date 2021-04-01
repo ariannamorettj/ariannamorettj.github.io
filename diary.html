@@ -3317,7 +3317,7 @@ FAILED (failures=1)
   </div>
   
   <div class="card">
-    <div class="card-header" id="headingSeven">
+    <div class="card-header" id="headingEight">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
           Week #8 (03-11-21)
@@ -3561,6 +3561,68 @@ class IdentifierManagerTest(unittest.TestCase):
       </div>
     </div>
   </div>
+  
+  
+    <div class="card">
+    <div class="card-header" id="headingNine">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+          Week #9 (03-18-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseNine" class="collapse" aria-labelledby="headingNine" data-parent="#accordion">
+      <div class="card-body">
+      
+        <h2>To do:</h2>
+          <ul>
+              <li>read the paper about oci</li>
+              <li>have a look at the conversion table in opencitations/oci/blob/master/lookup.csv</li>
+              <li>update issue about Test 05_citationstorer fail</li>
+              <li>chek up files and notes on them -- check (and fix): cnc 05_citationstorer + 04_oci</li>
+              <li>start analysing cnc and try to understand how does cnc work and what is used in this part of the software, in order to figure out whether some parts of the code can be in contrast with the PMID structure to be integrated</li>
+          </ul>
+        
+        <h2>Conversion Table</h2>
+        <h3><a href="https://github.com/opencitations/oci/blob/master/lookup.csv"></a>lookup.csv</h3>
+        <p><strong>https://github.com/opencitations/oci/blob/master/lookup.csv</strong></p>
+        <p>Here there is a table created in order to map the whole character conversion oci-doi (for OCIs coming from DOIs). The structure presents on the left a character and on the right the code identifying that character. All the codes are composed of at least 2 digits. This is the case of the most common characters, which are the alphanumeric ones. Then, the more the characters gets particular, the more "9" digits we find at the beginning of their mapping codes. The aim is to have an unique numeric identifier for each character. In the case of DOIs, which are not composed of digits only, we need such a conversion, which instead is not necessary in the case citing and cited ids are already expressed as sequences of only digits (which is PMIDs case). </p>
+        
+        <h2>Read paper</h2>
+        <a href="documenti/open%20citation%20+%20open%20citation%20identifier%20.docx">Summary "Open Citation" + "Open Citation Identifier"</a>
+        <p>In each OCI, the first identifier is the identifier for the citing bibliographic resource, while
+the second identifier is the identifier for the cited bibliographic resource.</p>
+        <p>E.g.: <strong>0200102030405-0200102030406</strong> -> in both parts "0200" is a prefix. </p>
+        <p>Considering a citations database, each OCI referring to one of the citations within that database must contain:</p>
+
+        <ul>
+            <li><strong>prefix</strong>: specifying the supplier’s database where the citation is recorded</li>
+            <li><strong>numerical identifiers of the database</strong>, or the encoded numerical equivalent of
+(part of) the identifiers used in that database, uniquely identifying citing and cited entity.</li>
+        </ul>
+
+        
+        <h2>Update Issue on Open Citations</h2>
+        <p>Issue updated: <a href="https://github.com/opencitations/index/issues/7">https://github.com/opencitations/index/issues/7</a></p>
+        
+        
+        <h2>oci.py extension</h2>
+        <p>Extend oci so to handle pmids (and correct previous wrong extension). Since pmids are already numeric strings, both encoding and decoding functions have to be skipped (they both are specific for dois).</p>
+        
+        <h2>Issues</h2>
+        <ul>
+            <li></li>
+            <li></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
 </div>
 
 

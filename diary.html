@@ -3734,6 +3734,670 @@ class APIManager(object):
   
   
   
+    <div class="card">
+    <div class="card-header" id="headingTen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+          Week #10 (04-01-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTen" class="collapse" aria-labelledby="headingTen" data-parent="#accordion">
+      <div class="card-body">
+          
+          <h2>oci.py : get_oci(self, doi_1, doi_2, prefix, id_type)</h2>
+          <h3>Change argument name to "id_1" and "id_2" instead of doi_1 and doi_2</h3>
+          <p>Since no more only dois are handled, correct the arguments names</p>
+
+          <h3>Create the 2 class variables doi_type and pmid_type in OCIManager</h3>
+          <p>Since no more only dois are handled, create the two class variables to define the type of id</p>
+
+          <div class="codebg">
+            <code>
+                <pre>
+                
+class OCIManager(object):
+    doi_type = "doi"
+    pmid_type = "pmid"
+    def __init__(self, oci_string=None, lookup_file=None, conf_file=None, id_1=None, id_2=None, prefix="", id_type=""): 
+        self.is_valid = None
+        self.messages = []
+        self.f = {
+            "decode": self.__decode,
+            "encode": quote,
+            "join": OCIManager.__join,
+            "shape": OCIManager.__shape,
+            "remove": OCIManager.__remove,
+            "normdate": OCIManager.__normdate,
+            "datestrings": OCIManager.__datestrings,
+            "api": OCIManager.__call_api,
+            "avoid_prefix_removal": OCIManager.__avoid_prefix_removal
+        }
+        self.lookup = {}
+        self.inverse_lookup = {}
+        self.lookup_file = lookup_file
+        self.lookup_code = -1
+        if self.lookup_file is not None:
+            if exists(self.lookup_file):
+                with open(self.lookup_file, 'r', encoding="utf8") as f:
+                    lookupcsv_reader = DictReader(f)
+                    code = -1
+                    for row in lookupcsv_reader:
+                        self.lookup[row["code"]] = row["c"]
+                        self.inverse_lookup[row["c"]] = row["code"]
+                        code = int(row['code'])
+                    self.lookup_code = code
+            else:
+                with open(self.lookup_file, 'w', encoding="utf8") as f:
+                    f.write('"c","code"')
+        else:
+            self.add_message("__init__", W, "No lookup file has been found (path: '%s')." % lookup_file)
+        self.conf = None
+        if conf_file is not None and exists(conf_file):
+            with open(conf_file, encoding="utf8") as f:
+                self.conf = load(f)
+        else:
+            self.add_message("__init__", W, "No configuration file has been found (path: '%s')." % conf_file)
+
+        if oci_string:
+            self.oci = oci_string.lower().strip()
+        elif id_1 and id_2:
+            self.oci = self.get_oci(id_1, id_2, prefix, id_type)
+        else:
+            self.oci = None
+            self.add_message("__init__", W, "No OCI specified!")
+
+     
+     (...)
+     
+     
+     def get_oci(self, id_1, id_2, prefix, id_type):
+        if id_type == OCIManager.doi_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, self.__decode_inverse(id_1), prefix, self.__decode_inverse(id_2))
+            return self.oci
+        elif id_type == OCIManager.pmid_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, (id_1), prefix, (id_2))
+        else:
+            raise Exception("Only DOI or PMID can be handled")
+    
+    (...)
+                
+                </pre>
+            </code>
+          </div>
+          
+          <h2>04_oci test: Add the missing id_type argument where needed</h2>
+          
+          <h3>oci.py</h3>
+          
+          <div class="codebg">
+            <code>
+                <pre>
+                
+                    def __init__(self,
+                 oci, citing_url, citing_pub_date,
+                 cited_url, cited_pub_date,
+                 creation, timespan,
+                 prov_entity_number, prov_agent_url, source, prov_date,
+                 service_name, id_type, id_shape, citation_type,
+                 journal_sc=False, author_sc=False,
+                 prov_inv_date=None, prov_description=None, prov_update=None):
+        self.oci = oci
+        self.id_type = "doi" if OCIManager.doi_type else "pmid" #qui?? ininfluente?
+        self.citing_url = citing_url
+        self.cited_url = cited_url
+        self.duration = Citation.check_duration(timespan)
+        self.creation_date = Citation.check_date(creation[:10] if creation else creation)
+        self.author_sc = "yes" if author_sc else "no"
+        self.journal_sc = "yes" if journal_sc else "no"
+        self.citing_pub_date = Citation.check_date(citing_pub_date[:10] if citing_pub_date else citing_pub_date)
+        self.cited_pub_date = Citation.check_date(cited_pub_date[:10] if cited_pub_date else cited_pub_date)
+
+        self.citation_type = citation_type if citation_type in CITATION_TYPES else DEFAULT_CITATION_TYPE
+
+        # Set uniformly all the time-related data in a citation
+        if self.citing_pub_date is None and self.creation_date is not None:
+            self.citing_pub_date = self.creation_date
+        if self.cited_pub_date is None and self.creation_date is not None and self.duration:
+            self.cited_pub_date = Citation.check_date(Citation.get_date(self.creation_date, self.duration))
+        if self.cited_pub_date is None:
+            self.duration = None
+
+        if self.contains_years(self.citing_pub_date):
+            self.creation_date = self.citing_pub_date[:10]
+
+            if self.contains_years(self.cited_pub_date):
+                citing_contains_months = Citation.contains_months(self.citing_pub_date)
+                cited_contains_months = Citation.contains_months(self.cited_pub_date)
+                citing_contains_days = Citation.contains_days(self.citing_pub_date)
+                cited_contains_days = Citation.contains_days(self.cited_pub_date)
+
+                # Handling incomplete dates
+                citing_complete_pub_date = self.creation_date
+                cited_complete_pub_date = self.cited_pub_date[:10]
+                if citing_contains_months and not cited_contains_months:
+                    cited_complete_pub_date += self.citing_pub_date[4:7]
+                elif not citing_contains_months and cited_contains_months:
+                    citing_complete_pub_date += self.cited_pub_date[4:7]
+                if citing_contains_days and not cited_contains_days:
+                    cited_complete_pub_date += self.citing_pub_date[7:]
+                elif not citing_contains_days and cited_contains_days:
+                    citing_complete_pub_date += self.cited_pub_date[7:]
+
+                try:
+                    citing_pub_datetime = parse(citing_complete_pub_date, default=DEFAULT_DATE)
+                except ValueError:  # It is not a leap year
+                    citing_pub_datetime = parse(citing_complete_pub_date[:7] + "-28", default=DEFAULT_DATE)
+                try:
+                    cited_pub_datetime = parse(cited_complete_pub_date, default=DEFAULT_DATE)
+                except ValueError:  # It is not a leap year
+                    cited_pub_datetime = parse(cited_complete_pub_date[:7] + "-28", default=DEFAULT_DATE)
+
+                delta = relativedelta(citing_pub_datetime, cited_pub_datetime)
+                self.duration = Citation.get_duration(
+                    delta,
+                    citing_contains_months and cited_contains_months,
+                    citing_contains_days and cited_contains_days)
+
+        self.prov_entity_number = prov_entity_number
+        self.prov_agent_url = prov_agent_url
+        self.prov_date = Citation.check_datetime(prov_date)
+        self.service_name = service_name
+        self.prov_inv_date = Citation.check_datetime(prov_inv_date)
+        self.prov_description = Citation.check_string(prov_description)
+        self.prov_update = Citation.check_string(prov_update)
+
+        self.id_type = id_type #qui ininfluente? entrano in contrasto?
+        self.id_shape = id_shape
+
+        self.source = source
+        if "[[citing]]" in self.source:
+            self.source = self.source.replace("[[citing]]", quote(self.get_id(citing_url)))
+        elif "[[cited]]" in self.source:
+            self.source = self.source.replace("[[cited]]", quote(self.get_id(cited_url)))
+        
+        (...)
+                </pre>
+            </code>
+          </div>
+          
+          <p><strong>NOTES:</strong> There is a double definition of id_type in init, could they contrast each other? One was defined before my additions. Further, the whether the id_type is defined or not in this part of the code seems to be ininfluent, as long as it is defined in 07_cnc CreateNewCitationsTest.setUp</p>
+          
+          <div class="codebg">
+            <code>
+                <pre>
+                
+            "normdate": OCIManager.__normdate,
+            "datestrings": OCIManager.__datestrings,
+            "api": OCIManager.__call_api,
+            "avoid_prefix_removal": OCIManager.__avoid_prefix_removal
+        }
+        self.lookup = {}
+        self.inverse_lookup = {}
+        self.lookup_file = lookup_file
+        self.lookup_code = -1
+        if self.lookup_file is not None:
+            if exists(self.lookup_file):
+                with open(self.lookup_file, 'r', encoding="utf8") as f:
+                    lookupcsv_reader = DictReader(f)
+                    code = -1
+                    for row in lookupcsv_reader:
+                        self.lookup[row["code"]] = row["c"]
+                        self.inverse_lookup[row["c"]] = row["code"]
+                        code = int(row['code'])
+                    self.lookup_code = code
+            else:
+                with open(self.lookup_file, 'w', encoding="utf8") as f:
+                    f.write('"c","code"')
+        else:
+            self.add_message("__init__", W, "No lookup file has been found (path: '%s')." % lookup_file)
+        self.conf = None
+        if conf_file is not None and exists(conf_file):
+            with open(conf_file, encoding="utf8") as f:
+                self.conf = load(f)
+        else:
+            self.add_message("__init__", W, "No configuration file has been found (path: '%s')." % conf_file)
+
+        if oci_string:
+            self.oci = oci_string.lower().strip()
+        elif id_1 and id_2:
+            self.oci = self.get_oci(id_1, id_2, prefix, id_type)
+        else:
+            self.oci = None
+            self.add_message("__init__", W, "No OCI specified!")
+                </pre>
+            </code>
+          </div>
+          
+          
+          <div class="codebg">
+            <code>
+                <pre>
+    def get_oci(self, id_1, id_2, prefix, id_type):
+        if id_type == OCIManager.doi_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, self.__decode_inverse(id_1), prefix, self.__decode_inverse(id_2))
+            return self.oci
+        elif id_type == OCIManager.pmid_type:
+            self.oci = "oci:%s%s-%s%s" % (prefix, (id_1), prefix, (id_2))
+        else:
+            raise Exception("Only DOI or PMID can be handled")
+                </pre>
+            </code>
+          </div>
+          
+          <div class="codebg">
+            <code>
+                <pre>
+    def __execute_query(self, citing_entity, cited_entity):
+        result = None
+
+        if self.conf is None:
+            self.add_message("__execute_query", E, "No citations can be retrieved since no configuration "
+                                                   "file has been specified.")
+        else:
+            try:
+                i = iter(self.conf["services"])
+                while result is None:
+                    item = next(i)
+                    name, query, api, tp, use_it, preprocess, prefix, id_type, id_shape, citation_type = \
+                        item.get("name"), item.get("query"), item.get("api"), item.get("tp"), item.get("use_it"), \
+                        item["preprocess"] if "preprocess" in item else [], \
+                        item["prefix"] if "prefix" in item else [], item.get("id_type"), item.get("id_shape"), \
+                        item["citation_type"] if "citation_type" in item else DEFAULT_CITATION_TYPE
+
+                    if use_it == "yes" and all(sub("^(%s).+$" % PREFIX_REGEX, "\\1", p) in prefix
+                                               for p in (citing_entity, cited_entity)):
+                        citing = sub("^%s(.+)$" % PREFIX_REGEX, "\\1", citing_entity)
+                        cited = sub("^%s(.+)$" % PREFIX_REGEX, "\\1", cited_entity)
+
+                        for f_name in preprocess:
+                            citing = self.f[f_name](citing)
+                            cited = self.f[f_name](cited)
+
+                        if tp is None:
+                            rest_query = api.replace("[[CITING]]", quote(citing)).replace("[[CITED]]", quote(cited))
+                            structured_res, type_res = OCIManager.__call_api(rest_query)
+                            if structured_res:
+                                result = self.__read_api_data(structured_res, type_res, query.get("citing"),
+                                                              citing, cited, api), \
+                                         self.__read_api_data(structured_res, type_res, query.get("cited"),
+                                                              citing, cited, api), \
+                                         self.__read_api_data(structured_res, type_res, query.get("citing_date"),
+                                                              citing, cited, api), \
+                                         self.__read_api_data(structured_res, type_res, query.get("cited_date"),
+                                                              citing, cited, api), \
+                                         self.__read_api_data(structured_res, type_res, query.get("creation"),
+                                                              citing, cited, api), \
+                                         self.__read_api_data(structured_res, type_res, query.get("timespan"),
+                                                              citing, cited, api), \
+                                         rest_query, name, id_type, id_shape, citation_type
+                        else:
+                            sparql = SPARQLWrapper(tp)
+                            sparql_query = sub("\\[\\[CITED\\]\\]", cited, sub("\\[\\[CITING\\]\\]", citing, query))
+
+                            sparql.setQuery(sparql_query)
+                            sparql.setReturnFormat(JSON)
+                            q_res = sparql.query().convert()["results"]["bindings"]
+                            if len(q_res) > 0:
+                                answer = q_res[0]
+                                result = answer["citing"]["value"], \
+                                         answer["cited"]["value"], \
+                                         answer["citing_date"]["value"] if "citing_date" in answer else None, \
+                                         answer["cited_date"]["value"] if "cited_date" in answer else None, \
+                                         answer["creation"]["value"] if "creation" in answer else None, \
+                                         answer["timespan"]["value"] if "timespan" in answer else None, \
+                                         tp + "?query=" + quote(sparql_query), name, id_type, id_shape, citation_type
+
+            except StopIteration:
+                pass  # No nothing
+
+        return result
+                </pre>
+            </code>
+          </div>
+          
+          <p><strong>NOTE:</strong>This part also refers to the other id_type variable (the originally defined one, which actually I think had more or less the same meaning of the one defined now to differentiate pmids from dois). May it be a problem?</p>
+          
+          
+          <div class="codebg">
+            <code>
+                <pre>
+    def get_citation_object(self):
+        if self.validate():
+            citing_entity_local_id = sub("^oci:([0-9]+)-([0-9]+)$", "\\1", self.oci)
+            cited_entity_local_id = sub("^oci:([0-9]+)-([0-9]+)$", "\\2", self.oci)
+
+            res = self.__execute_query(citing_entity_local_id, cited_entity_local_id)
+            if res is not None:
+                citing_url, cited_url, full_citing_pub_date, full_cited_pub_date, \
+                creation, timespan, sparql_query_url, name, id_type, id_shape, citation_type = res
+
+                citation = Citation(self.oci,
+                                    citing_url, full_citing_pub_date,
+                                    cited_url, full_cited_pub_date,
+                                    creation, timespan,
+                                    URL, sparql_query_url,
+                                    datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+                                    name, id_type, id_shape, citation_type)
+
+                return citation
+            else:
+                self.add_message("get_citation_object", I, "No citation data have been found for the OCI '%s'. "
+                                                           "While the OCI specified is syntactically valid, "
+                                                           "it is possible that it does not identify any "
+                                                           "citation at all." % self.oci)
+        else:
+            self.add_message("get_citation_object", E, "No citation data can be returned since the OCI specified is "
+                                                       "not valid.")
+
+                </pre>
+            </code>
+          </div>
+          
+          <h3>cnc.py</h3>
+          
+          <div class="codebg">
+            <code>
+                <pre>
+def execute_workflow(idbaseurl, baseurl, python, pclass, input, doi_file, date_file,
+                     orcid_file, issn_file, orcid, lookup, data, prefix, id_type, agent, source, service, verbose, no_api): #qui?
+    # Create the support file for handling information about bibliographic resources
+    valid_doi, id_date, id_orcid, id_issn = create_csv(doi_file, date_file, orcid_file, issn_file)
+
+    doi_manager = DOIManager(valid_doi, use_api_service=not no_api)
+    crossref_rf = CrossrefResourceFinder(
+        date=id_date, orcid=id_orcid, issn=id_issn, doi=valid_doi, use_api_service=not no_api)
+    datacite_rf = DataCiteResourceFinder(
+        date=id_date, orcid=id_orcid, issn=id_issn, doi=valid_doi, use_api_service=not no_api)
+    orcid_rf = ORCIDResourceFinder(
+        date=id_date, orcid=id_orcid, issn=id_issn, doi=valid_doi,
+        use_api_service=True if orcid is not None and not no_api else False, key=orcid)
+
+    rf_handler = ResourceFinderHandler([crossref_rf, datacite_rf, orcid_rf])
+    return extract_citations(idbaseurl, baseurl, python, pclass, input, lookup, data, prefix, id_type,
+                             agent, source, service, verbose, doi_manager, rf_handler) #qui?
+                
+                </pre>
+            </code>
+          </div>
+          
+          
+          
+          
+          <div class="codebg">
+            <code>
+                <pre>
+def extract_citations(idbaseurl, baseurl, python, pclass, input, lookup, data, prefix, id_type,
+                      agent, source, service, verbose, doi_manager, rf_handler, oci_to_do=None): #qui???
+    BASE_URL = idbaseurl
+    DATASET_URL = baseurl + "/" if not baseurl.endswith("/") else baseurl
+
+    oci_manager = OCIManager(lookup_file=lookup)
+    exi_ocis = CSVManager.load_csv_column_as_set(data + sep + "data", "oci")  # TODO: we need to specify carefully the dir, eg by adding an additional flag to distinguish between the files belonging to a particular process, and it should be aligned with the storer.
+    if oci_to_do is not None:
+        oci_to_do.difference_update(exi_ocis)
+    cit_storer = CitationStorer(data, DATASET_URL)
+
+    citations_already_present = 0
+    new_citations_added = 0
+    error_in_dois_existence = 0
+
+    cs = import_citation_source(python, pclass, input)
+    next_citation = cs.get_next_citation_data()
+
+    while next_citation is not None:
+        citing, cited, created, timespan, journal_sc, author_sc = next_citation
+        print("the id type is:", id_type) #for now it works with doi only
+        oci = oci_manager.get_oci(citing, cited, prefix, id_type)
+        oci_noprefix = oci.replace("oci:", "")
+        if oci_noprefix not in exi_ocis and (oci_to_do is None or oci_noprefix in oci_to_do):
+            if doi_manager.is_valid(citing) and doi_manager.is_valid(cited):
+                if created is None:
+                    citing_date = rf_handler.get_date(citing)
+                else:
+                    citing_date = created
+                cited_date = rf_handler.get_date(cited)
+                if journal_sc is None or type(journal_sc) is not bool:
+                    journal_sc = rf_handler.share_issn(citing, cited)
+                if author_sc is None or type(author_sc) is not bool:
+                    author_sc = rf_handler.share_orcid(citing, cited)
+
+                if created is not None and timespan is not None:
+                    cit = Citation(oci,#primo parametro passato
+                                   BASE_URL + quote(citing), None,
+                                   BASE_URL + quote(cited), None,
+                                   created, timespan,
+                                   1, agent, source, datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+                                   service, id_type, BASE_URL + "([[XXX__decode]])", "reference",
+                                   journal_sc, author_sc,
+                                   None, "Creation of the citation", None) #NOTA: qui ho sostituito il precedente "doi" con id_type
+                else:
+                    cit = Citation(oci,
+                                   BASE_URL + quote(citing), citing_date,
+                                   BASE_URL + quote(cited), cited_date,
+                                   None, None,
+                                   1, agent, source, datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+                                   service, "doi", BASE_URL + "([[XXX__decode]])", "reference",
+                                   journal_sc, author_sc,
+                                   None, "Creation of the citation", None)
+
+                cit_storer.store_citation(cit)
+
+                if verbose:
+                    print("Create citation data for '%s' between ID '%s' and ID '%s'" % (oci, citing, cited)) #changed DOI in ID
+                new_citations_added += 1
+                exi_ocis.add(oci_noprefix)
+            else:
+                if verbose:
+                    print("WARNING: some IDs, among '%s' and '%s', do not exist" % (citing, cited)) #changed DOI in ID
+                error_in_dois_existence += 1
+            if oci_to_do is not None:
+                oci_to_do.remove(oci_noprefix)
+        else:
+            if verbose:
+                print("WARNING: the citation between ID '%s' and ID '%s' has been already processed" % #changed DOI in ID
+                      (citing, cited))
+            citations_already_present += 1
+
+        next_citation = cs.get_next_citation_data()
+
+    return new_citations_added, citations_already_present, error_in_dois_existence
+
+
+if __name__ == "__main__":
+    arg_parser = ArgumentParser("cnc.py (Create New Citations",
+                                description="This tool allows one to take a series of entity-to-entity"
+                                            "citation data, and to store it according to CSV used by"
+                                            "the OpenCitations Indexes so as to be added to an Index. It uses"
+                                            "several online services to check several things to create the"
+                                            "final CSV/TTL/Scholix files.")
+
+    arg_parser.add_argument("-p", "--python", required=True,
+                            help="The input Python file implementing the class index.citation.CitationSource "
+                                 "which is responsible for parsing and passing all the input entity-to-entity"
+                                 "citations.")
+    arg_parser.add_argument("-c", "--pclass", required=True,
+                            help="The name of the class implementing the class index.citation.CitationSource "
+                                 "which is responsible for parsing and passing all the input entity-to-entity"
+                                 "citations.")
+    arg_parser.add_argument("-i", "--input", required=True,
+                            help="The input file/directory to provide as input of the specified input "
+                                 "Python file (using -p).")
+    arg_parser.add_argument("-d", "--data", required=True,
+                            help="The directory containing all the CSV files already added in the Index, "
+                                 "including data and provenance files.")
+    arg_parser.add_argument("-o", "--orcid", default=None,
+                            help="ORCID API key to be used to query the ORCID API.")
+    arg_parser.add_argument("-l", "--lookup", required=True,
+                            help="The lookup table that must be used to produce OCIs.")
+    arg_parser.add_argument("-b", "--baseurl", required=True, default="",
+                            help="The base URL of the dataset")
+    arg_parser.add_argument("-ib", "--idbaseurl", required=True, default="",
+                            help="The base URL of the identifier of citing and cited entities, if any")
+    arg_parser.add_argument("-doi", "--doi_file", default=None,
+                            help="The file where the valid and invalid DOIs are stored.") #how do I handle this?
+    arg_parser.add_argument("-date", "--date_file", default=None,
+                            help="The file that maps id of bibliographic resources with their publication date.")
+    arg_parser.add_argument("-orcid", "--orcid_file", default=None,
+                            help="The file that maps id of bibliographic resources with the ORCID of its authors.")
+    arg_parser.add_argument("-issn", "--issn_file", default=None,
+                            help="The file that maps id of bibliographic resources with the ISSN of the journal "
+                                 "they have been published in.")
+    arg_parser.add_argument("-px", "--prefix", default="",
+                            help="The '0xxx0' prefix to use for creating the OCIs.")
+    arg_parser.add_argument("-a", "--agent", required=True, default="https://w3id.org/oc/index/prov/pa/1",
+                            help="The URL of the agent providing or processing the citation data.")
+    arg_parser.add_argument("-s", "--source", required=True,
+                            help="The URL of the source from where the citation data have been extracted.")
+    arg_parser.add_argument("-sv", "--service", required=True,
+                            help="The name of the service that will made available the citation data.")
+    arg_parser.add_argument("-v", "--verbose", action="store_true", default=False,
+                            help="Print the messages on screen.")
+    arg_parser.add_argument("-na", "--no_api", action="store_true", default=False,
+                            help="Tell the tool explicitly not to use the APIs of the various finders.")
+    arg_parser.add_argument("-pn", "--process_number", default=1, type=int,
+                            help="The number of parallel process to run for working on the creation of citations.")
+
+    args = arg_parser.parse_args()
+    n_processes = args.process_number
+    if n_processes minore = 1: #nb I changed the symbol in "minore" in order to avoid breaking the code in brackets 
+        new_citations_added, citations_already_present, error_in_dois_existence = \
+            execute_workflow(args.idbaseurl, args.baseurl, args.python, args.pclass, args.input, args.doi_file,
+                             args.date_file, args.orcid_file, args.issn_file, args.orcid, args.lookup, args.data,
+                             args.prefix, args.id_type, args.agent, args.source, args.service, args.verbose, args.no_api) #qui?
+    else:  # Run in parallel
+        pass  # TODO: do things
+
+    print("\n# Summary\n"
+          "Number of new citations added to the OpenCitations Index: %s\n"
+          "Number of citations already present in the OpenCitations Index: %s\n"
+          "Number of citations with invalid DOIs: %s" %
+          (new_citations_added, citations_already_present, error_in_dois_existence))
+
+                </pre>
+            </code>
+          </div>
+          
+          <h2>Add type information to the six (now seven) elements tuple returned by get_next_citation_data</h2>
+          
+          <p> I modified the returned tuple in NationalInstituteHealthSource, CrossrefCitationSource and CrowdSourcedCitationSource, defining in the first case the variable id_type = OCIManager.pmid_type and in the other two cases id_type = OCIManager.doi_type and then adding id_type as seventh and last element of the returned tuple.</p>
+          
+          <h2>Extend 07_cnc</h2>
+          <p>The extension is to be implemented, I just started checking 07_cnc and making some consideration to be discussed. I commented my consideration in several points of the code</p>
+          
+          <div class="codebg">
+            <code>
+                <pre>
+import unittest
+from os import sep, remove
+from index.cnc import execute_workflow
+from os.path import exists
+from index.citation.citationsource import CSVFileCitationSource
+from index.citation.oci import Citation, OCIManager
+from urllib.parse import quote
+from index.storer.citationstorer import CitationStorer
+from glob import glob
+from shutil import rmtree
+
+
+class CreateNewCitationsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.idbaseurl = "http://dx.doi.org/"
+        self.baseurl = "https://w3id.org/oc/index/coci/"
+        self.python = "index%scitation%scitationsource.py" % (sep, sep)
+        self.pclass = "CSVFileCitationSource"
+        self.input = "index%stest_data%scitations_partial.csv" % (sep, sep)
+        self.doi_file = "index%stest_data%scnc_valid_doi.csv" % (sep, sep)
+        self.pmid_file = "index%stest_data%scnc_valid_pmid.csv" % (sep, sep) #here extension for pmid
+        self.date_file = "index%stest_data%scnc_id_date.csv" % (sep, sep)
+        self.orcid_file = "index%stest_data%scnc_id_orcid.csv" % (sep, sep)
+        self.issn_file = "index%stest_data%scnc_id_issn.csv" % (sep, sep)
+        self.orcid = None
+        self.lookup = "index%stest_data%slookup_full.csv" % (sep, sep)
+        self.data = "index%stest_data%stmp_workflow" % (sep, sep)
+        self.prefix = "020" #here the prefix is for dois only.
+        # How can I specify an alternative prefix? maybe using where required an if-else structure to
+        # identify the id type and then using the doi prefix where needed and pmid prefix in other cases?
+        # All this specifying two distict prefix variables.
+        self.id_type = "doi" if OCIManager.doi_type else "pmid" #Tests are passed but for dois only. does it
+        #depend on this part of the code or on the lack of a further specification of id_type in other parts of the code?
+        #i.e.: is  --"doi" if OCIManager.doi_type else "pmid"-- the problem or should I look for it somewhere else?
+        #hint: deve passare solo doi perché qui si gestiscono solo doi
+        self.agent = "https://w3id.org/oc/index/prov/ra/1"
+        self.source = "https://api.crossref.org/works/[[citing]]"
+        self.service = "OpenCitations Index: COCI" #Should I modify this part too?
+        self.verbose = True
+        self.no_api = False
+
+        self.citation_list = self.__load_citations("index%stest_data%scitations_data.csv" % (sep, sep),
+                                                   "index%stest_data%scitations_prov.csv" % (sep, sep))
+        self.data_path = self.data + sep + "data" + sep + "**" + sep + "*.csv"
+        self.prov_path = self.data + sep + "prov" + sep + "**" + sep + "*.csv"
+
+        if exists(self.data):
+            rmtree(self.data)
+
+    def __load_citations(self, data, prov):
+        return CitationStorer.load_citations_from_file(data, prov, baseurl="http://dx.doi.org/", #NOTE: The base url is no more this one only!
+            service_name=self.service, id_type="doi",
+            id_shape="http://dx.doi.org/([[XXX__decode]])", citation_type=None) #NOTE: discuss id_shape
+
+    def __citations_csv(self, origin_citation_list, stored_citation_list):
+        l1 = [cit.get_citation_csv() for cit in origin_citation_list]
+        l2 = [cit.get_citation_csv() for cit in stored_citation_list]
+        self.assertEqual(len(l1), len(l2))
+        self.assertEqual(set(l1), set(l2))
+
+    def __test_citations(self):
+        data_csv = glob(self.data_path, recursive=True)
+        prov_csv = glob(self.prov_path, recursive=True)
+        self.assertEqual(len(data_csv), 1)
+        self.assertEqual(len(prov_csv), 1)
+        self.__citations_csv(self.citation_list, self.__load_citations(data_csv[0], prov_csv[0]))
+
+    def test_execute_workflow(self): #Probably an alternative version for PMIDs is to be implemented. In case
+        #only one function differentiating between id types is mantained, the argument self.id_type is ok, otherwise
+        #ot is probably to be specified in one case "doi" and "pmid" in the other. Same for doi_file/pmid_file
+        new_citations_added, citations_already_present, error_in_dois_existence = \
+            execute_workflow(self.idbaseurl, self.baseurl, self.python, self.pclass, self.input, self.doi_file,
+                             self.date_file, self.orcid_file, self.issn_file, self.orcid, self.lookup, self.data,
+                             self.prefix, self.id_type, self.agent, self.source, self.service, self.verbose, self.no_api)#qui???
+        self.assertEqual(new_citations_added, 6)
+        self.assertEqual(citations_already_present, 0)
+        self.assertEqual(error_in_dois_existence, 0)
+        self.__test_citations()
+
+        new_citations_added, citations_already_present, error_in_dois_existence = \
+            execute_workflow(self.idbaseurl, self.baseurl, self.python, self.pclass, self.input, self.doi_file,
+                             self.date_file, self.orcid_file, self.issn_file, self.orcid, self.lookup, self.data,
+                             self.prefix, self.id_type, self.agent, self.source, self.service, self.verbose, self.no_api) #qui?
+        self.assertEqual(new_citations_added, 0)
+        self.assertEqual(citations_already_present, 6)
+        self.assertEqual(error_in_dois_existence, 0)
+        self.__test_citations()
+
+                
+                </pre>
+            </code>
+          </div>
+          
+          <h2>Issues</h2>
+          <ul>
+
+              <li>Discuss cnc.py execute_workflow: it works with doi only. Discuss the format of the support csv file built in this step</li>
+              <li>Discuss cnc.py arg_parser.add_argument("-doi", "--doi_file"... and how to manage the pmid version</li>
+              <li>07_cnc. Discuss how to test the cases in which the id is not a doi. </li>
+          </ul>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
   
 </div>
 

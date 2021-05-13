@@ -4825,14 +4825,44 @@ if __name__ == "__main__": #since this if is outside citations, I have to specif
           
           <h2>citationsource.py</h2>
           <ul>
-            <li><strong>class CSVFileCitationSource(DirCitationSource):</strong> When it is instantiated in the test, it is necessary to pass in input also the id type related to the CSV in question.It is necessary to create a csv file also for PMID. </li>
+            <li><strong>class CSVFileCitationSource(DirCitationSource):</strong> When it is instantiated in the test, it is necessary to pass in input also the id type related to the CSV in question. It is necessary to create a csv file also for PMID. </li>
             <li><strong>return citing, cited, created, timespan, journal_sc, author_sc, self.id_type</strong>: It is necessary to pass the self.id_type correctly; the function will return it as it was passed by the user.</li>
+          </ul>
+          <p>During the last meeting, the function __init__(self, src, id_type=None) in CitationSource was extended so to let the user specify the id_type of the citation data used in the source file: </p>
+          <div class="codebg">
+            <code>
+                <pre>
+    def __init__(self, src, id_type=None):
+        self.src = src
+        self.id_type = id_type
+                </pre>
+            </code>
+          </div>
+          <p>Accordingly, I extended the comment to the function __init__(self, src, id_type=None) in CitationSource by adding an explanation about the use of the id_type variable, similar to the one describing the variable src: <i>"""The constructor allows to associate to the variable 'src' a kind of source,
+        that will be used to retrieve citation data, and to the variable 'id_type' the
+        type of identifier used in the citation data, i.e. either DOIs or PMIDs."""</i> </p>
+        <p><strong>Note</strong>:  CitationSource(object) is the generic class that all the citationsources have to implement. It defines a constructor and a method which is not implemented, since it is to be implemented by each specific CitationSource (i.e.: the one for COCI, CROCI and NOCI).</p>
+        
+        <h3>Issues</h3>
+          <ul>
+            <li>The reason why the id_type is initialised in this way is to handle the possibility that the user doesn't specify it, is it correct?</li>
+            <li>I was asked to create a staticmethod to give the possibility to overwrite the value of the variable id_type. This was the request: "provide a staic method to change the value of that variable: set_id_type, which takes in input self, id_type (was it self.id_type??), so to overwrite the initial value. The class needs a mechanism to specify the specific type of id." However, the problem is that, first of all, I haven't a clear idea of why is this staticmethod strictly necessary: Isn't it enough to pass in input the correct id type? (i.e. id_type=OCIManager.doi_type or OCIManager.pmid_type when needed?, second, what is supposed to return this staticmethod? how should it work? In which occasions a staticmethod is necessary?)</li>
+            <li>Discuss the function of the following line of code:                 self.status_file = cur_dir + sep + ".dir_citation_source" + local_name #?
+</li>
           </ul>
           
           
           <h2>06_citationsource.py</h2>
           <ul>
             <li>check the file and transpose the notes.</li>
+          </ul>
+          <p>First of all, I divided the function test_get_next_citation_data(self) in two versions: test_get_next_citation_data_doi(self) and test_get_next_citation_data_pmid(self), accordingly with the changes to the class CitationSource(object) in citationsource.py. Now, since I am instantiating the tests for two functions of the class CSVFileCitationSource(DirCitationSource), I'll have to pass in input also the id_type. </p>
+          
+          <h3>Issues</h3>
+          <ul>
+            <li>The reason why I am passing OCIManager.doi_type and OCIManager.pmid_type as parameters of CSVFileCitationSource in the two test functions for get_next_citation_data is that the class CSVFileCitationSource(DirCitationSource) takes in input DirCitationSource(CitationSource), which takes in input CitationSource(object), where the __init__(self, src, id_type=None) function takes in input src and the id_type. Am I correct?</li>
+            <li> For now we have two versions of test_get_next_citation_data only. May it make sense the creation of two whole separate classes for the unittest? (one for pmids and one for dois, since the most of the functions should otherwise handle many conditional statements, splitting the process for dois and pmid). In this way the citations would be also stored separately. </li>
+            <li>__create_citation : Discuss how does it work in detail and understand where does it store the citations (tmp_store?, and what about the inner folder?).</li>
           </ul>
           
           <h2>cnc.py</h2>
@@ -4845,37 +4875,47 @@ if __name__ == "__main__": #since this if is outside citations, I have to specif
             <li>check the file and transpose the the notes.</li>
             <li>create the required support files.</li>
           </ul>
+          <p> I manually created the following files: citations_data_pmid.csv, citations_partial_pmid.csv, citations_prov_pmid.csv, cnc_id_date_pmid.csv, cnc_id_issn_pmid.csv, cnc_valid_pmid.csv, valid_pmid.csv. Accordingly, I updated the two testing classes. </p>
+          <p>I'd need to discuss the functioning of <strong>citationstorer</strong> and understand how does it create and fill the folders with citation files.</p>
           
           <h2>oci.py</h2>
           <ul>
-            <li>check the file and transpose the the notes.</li>
+            <li>check the file and transpose the notes.</li>
           </ul>
           
           <h2>resourcefinder.py</h2>
           <ul>
             <li>read the file so to understand how to implement the version for NIH.</li>
           </ul>
-          
+          <p> Also in this case, how to handle PMID? I implemented a class APIPMIDResourceFinder, but its just a temporary solution to be discussed. Indeed, the problem is in the ResourceFinder, since it does not handle the possibility of having an identfier which is not a doi (can it be handled like in citationsource?).</p>
           <h2>nationalinstituteofhealthresourcefinder.py</h2>
           <ul>
             <li>create the file.</li>
             <li>Use as a model the crossrefresourcefinder.py (emulate its functions)</li>
           </ul>
+          <p> I created the file with the class NationalInstituteOfHealthResourceFinder, where  i specified "https://pubmed.ncbi.nlm.nih.gov/" as API. I then took notes on where to intervene for the changes dependent on the resourcefinder updates to be implemented.</p>
           
           <h2>03_resourcefinder.py</h2>
           <ul>
             <li>update the file by adding the piece of code to test nationalinstituteofhealthresourcefinder.py</li>
           </ul>
+          <p> In order to handle also pmid, should I extend the files id_issn.csv, id_orcid.csv and id_date.csv or should I create new versions of the same files for pmid only? Further, since in the dataset we imported the citational data from this information is not provided, am I supposed to invent them? or should I just assign empty strings as values to the identifiers?</p>
+          <p> I prepared the structure of the functions test_nationalinstititeofhealth_get_orcid(self), test_nationalinstititeofhealth_get_issn(self), test_nationalinstititeofhealth_get_pub_date(self), that I'll implement when I'll know better how to structure the support files.</p>
+          
+          
+          
           
           <h2>Transcribe OpenCitations commits</h2>
           <ul>
             <li>Update the code in accordance with the commits in OpenCitations</li>
           </ul>
+          <p>The code was updated: now my local version of the software reflects the latest updates of the official Software of OpenCitations (commit :"added encoding set to utf8 everywhere")</p>
           
           <h2>DARCH intership request</h2>
           <ul>
             <li>Send the request for the intership</li>
           </ul>
+          <p>The intership request was sent, now pending approval. Details: Intership request n. 565309; notes: "Richiesta di tirocinio per lavoro di tesi già avviato, all'interno del progetto OpenCitations. L'attività si incentra sull'importazione di dati citazionali provenienti dal National Institute of Health, tra pubblicazioni identificate da PMIDs".</p>
 
       </div>
     </div>

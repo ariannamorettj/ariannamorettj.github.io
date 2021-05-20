@@ -5310,76 +5310,6 @@ class ApiIDResourceFinder(ResourceFinder): #The name of the class was changed
 
             return csv_manager.get_value(id)
 
-class ApiDOIResourceFinder(ResourceFinder):
-    """This is the abstract class that must be implemented by any resource finder
-        for a particular service which is based on DOI retrieving via HTTP REST APIs
-        (Crossref, DataCite). It provides basic methods that are be used for
-        implementing the main methods of the ResourceFinder abstract class."""
-
-    # The following four methods are those ones that should be implemented in
-    # the concrete subclasses of this abstract class.
-    def _get_date(self, json_obj):
-        pass
-
-    def _get_issn(self, json_obj):
-        return set()
-
-    def _get_orcid(self, json_obj):
-        return set()
-
-    def _call_api(self, id_full):
-        pass
-
-    # The implementation of the following methods is strictly dependent on the actual
-    # implementation of the previous three methods, since they strictly reuse them
-    # for returning the result.
-    def get_orcid(self, id_string):
-        return self._get_item(id_string, self.orcid)
-
-    def get_pub_date(self, id_string):
-        return self._get_item(id_string, self.date)
-
-    def get_container_issn(self, id_string):
-        return self._get_item(id_string, self.issn)
-
-    def is_valid(self, id_string, id_type):
-        if id_type is OCIManager.doi_type:
-            return self.dm.is_valid(id_string)
-        elif id_type is OCIManager.pmid_type:
-            return self.pm.is_valid(id_string)
-        else:
-            print("The id_type specified is not compliant")
-
-
-    def normalise(self, id_string, id_type):
-        if id_type is OCIManager.doi_type:
-            return self.dm.normalise(id_string, include_prefix=True)
-        elif id_type is OCIManager.pmid_type:
-            return self.pm.normalise(id_string, include_prefix=True)
-        else:
-            print("The id_type specified is not compliant")
-
-    def _get_item(self, id_entity, csv_manager):
-        if self.is_valid(id_entity):
-            id = self.normalise(id_entity)
-
-            if csv_manager.get_value(id) is None:
-                json_obj = self._call_api(id)
-
-                if json_obj is not None:
-                    for issn in self._get_issn(json_obj):
-                        self.issn.add_value(id, issn)
-
-                    if self.date.get_value(id) is None:
-                        pub_date = self._get_date(json_obj)
-                        if pub_date is not None:
-                            self.date.add_value(id, pub_date)
-
-                    for orcid in self._get_orcid(json_obj):
-                        self.orcid.add_value(id, orcid)
-
-            return csv_manager.get_value(id)
-
 
 class ResourceFinderHandler(object):
     """This class allows one to use multiple resource finders at the same time
@@ -5437,7 +5367,14 @@ class ResourceFinderHandler(object):
             </code>
           </div>
           
-          
+          <h2>citationstorer.py</h2>
+          <p>The overall structure seems to be neutral and thus reusable also for pmid. However,  load_citations_from_file is initialised with the following arguments: (data_f_path, prov_f_path=None, oci="04201-04201", baseurl="",
+                                 service_name="CitationStorer", id_type="doi",
+                                 id_shape="http://dx.doi.org/([[XXX__decode]])",
+                                 citation_type="", agent="", source=""). Should I implement an alternative static method to call when it's up to PMIDs or just generalise these parameters? </p>
+                                 
+         <h2>05_citationstorer.py</h2>
+         <p>How to handle the test? If there is the necessity to create a separate class? The procedure is pretty much neutral (except for some passages in which it would be useful to specify the id_type among the parameters), However, if the paths for doi data and pmid data have to stay separated, in which way should the SetUp be handled? </p>
 
 
       </div>

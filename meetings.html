@@ -587,6 +587,78 @@ C:\Users\arimoretti\Documents\GitHub>
     </div>
   </div>
   
+  <div class="card">
+    <div class="card-header" id="headingFourteen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
+          Week #14 (05-20-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFourteen" class="collapse" aria-labelledby="headingFourteen" data-parent="#accordion">
+      <div class="card-body">
+          
+          <h2>nihresourcefinder.py</h2>
+          <p>The kind of material from which we have to retrieve the information handled by a resource finder has this shape:</p>
+          <div class="codebg">
+              <code>
+                  <pre>
+PMID- 123456
+OWN - NLM
+STAT- MEDLINE
+DCOM- 19750625
+LR  - 20160920
+IS  - 0030-0632 (Print)
+IS  - 0030-0632 (Linking)
+VI  - 78
+IP  - 4
+DP  - 1975 Apr
+TI  - [The laboratory in programs for enteric infection control].
+PG  - 318-22
+FAU - Grados, O B
+AU  - Grados OB
+LA  - spa
+PT  - Journal Article
+TT  - El laboratorio en los programas de control de las infecciones entéricas.
+PL  - United States
+TA  - Bol Oficina Sanit Panam
+JT  - Boletin de la Oficina Sanitaria Panamericana. Pan American Sanitary Bureau
+JID - 0414762
+SB  - IM
+MH  - Bacterial Infections/*prevention and control
+MH  - Bacteriological Techniques
+MH  - *Communicable Disease Control/methods
+MH  - Enteritis/*prevention and control
+MH  - Health Planning
+MH  - *Laboratories
+MH  - Peru
+EDAT- 1975/04/01 00:00
+MHDA- 1975/04/01 00:01
+CRDT- 1975/04/01 00:00
+PHST- 1975/04/01 00:00 [pubmed]
+PHST- 1975/04/01 00:01 [medline]
+PHST- 1975/04/01 00:00 [entrez]
+PST - ppublish
+SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
+                  </pre>
+              </code>
+              <h3>Issues to handle</h3>
+              <ul>
+                  <li>Find a documentation and understand the acronyms</li>
+                  <li>Understand which piece of information refers to the date of publication</li>
+                  <li>Handle the double ISSN (printing and linking) </li>
+                  <li>The ORCID is missing, so just pass this step and return an empty set in any case</li>
+              </ul>
+              
+              <h3>Meeting: Various notes</h3>
+              <h4>NIHResourceFinder._get_orcid(self,pmid)</h4>
+              <p>This function is going to return in any case an empty set: the NIH doesn't provide any information about the ORCID of an article. For this, the Orcid Finder will be used, so to try to retrieve the information somewhere else.</p>
+              <h4>NIHResourceFinder._get_issn</h4>
+              <p>In the case the test is not passed, doublecheck the indetation of the lines containing the information about the ISSN: it is possible that the number of spaces needs to be changed.</p>
+      </div>
+    </div>
+  </div>
+  
       
       
       

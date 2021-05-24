@@ -5381,6 +5381,956 @@ class ResourceFinderHandler(object):
     </div>
   </div>
   
+  <div class="card">
+    <div class="card-header" id="headingFourteen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
+          Week #14 (05-20-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFourteen" class="collapse" aria-labelledby="headingFourteen" data-parent="#accordion">
+      <div class="card-body">
+          
+          <h2>nihresourcefinder.py</h2>
+          <h3>Documentation on PubMed Format</h3>
+          <p> Information on the acronyms used in PubMed Format is provided at <a href="https://pubmed.ncbi.nlm.nih.gov/help/#understanding-docsum">https://pubmed.ncbi.nlm.nih.gov/help/#understanding-docsum</a> </p>
+          <p><i>The PubMed Format tags table defines the data tags that compose the PubMed format. The tags are presented in alphabetical order. Some of the tags (e.g., CIN) are not mandatory and therefore will not be found in every record. Other tags (e.g., AU, MH, and RN) may occur multiple times in one record. You can download records in PubMed format as a text file (.txt) or as an .nbib file for exporting into citation management software programs.</i></p>
+          
+          <table tabindex="0">
+      <tbody><tr>
+        <th scope="colgroup" colspan="3">PubMed Format tags</th>
+      </tr>
+      <tr>
+        <th scope="col">Tag</th>
+        <th scope="col">Name</th>
+        <th scope="col">Description</th>
+      </tr>
+      <tr>
+        <td>AB</td>
+        <td>Abstract</td>
+        <td>English language abstract taken directly from the published article</td>
+      </tr>
+      <tr>
+        <td>AD</td>
+        <td>Affiliation</td>
+        <td>Author or corporate author addresses</td>
+      </tr>
+      <tr>
+        <td>AID</td>
+        <td>Article Identifier</td>
+        <td>Article ID values supplied by the publisher may include the pii (controlled publisher identifier), doi (digital object identifier), or book accession</td>
+      </tr>
+      <tr>
+        <td>AU</td>
+        <td>Author</td>
+        <td>Authors</td>
+      </tr>
+      <tr>
+        <td>BTI</td>
+        <td>Book Title</td>
+        <td>Book Title</td>
+      </tr>
+      <tr>
+        <td>CI</td>
+        <td>Copyright Information</td>
+        <td>Copyright statement provided by the publisher</td>
+      </tr>
+      <tr>
+        <td>CIN</td>
+        <td>Comment In</td>
+        <td>Reference containing a comment about the article</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>Corporate Author</td>
+        <td>Corporate author or group names with authorship responsibility</td>
+      </tr>
+      <tr>
+        <td>COI</td>
+        <td>Conflict of Interest</td>
+        <td>Conflict of interest statement</td>
+      </tr>
+      <tr>
+        <td>CON</td>
+        <td>Comment On</td>
+        <td>Reference upon which the article comments</td>
+      </tr>
+      <tr>
+        <td>CP</td>
+        <td>Chapter</td>
+        <td>Book chapter</td>
+      </tr>
+      <tr>
+        <td>CRDT</td>
+        <td>Create Date</td>
+        <td>The date the citation record was first created</td>
+      </tr>
+      <tr>
+        <td>CRF</td>
+        <td>Corrected and republished from</td>
+        <td>Final, correct version of an article</td>
+      </tr>
+      <tr>
+        <td>CRI</td>
+        <td>Corrected and republished in</td>
+        <td>Original article that was republished in corrected form</td>
+      </tr>
+      <tr>
+        <td>CTDT</td>
+        <td>Contribution Date</td>
+        <td>Book contribution date</td>
+      </tr>
+      <tr>
+        <td>CTI</td>
+        <td>Collection Title</td>
+        <td>Collection Title</td>
+      </tr>
+      <tr>
+        <td>DCOM</td>
+        <td>Completion Date</td>
+        <td>NLM internal processing completion date</td>
+      </tr>
+      <tr>
+        <td>DDIN</td>
+        <td>Dataset described in</td>
+        <td>Citation for the primary article resulting from a dataset</td>
+      </tr>
+      <tr>
+        <td>DRIN</td>
+        <td>Dataset use reported in</td>
+        <td>Citation for an article that uses a dataset from another scientific article</td>
+      </tr>
+      <tr>
+        <td>DEP</td>
+        <td>Date of Electronic Publication</td>
+        <td>Electronic publication date</td>
+      </tr>
+      <tr>
+        <td>DP</td>
+        <td>Publication Date</td>
+        <td>The date the article was published</td>
+      </tr>
+      <tr>
+        <td>DRDT</td>
+        <td>Date Revised</td>
+        <td>Book Revision Date</td>
+      </tr>
+      <tr>
+        <td>ECF</td>
+        <td>Expression of Concern For</td>
+        <td>Reference containing an expression of concern for an article</td>
+      </tr>
+      <tr>
+        <td>ECI</td>
+        <td>Expression of Concern In</td>
+        <td>Cites the original article for which there is an expression of concern</td>
+      </tr>
+      <tr>
+        <td>EDAT</td>
+        <td>Entrez Date</td>
+        <td>The date the citation was added to PubMed; the date is set to the publication date if added more than 1 year after the date published</td>
+      </tr>
+      <tr>
+        <td>EFR</td>
+        <td>Erratum For</td>
+        <td>Cites the original article needing the correction</td>
+      </tr>
+      <tr>
+        <td>EIN</td>
+        <td>Erratum In</td>
+        <td>Reference containing a published erratum to the article</td>
+      </tr>
+      <tr>
+        <td>ED</td>
+        <td>Editor</td>
+        <td>Book editors</td>
+      </tr>
+      <tr>
+        <td>EN</td>
+        <td>Edition</td>
+        <td>Book edition</td>
+      </tr>
+      <tr>
+        <td>FAU</td>
+        <td>Full Author Name</td>
+        <td>Full Author Names</td>
+      </tr>
+      <tr>
+        <td>FED</td>
+        <td>Full Editor Name</td>
+        <td>Full Editor Names</td>
+      </tr>
+      <tr>
+        <td>FIR</td>
+        <td>Full Investigator</td>
+        <td>Full investigator or collaborator name</td>
+      </tr>
+      <tr>
+        <td>FPS</td>
+        <td>Full Personal Name as Subject</td>
+        <td>Full Personal Name of the subject of the article</td>
+      </tr>
+      <tr>
+        <td>GN</td>
+        <td>General Note</td>
+        <td>Supplemental or descriptive information related to the document</td>
+      </tr>
+      <tr>
+        <td>GR</td>
+        <td>Grant Number</td>
+        <td>Research grant numbers, contract numbers, or both that designate financial support by any agency of the US PHS or other funding agencies</td>
+      </tr>
+      <tr>
+        <td>GS</td>
+        <td>Gene Symbol</td>
+        <td>Abbreviated gene names (used 1991 through 1996)</td>
+      </tr>
+      <tr>
+        <td>IP</td>
+        <td>Issue</td>
+        <td>The number of the issue, part, or supplement of the journal in which the article was published</td>
+      </tr>
+      <tr>
+        <td>IR</td>
+        <td>Investigator</td>
+        <td>Investigator or collaborator</td>
+      </tr>
+      <tr>
+        <td>IRAD</td>
+        <td>Investigator Affiliation</td>
+        <td>Investigator or collaborator addresses</td>
+      </tr>
+      <tr>
+        <td>IS</td>
+        <td>ISSN</td>
+        <td>International Standard Serial Number of the journal</td>
+      </tr>
+      <tr>
+        <td>ISBN</td>
+        <td>ISBN</td>
+        <td>International Standard Book Number</td>
+      </tr>
+      <tr>
+        <td>JID</td>
+        <td>NLM Unique ID</td>
+        <td>Unique journal ID in the NLM catalog of books, journals, and audiovisuals</td>
+      </tr>
+      <tr>
+        <td>JT</td>
+        <td>Full Journal Title</td>
+        <td>Full journal title from NLM cataloging data</td>
+      </tr>
+      <tr>
+        <td>LA</td>
+        <td>Language</td>
+        <td>The language in which the article was published</td>
+      </tr>
+      <tr>
+        <td>LID</td>
+        <td>Location ID</td>
+        <td>The pii or doi that serves the role of pagination</td>
+      </tr>
+      <tr>
+        <td>LR</td>
+        <td>Modification Date</td>
+        <td>Citation last revision date</td>
+      </tr>
+      <tr>
+        <td>MH</td>
+        <td>MeSH Terms</td>
+        <td>NLM Medical Subject Headings (MeSH) controlled vocabulary</td>
+      </tr>
+      <tr>
+        <td>MHDA</td>
+        <td>MeSH Date</td>
+        <td>The date MeSH terms were added to the citation. The MeSH date is the same as the Entrez date until MeSH are added</td>
+      </tr>
+      <tr>
+        <td>OAB</td>
+        <td>Other Abstract</td>
+        <td>Abstract supplied by an NLM collaborating organization</td>
+      </tr>
+      <tr>
+        <td>OABL</td>
+        <td>Other Abstract Language</td>
+        <td>Language of an abstract available from the publisher</td>
+      </tr>
+      <tr>
+        <td>OCI</td>
+        <td>Other Copyright Information</td>
+        <td>Copyright owner</td>
+      </tr>
+      <tr>
+        <td>OID</td>
+        <td>Other ID</td>
+        <td>Identification numbers provided by organizations supplying citation data</td>
+      </tr>
+      <tr>
+        <td>ORI</td>
+        <td>Original Report In</td>
+        <td>Cites the original article associated with the patient summary</td>
+      </tr>
+      <tr>
+        <td>OT</td>
+        <td>Other Term</td>
+        <td>Non-MeSH subject terms (keywords) either assigned by an organization identified by the Other Term Owner, or generated by the author and submitted by the publisher</td>
+      </tr>
+      <tr>
+        <td>OTO</td>
+        <td>Other Term Owner</td>
+        <td>Organization that may have provided the Other Term data</td>
+      </tr>
+      <tr>
+        <td>OWN</td>
+        <td>Owner</td>
+        <td>Organization acronym that supplied citation data</td>
+      </tr>
+      <tr>
+        <td>PB</td>
+        <td>Publisher</td>
+        <td>Publishers of Books &amp; Documents citations</td>
+      </tr>
+      <tr>
+        <td>PG</td>
+        <td>Pagination</td>
+        <td>The full pagination of the article</td>
+      </tr>
+      <tr>
+        <td>PHST</td>
+        <td>Publication History Status Date</td>
+        <td>Publisher supplied dates regarding the article publishing process 
+          and PubMed date stamps:
+          <ul>
+            <li>
+              received: manuscript received for review
+            </li>
+            <li>
+              revised: manuscript revised by publisher or author
+            </li>
+            <li>
+              accepted: manuscript accepted for publication
+            </li>
+            <li>
+              aheadofprint: published electronically prior to final publication
+            </li>            
+            <li>
+              entrez: PubMed Create Date [crdt]
+            </li>
+            <li>
+              pubmed: PubMed Entry Date [edat]
+            </li>
+            <li>
+              medline: PubMed MeSH Date [mhda]
+            </li>            
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>PL</td>
+        <td>Place of Publication</td>
+        <td>Journal's (country only) or book’s place of publication</td>
+      </tr>
+      <tr>
+        <td>PMCR</td>
+        <td>PMC Release</td>
+        <td>Availability of PMC article</td>
+      </tr>
+      <tr>
+        <td>PMID</td>
+        <td>PubMed Unique Identifier</td>
+        <td>Unique number assigned to each PubMed citation</td>
+      </tr>
+      <tr>
+        <td>PRIN</td>
+        <td>Partial Retraction In</td>
+        <td>Partial retraction of the article</td>
+      </tr>
+      <tr>
+        <td>PROF</td>
+        <td>Partial Retraction Of</td>
+        <td>Article being partially retracted</td>
+      </tr>
+      <tr>
+        <td>PS</td>
+        <td>Personal Name as Subject</td>
+        <td>Individual is the subject of the article</td>
+      </tr>
+      <tr>
+        <td>PST</td>
+        <td>Publication Status</td>
+        <td>Publication status</td>
+      </tr>
+      <tr>
+        <td>PT</td>
+        <td>Publication Type</td>
+        <td>The type of material the article represents</td>
+      </tr>
+      <tr>
+        <td>RF</td>
+        <td>Number of References</td>
+        <td>Number of bibliographic references for Review articles</td>
+      </tr>
+      <tr>
+        <td>RIN</td>
+        <td>Retraction In</td>
+        <td>Retraction of the article</td>
+      </tr>
+      <tr>
+        <td>RN</td>
+        <td>EC/RN Number</td>
+        <td>Includes chemical, protocol or disease terms. May also a number assigned by the Enzyme Commission or by the Chemical Abstracts Service.</td>
+      </tr>
+      <tr>
+        <td>ROF</td>
+        <td>Retraction Of</td>
+        <td>Article being retracted</td>
+      </tr>
+      <tr>
+        <td>RPF</td>
+        <td>Republished From</td>
+        <td>Article being cited has been republished or reprinted in either full or abridged form from another source</td>
+      </tr>
+      <tr>
+        <td>RPI</td>
+        <td>Republished In</td>
+        <td>Article being cited also appears in another source in either full or abridged form</td>
+      </tr>
+      <tr>
+        <td>RRI</td>
+        <td>Retracted and Republished In</td>
+        <td>Final, republished version of an article</td>
+      </tr>
+      <tr>
+        <td>RRF</td>
+        <td>Retracted and Republished From</td>
+        <td>Original article that was retracted and republished</td>
+      </tr>
+      <tr>
+        <td>SB</td>
+        <td>Subset</td>
+        <td>Journal or citation subset values representing specialized topics</td>
+      </tr>
+      <tr>
+        <td>SFM</td>
+        <td>Space Flight Mission</td>
+        <td>NASA-supplied data space flight/mission name and/or number</td>
+      </tr>
+      <tr>
+        <td>SI</td>
+        <td>Secondary Source Identifier</td>
+        <td>Identifies secondary source databanks and accession numbers of molecular sequences discussed in articles</td>
+      </tr>
+      <tr>
+        <td>SO</td>
+        <td>Source</td>
+        <td>Composite field containing bibliographic information</td>
+      </tr>
+      <tr>
+        <td>SPIN</td>
+        <td>Summary For Patients In</td>
+        <td>Cites a patient summary article</td>
+      </tr>
+      <tr>
+        <td>STAT</td>
+        <td>Status Tag</td>
+        <td>Used for internal processing at NLM</td>
+      </tr>
+      <tr>
+        <td>TA</td>
+        <td>Journal Title Abbreviation</td>
+        <td>Standard journal title abbreviation</td>
+      </tr>
+      <tr>
+        <td>TI</td>
+        <td>Title</td>
+        <td>The title of the article</td>
+      </tr>
+      <tr>
+        <td>TT</td>
+        <td>Transliterated Title</td>
+        <td>Title of the article originally published in a non-English language, in that language</td>
+      </tr>
+      <tr>
+        <td>UIN</td>
+        <td>Update In</td>
+        <td>Update to the article</td>
+      </tr>
+      <tr>
+        <td>UOF</td>
+        <td>Update Of</td>
+        <td>The article being updated</td>
+      </tr>
+      <tr>
+        <td>VI</td>
+        <td>Volume</td>
+        <td>Volume number of the journal</td>
+      </tr>
+      <tr>
+        <td>VTI</td>
+        <td>Volume Title</td>
+        <td>Book Volume Title</td>
+      </tr>
+    </tbody></table>
+    
+    
+    
+    <h3>Date of Publication</h3>
+    <p>The information about dates:</p>
+    <ul>
+        <li>CRDT: Create Date, The date the citation record was first created</li>
+        <li>DCOM: Completion Date, NLM internal processing completion date</li>
+        <li>DEP: Date of Electronic Publication, Electronic publication date</li>
+        <li>DP: Publication Date, The date the article was published</li>
+        <li>DRDT: Date Revised, Book Revision Date</li>
+        <li>EDAT: Entrez Date, The date the citation was added to PubMed; the date is set to the publication date if added more than 1 year after the date published</li>
+        <li>MHDA: MeSH Date, The date MeSH terms were added to the citation. The MeSH date is the same as the Entrez date until MeSH are added</li>
+    </ul>
+    <p>According to the documentation, DP (Date of publication) seems to be the most appropriate datum. It comes in the following format:</p>
+    <ul>
+        <li>Year: Four digits</li>
+        <li>Month: three charactes representing the month, where the first letter is capital</li>
+        <li>Day: One or two digits</li>
+    </ul>
+    <p>In order to mantain a coherent format for the dates (so that the ones retrieved from NIH keept the same style of the ones retrieved form other sources, e.g.: Crossref), I handled the data contained in DP in this way:</p>
+    <div class="codebg">
+     <code>
+        <pre>
+    def _get_date(self, txt_obj):
+        date = re.findall("^DP  - \d{4}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(([0-9])|([0-2][0-9])|([3][0-1]))$", txt_obj)
+        if date:
+            datetime_object = datetime.strptime(date, '%Y-%m-%d')
+            return datetime_object
+        else:
+            date = re.findall("^DP  - \d{4}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$", txt_obj)
+            if date:
+                datetime_object = datetime.strptime(date, '%Y-%m')
+                return datetime_object
+            else:
+                date = re.findall("^DP  - \d{4}$", txt_obj)
+                if date:
+                    datetime_object = datetime.strptime(date, '%Y')
+                    return datetime_object
+                else:
+                    return None
+        </pre>
+     </code>
+    </div>
+    
+    <h3>Api call output</h3>
+    <p>The other resource finders handle data in json format. However, in NIH the correspondant pieces of information can't be retrieved in the same way. For this reason I restructured the call_api(self, pmid_full) function, whose output is supposed to be the input for the other functions of the class (Is it correct?) </p>
+    <div class="codebg">
+        <code>
+            <pre>
+    def _call_api(self, pmid_full):
+        if not self.use_api_service:
+            return
+        pmid = self.pm.normalise(pmid_full)
+        r = get(self.api + quote(pmid) + "/?format=pubmed", headers=self.headers, timeout=30)
+        if r.status_code == 200:
+            r.encoding = "utf-8"
+            html = open(self.baseurl + pmid + "/?format=pubmed").read()
+            soup = BeautifulSoup(html)
+            mdata = soup.find(id="article-details")
+            return mdata
+            </pre>
+        </code>
+    </div>
+    
+    <h3>nihresourcefinder.py current version (Full)</h3>
+    <p> Current version of the complete structure of nihresourcefinder.py:</p>
+    <div class="codebg">
+        <code>
+            <pre>
+from index.finder.resourcefinder import ApiIDResourceFinder
+from requests import get
+from urllib.parse import quote
+from datetime import datetime
+from bs4 import BeautifulSoup
+import re
+
+class NIHResourceFinder(ApiIDResourceFinder):
+    def __init__(self, date=None, orcid=None, issn=None, pmid=None, use_api_service=True):
+        self.use_api_service = use_api_service
+        self.api = "https://pubmed.ncbi.nlm.nih.gov/"
+        self.baseurl = "https://pubmed.ncbi.nlm.nih.gov/"
+        super(NIHResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, pmid=pmid,
+                                                     use_api_service=use_api_service)
+
+    def _get_orcid(self, txt_obj):
+        result = set()
+        return result
+
+
+    def _get_issn(self, txt_obj):
+        result = set()
+        issns = re.findall("^IS  - \d{4}-\d{4}", txt_obj)
+        for issn in issns:
+            result.add(issn)
+        return result
+
+    def _get_date(self, txt_obj):
+        date = re.findall("^DP  - \d{4}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(([0-9])|([0-2][0-9])|([3][0-1]))$", txt_obj)
+        if date:
+            datetime_object = datetime.strptime(date, '%Y-%m-%d')
+            return datetime_object
+        else:
+            date = re.findall("^DP  - \d{4}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$", txt_obj)
+            if date:
+                datetime_object = datetime.strptime(date, '%Y-%m')
+                return datetime_object
+            else:
+                date = re.findall("^DP  - \d{4}$", txt_obj)
+                if date:
+                    datetime_object = datetime.strptime(date, '%Y')
+                    return datetime_object
+                else:
+                    return None
+
+
+    def _call_api(self, pmid_full):
+        if not self.use_api_service:
+            return
+        pmid = self.pm.normalise(pmid_full)
+        r = get(self.api + quote(pmid) + "/?format=pubmed", headers=self.headers, timeout=30)
+        if r.status_code == 200:
+            r.encoding = "utf-8"
+            html = open(self.baseurl + pmid + "/?format=pubmed").read()
+            soup = BeautifulSoup(html)
+            mdata = soup.find(id="article-details")
+            return mdata
+
+
+            </pre>
+        </code>
+    </div>
+    
+    <h2>03_resourcefinder.py</h2>
+    <p>I created the support files: id_issn_pmid.csv, id_date_pmid.csv, id_orcid_pmid.csv. However, I'm not sure about the way id_orcid_pmid.csv was supposed to be structured, since I had no real id-orcid match to use as example. In the end I used empty strings as orcid values for all the pmids of the support file. Would it be better to use None as value for the missing orcids? </p>
+    <h3>Support files:</h3>
+    <4h>id_issn_pmid.csv</4h>
+    <div class="codebg">
+        <code>
+            <pre>
+"id","value"
+"pmid:2942070","0003-4819"
+"pmid:1509982","0065-4299"
+"pmid:7189714","0014-4827"
+"pmid:9689714","0920-9964"
+            </pre>
+        </code>
+    </div>
+    <4h>id_date_pmid.csv</4h>
+    <div class="codebg">
+        <code>
+            <pre>
+"id","value"
+"pmid:2942070","1986-08"
+"pmid:7189714","1980-06"
+"pmid:9689714","1998-05-25"
+            </pre>
+        </code>
+    </div>
+    <4h>id_orcid_pmid.csv</4h>
+    <div class="codebg">
+        <code>
+            <pre>
+"id","value"
+"pmid:2942070",""
+"pmid:1509982",""
+"pmid:7189714",""
+"pmid:9689714",""
+            </pre>
+        </code>
+    </div>
+    
+    <h3>Added/modified pieces of code in 03_resourcefinder.py:</h3>
+    <div class="codebg">
+        <code>
+            <pre>
+class ResourceFinderTest(unittest.TestCase):
+    """This class aim at testing the methods of the class CSVManager."""
+
+    def setUp(self):
+        self.date_path = "index%stest_data%sid_date.csv" % (sep, sep)
+        self.date_path_pmid = "index%stest_data%sid_date_pmid.csv" % (sep, sep)
+        self.orcid_path = "index%stest_data%sid_orcid.csv" % (sep, sep)
+        self.orcid_path_pmid = "index%stest_data%sid_orcid_pmid.csv" % (sep, sep)
+        self.issn_path = "index%stest_data%sid_issn.csv" % (sep, sep)
+        self.issn_path_pmid = "index%stest_data%sid_issn_pmid.csv" % (sep, sep)
+        self.doi_path = "index%stest_data%svalid_doi.csv" % (sep, sep)
+        self.pmid_path = "index%stest_data%svalid_pmid.csv" % (sep, sep)
+            </pre>
+        </code>
+    </div>
+    
+    <div class="codebg">
+        <code>
+            <pre>
+    # IMPLEMENTED THE TEST FOR  NIH finder
+    def test_nationalinstititeofhealth_get_orcid(self):
+        # Do not use support files, only APIs
+        nf_1 = NIHResourceFinder()
+        self.assertIsNone(nf_1.get_orcid("7189714"))
+        self.assertIsNone(nf_1.get_orcid("1509982"))
+
+        # Do use support files, but avoid using APIs
+        nf_2 = NIHResourceFinder(orcid=CSVManager(self.orcid_path_pmid),
+                                      pmid=CSVManager(self.pmid_path), use_api_service=False)
+        self.assertIn("", nf_2.get_orcid("7189714"))
+        self.assertNotIn("", nf_2.get_orcid("1509982"))
+
+        # Do not use support files neither APIs
+        nf_3 = NIHResourceFinder(use_api_service=False)
+        self.assertIsNone(nf_3.get_orcid("7189714"))
+
+    def test_nationalinstititeofhealth_get_issn(self):
+        # Do not use support files, only APIs
+        nf_1 = NIHResourceFinder()
+        self.assertIn("0003-4819", nf_1.get_container_issn("2942070"))
+        self.assertNotIn("0003-0000", nf_1.get_container_issn("2942070"))
+
+        # Do use support files, but avoid using APIs
+        nf_2 = NIHResourceFinder(date=CSVManager(self.date_path_pmid),
+                                      pmid=CSVManager(self.pmid_path), use_api_service=False)
+        self.assertIn("0065-4299", nf_2.get_container_issn("1509982"))
+        self.assertNotIn("0065-4444", nf_2.get_container_issn("1509982"))
+
+        # Do not use support files neither APIs
+        nf_3 = NIHResourceFinder(use_api_service=False)
+        self.assertIsNone(nf_3.get_container_issn("7189714"))
+
+    def test_nationalinstititeofhealth_get_pub_date(self):
+        # Do not use support files, only APIs
+        nf_1 = NIHResourceFinder()
+        self.assertIn("1998-05-25", nf_1.get_pub_date("9689714"))
+        self.assertNotEqual("1998", nf_1.get_pub_date("9689714"))
+
+        # Do not use support files, only APIs
+        nf_2 = NIHResourceFinder(date=CSVManager(self.date_path_pmid),
+                                      pmid=CSVManager(self.pmid_path), use_api_service=False)
+        self.assertIn("1980-06", nf_2.get_pub_date("7189714"))
+        self.assertNotEqual("1980-06-22", nf_2.get_pub_date("7189714"))
+
+        # Do not use support files neither APIs
+        nf_3 = NIHResourceFinder(use_api_service=False)
+        self.assertIsNone(nf_3.get_pub_date("2942070"))
+
+            </pre>
+        </code>
+    </div>
+    
+    <p>However, the test failed:</p>
+    <div class="codebg">
+        <code>
+            <pre>
+C:\Users\arimoretti\Documents\GitHub>python -m unittest index.test.03_resourcefinder
+The id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+FThe id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+FThe id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+FThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+EThe id_type specified is not compliant
+The id_type specified is not compliant
+E
+======================================================================
+ERROR: test_crossref_get_issn (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 146, in test_crossref_get_issn
+    self.assertIn("0138-9130", cf_1.get_container_issn("10.1007/s11192-018-2988-z"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_crossref_get_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 130, in test_crossref_get_orcid
+    self.assertIn("0000-0003-0530-4305", cf_1.get_orcid("10.1007/s11192-018-2988-z"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_crossref_get_pub_date (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 162, in test_crossref_get_pub_date
+    self.assertIn("2019-01-02", cf_1.get_pub_date("10.1007/s11192-018-2988-z"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_datacite_get_issn (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 95, in test_datacite_get_issn
+    self.assertIn("2197-6775", df_1.get_container_issn("10.14763/2019.1.1389"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_datacite_get_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 78, in test_datacite_get_orcid
+    self.assertIn("0000-0001-7734-8388", df_1.get_orcid("10.5065/d6b8565d"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_datacite_get_pub_date (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 112, in test_datacite_get_pub_date
+    self.assertIn("2019-05-27", df_1.get_pub_date("10.6092/issn.2532-8816/8555"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_nationalinstititeofhealth_get_issn (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 196, in test_nationalinstititeofhealth_get_issn
+    self.assertIn("0003-4819", nf_1.get_container_issn("2942070"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_nationalinstititeofhealth_get_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 186, in test_nationalinstititeofhealth_get_orcid
+    self.assertIn("", nf_2.get_orcid("7189714"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_nationalinstititeofhealth_get_pub_date (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 212, in test_nationalinstititeofhealth_get_pub_date
+    self.assertIn("1998-05-25", nf_1.get_pub_date("9689714"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+ERROR: test_orcid_get_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 62, in test_orcid_get_orcid
+    self.assertIn("0000-0003-0530-4305", of_1.get_orcid("10.1108/jd-12-2013-0166"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+FAIL: test_handler_get_date (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 44, in test_handler_get_date
+    self.assertEqual("2019-05-27", handler.get_date("10.6092/issn.2532-8816/8555"))
+AssertionError: '2019-05-27' != None
+
+======================================================================
+FAIL: test_handler_share_issn (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 50, in test_handler_share_issn
+    self.assertTrue(handler.share_issn("10.1007/s11192-018-2988-z", "10.1007/s11192-015-1565-y"))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_handler_share_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\arimoretti\Documents\GitHub\index\test\03_resourcefinder.py", line 56, in test_handler_share_orcid
+    self.assertTrue(handler.share_orcid("10.1007/s11192-018-2988-z", "10.5281/zenodo.3344898"))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.027s
+
+FAILED (failures=3, errors=10)
+
+
+            </pre>
+        </code>
+    </div>
+    
+    
+    <h2>crossrefresourcefinder.py, dataciteresourcefinder.py, orcidresourcefinder.py</h2>
+    <p>After testing 03_resourcefinder.py I refactored ApiDOIResourceFinder to ApiIDResourceFinder.</p>
+
+
+          
+
+
+      </div>
+    </div>
+  </div>
+  
   
   
   

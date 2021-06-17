@@ -6422,6 +6422,89 @@ class NIHResourceFinder(ApiIDResourceFinder):
 
 </div>
 
+<div class="card">
+    <div class="card-header" id="headingSixteen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSixteen" aria-expanded="false" aria-controls="collapseSixteen">
+          Week #16 (06-03-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseSixteen" class="collapse" aria-labelledby="headingSixteen" data-parent="#accordion">
+      <div class="card-body">
+      
+      <h2>Source folder and reorganization of the project</h2>
+      <p>I forked OpenCitations code.
+I moved the folder index to another path in my personal computer, so that I could keep working on my modified code, while starting updating the fork with pieced of code which already work properly. </p>
+      <p><strong>Note:</strong> During last meeting, we realized that, in order to make the code work properly, it is necessary that the folder to be opened as project is the one containing the whole code (so the folder index). This is very important, because in all the other cases the import statements stop working.</p>
+      
+     <h2>Finders tests and path problems</h2>
+     <p>Trying to debug the finders' tests, it turned out a problem -that I wasn't able to fix- related to the csv manager: at a certain point is like the support file is not identified nor found anymore. I also implemented a separate function to check the existence and the correctness of the paths of thr support files specified in the SetUp of the finders' test file, and everything seems to work. Anyway, for this reason, none of the finder tests involving the support files seems to work. </p>
+     
+     <h2>Finders tests and path problems</h2>
+     <p>While debugging, a some problems related to the specific structure of nihresourcefinder.py emerged. I consequently modified some parts of the functions:</p>
+
+<div class="codebg">
+    <code>
+        <pre>
+        
+        def _get_issn(self, txt_obj):
+    result = set()
+    issns = re.findall("IS\s+-\s+\d{4}-\d{4}", txt_obj)
+    print("HEY THIS OBJECT IS ISSNS, risultato di re.findall", issns)
+    for i in issns:
+        issn = re.search("\d{4}-\d{4}", i).group(0)
+        print("HEY THIS OBJECT IS ISSN, risultato di re.search", issn)
+        result.add(issn)
+    return result
+
+def _get_date(self, txt_obj):
+    date = re.search("DP\s+-\s+\d{4}(\s?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))?(\s?((3[0-1])|([1-2][0-9])|([0]?[1-9])))?", txt_obj).group(0)
+    result = re.search("(\d{4})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+((3[0-1])|([1-2][0-9])|([0]?[1-9]))", date).group(0)
+    if result:
+        datetime_object = datetime.strptime(result, '%Y %b %d')
+        return datetime.strftime(datetime_object, '%Y-%m-%d')
+    else:
+        result = re.search("(\d{4})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)", date).group(0)
+        if result:
+            datetime_object = datetime.strptime(result, '%Y %b')
+            return datetime.strftime(datetime_object, '%Y-%m')
+        else:
+            result = re.search("(\d{4})", date).group(0)
+            if result:
+                datetime_object = datetime.strptime(result, '%Y')
+                return datetime.strftime(datetime_object, '%Y')
+            else:
+                return None
+
+def _call_api(self, pmid_full):
+    if self.use_api_service:
+        pmid = self.pm.normalise(pmid_full)
+        r = get(self.api + quote(pmid) + "/?format=pubmed", headers=self.headers, timeout=30)
+        if r.status_code == 200:
+            r.encoding = "utf-8"
+            soup = BeautifulSoup( r.text )
+            mdata = str(soup.find(id="article-details"))
+            return mdata
+        
+        </pre>
+    </code>
+</div>
+
+<p>In particular:</p>
+<ol>
+    <li>The missing format information ("/?format=pubmed") in _call_api led to the wrong URL.</li>
+    <li>The returned output of _call_api was not a text object, but a tag object, so I turned it into a string. </li>
+    <li>In _get_pub_date and _get_issn the regex didn’t need the starting and ending delimiters.</li>
+    <li>In _get_pub_date the regex for the date was not correct: considering first the possibility to match a number between 1 and 9 led to a mismatch for days numbers with more than one digit, so I inverted the order of the 3 alternative patterns to match the day number (from 1 to 31).  </li>
+    <li>I substituted re.search to re.findall in the pub date function, since there should be just one DP in the text object. I used group(0) to select the matched term from the match object, so to obtain a string.</li>
+    <li>Something still doesn’t work as it should, since the tests for issn and orcid seems to fail for problems related to the get pub date function (whose test is instead passed). </li>
+    <li>I also modified some details in the read and written datetime object: I used "%b" to let the literal abbreviation of the month to be correctly individuated, and I changed the overall format structure in the strptime parameters. The previously used parameter format ('%Y-%m-%d') is keept instead in the strftime function, which is supposed to return the date in the format compliant with the rest of the OC project. </li>
+</ol>       
+    </div>
+  </div>
+
+</div>
 
 
   </body>

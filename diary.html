@@ -6447,8 +6447,9 @@ I moved the folder index to another path in my personal computer, so that I coul
 <div class="codebg">
     <code>
         <pre>
-        
-        def _get_issn(self, txt_obj):
+
+
+def _get_issn(self, txt_obj):
     result = set()
     issns = re.findall("IS\s+-\s+\d{4}-\d{4}", txt_obj)
     print("HEY THIS OBJECT IS ISSNS, risultato di re.findall", issns)
@@ -6505,6 +6506,444 @@ def _call_api(self, pmid_full):
   </div>
 
 </div>
+
+
+
+<div class="card">
+    <div class="card-header" id="headingSeventeen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSeventeen" aria-expanded="false" aria-controls="collapseSeventeen">
+          Week #17 (06-17-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseSeventeen" class="collapse" aria-labelledby="headingSeventeen" data-parent="#accordion">
+      <div class="card-body">
+          <h2>03_resourcefinder</h2>
+          <div class="codebg">
+            <code>
+                <pre>
+                def get_orcid(self, id_string):
+    print("this is id_string and it is ok if...", id_string)
+    print("this is self.orcid and it is ok if...", self.orcid) #index.storer.csvmanager.CSVManager object at 0x0000016A3A62BAC8
+    print("here self._get_item(id_string, self.orcid)", self._get_item(id_string, self.orcid))
+    print("here self._get_item(doi:10.1108/jd-12-2013-0166, 0000-0003-0530-4305)", self._get_item("doi:10.1108/jd-12-2013-0166", "0000-0003-0530-4305"))
+    print("here self._get_item(10.1108/jd-12-2013-0166, 0000-0003-0530-4305)", self._get_item("10.1108/jd-12-2013-0166", "0000-0003-0530-4305"))
+    return self._get_item(id_string, self.orcid)
+
+
+                </pre>
+            </code>
+          </div>
+          
+          <p>Terminal</p>
+          <div class="codebg">
+            <code>
+                <pre>
+this is id_string and it is ok if... 10.1108/jd-12-2013-0166
+this is self.orcid and it is ok if... index.storer.csvmanager.CSVManager object at 0x0000014BB8E565C0
+here self._get_item(id_string, self.orcid) None
+here self._get_item(doi:10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+here self._get_item(10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+E
+                </pre>
+            </code>
+          </div>
+          
+          <p>I stepped into get_orcid from the test to see its functioning. I supposed that the error could be related to self.orcid (index.storer.csvmanager.CSVManager object at 0x0000014BB8E565C0), but, instead, it seems that any combination doesn’t work as well, as I checked with some print attempts. </p>
+          <p>I proceed now analysing the process in the original software, in order to see at which point the two versions start working differently, and – consequently – at which point the extended version of the software stops working properly. 
+this is self._get_item(id_string, self.orcid) {'0000-0003-0530-4305'} --> self.get_item function should get in input an id string without prefix and an object like index.storer.csvmanager.CSVManager object at 0x0000025C2E12C278, and return a set containing the string(s) of the orcid related to the input identifier. </p>
+        <p>THE PROBLEM MUST BE RELATED TO THE FUNCTIONING OF THE self._get_item(id_string, self.orcid) in the extended version</p>
+        
+        <h2>csvmanager.py</h2>
+        <p>In my version of the software the function update_value is still present, but I noticed that it was deleted from the OC software in the meantime. Should I delete it too?</p>
+        
+        <h2>Current version of my files</h2>
+        
+        <h3>resourcefinder.py</h3>
+        <div class="codebg">
+            <code>
+                <pre>
+
+from index.storer.csvmanager import CSVManager
+from index.identifier.orcidmanager import ORCIDManager
+from index.identifier.doimanager import DOIManager
+from index.identifier.pmidmanager import PMIDManager
+from index.identifier.issnmanager import ISSNManager
+from index.citation.oci import OCIManager
+
+from collections import deque
+# TODO: For multiprocessing purposes
+# from multiprocessing.managers import BaseManager
+
+
+class ResourceFinder(object):
+    """This is the abstract class that must be implemented by any resource finder
+    for a particular service (Crossref, DataCite, ORCiD, etc.). It provides
+    the signatures of the methods that should be implemented, and a basic
+    constructor."""
+
+    def __init__(self, date=None, orcid=None, issn=None, id=None, id_type=None, **params): #vedere se crea problemi l'aggiunta di id_type
+        if date is None:
+            date = CSVManager(store_new=False)
+        if orcid is None:
+            orcid = CSVManager(store_new=False)
+        if issn is None:
+            issn = CSVManager(store_new=False)
+        if id is None:
+            id = CSVManager(store_new=False)
+
+        for key in params:
+            setattr(self, key, params[key])
+
+        self.issn = issn
+        self.date = date
+        self.orcid = orcid
+        self.id_type = id_type
+        if hasattr(self, 'use_api_service'):
+            if id_type is OCIManager.doi_type:
+                self.dm = DOIManager(id, self.use_api_service)
+            elif id_type is OCIManager.pmid_type:
+                self.pm = PMIDManager(id, self.use_api_service)
+            else:
+                print("The id_type specified is not compliant")
+        else:
+            if id_type is OCIManager.doi_type:
+                self.dm = DOIManager(id)
+            elif id_type is OCIManager.pmid_type:
+                self.pm = PMIDManager(id)
+            else:
+                print("The id_type specified is not compliant")
+
+        self.im = ISSNManager()
+        self.om = ORCIDManager()
+
+        self.headers = {
+            "User-Agent": "ResourceFinder / OpenCitations Indexes "
+                          "(http://opencitations.net; mailto:contact@opencitations.net)"
+        }
+
+        # TODO: For multiprocessing purposes
+        # c_type = type(self)
+        # BaseManager.register(c_type.__name__, c_type)
+
+    def get_orcid(self, id_string):
+        pass
+
+    def get_pub_date(self, id_string):
+        pass
+
+    def get_container_issn(self, id_string):
+        pass
+
+    def is_valid(self, id_string):
+        pass
+
+    def normalise(self, id_string):
+        pass
+
+class ApiIDResourceFinder(ResourceFinder): #The name of the class was changed
+    """This is the abstract class that must be implemented by any resource finder
+        for a particular service which is based on DOI retrieving via HTTP REST APIs
+        (Crossref, DataCite). It provides basic methods that are be used for
+        implementing the main methods of the ResourceFinder abstract class."""
+
+    # The following four methods are those ones that should be implemented in
+    # the concrete subclasses of this abstract class.
+    def _get_date(self, json_obj):
+        pass
+
+    def _get_issn(self, json_obj):
+        return set()
+
+    def _get_orcid(self, json_obj):
+        return set()
+
+    def _call_api(self, id_full):
+        pass
+
+    # The implementation of the following methods is strictly dependent on the actual
+    # implementation of the previous three methods, since they strictly reuse them
+    # for returning the result.
+    def get_orcid(self, id_string):
+        print("this is id_string and it is ok if...", id_string)
+        print("this is self.orcid and it is ok if...", self.orcid) # index.storer.csvmanager.CSVManager object at 0x0000016A3A62BAC8>
+        print("here self._get_item(id_string, self.orcid)", self._get_item(id_string, self.orcid))
+        print("here self._get_item(doi:10.1108/jd-12-2013-0166, 0000-0003-0530-4305)", self._get_item("doi:10.1108/jd-12-2013-0166", "0000-0003-0530-4305"))
+        print("here self._get_item(10.1108/jd-12-2013-0166, 0000-0003-0530-4305)", self._get_item("10.1108/jd-12-2013-0166", "0000-0003-0530-4305"))
+        return self._get_item(id_string, self.orcid)
+
+    def get_pub_date(self, id_string):
+        return self._get_item(id_string, self.date)
+
+    def get_container_issn(self, id_string):
+        return self._get_item(id_string, self.issn)
+
+    def is_valid(self, id_string): #FAI IN TUTTI COSì
+        if self.id_type is OCIManager.doi_type:
+            return self.dm.is_valid(id_string)
+        elif self.id_type is OCIManager.pmid_type:
+            return self.pm.is_valid(id_string)
+        else:
+            print("The id_type specified is not compliant")
+
+    def normalise(self, id_string):
+        if self.id_type is OCIManager.doi_type:
+            return self.dm.normalise(id_string, include_prefix=True)
+        elif self.id_type is OCIManager.pmid_type:
+            return self.pm.normalise(id_string, include_prefix=True)
+        else:
+            print("The id_type specified is not compliant")
+
+
+    def _get_item(self, id_entity, csv_manager):
+        if self.is_valid(id_entity):
+            print("self.is_valid(id_entity) in _get_item is ok if....", self.is_valid(id_entity))
+            id = self.normalise(id_entity) #!!!!!!!!!!!!!!!!!!!!
+            print ("self.normalise(id_entity) in _get_item is ok if....", self.normalise(id_entity))
+
+            if csv_manager.get_value(id) is None:
+                json_obj = self._call_api(id) #la prima volta c'erano solo json. quello che restituirà sarà sicuramente compliant. Non è un problema è solo il nome della variabile
+
+                if json_obj is not None:
+                    for issn in self._get_issn(json_obj):
+                        self.issn.add_value(id, issn)
+
+                    if self.date.get_value(id) is None:
+                        pub_date = self._get_date(json_obj)
+                        if pub_date is not None:
+                            self.date.add_value(id, pub_date)
+
+                    for orcid in self._get_orcid(json_obj):
+                        self.orcid.add_value(id, orcid)
+
+            return csv_manager.get_value(id)
+
+
+class ResourceFinderHandler(object):
+    """This class allows one to use multiple resource finders at the same time
+    so as to find the information needed for the creation of the citations to
+    include in the index."""
+
+    def __init__(self, resource_finders):
+        self.resource_finders = resource_finders
+
+    def get_date(self, id_string):
+        result = None
+        finders = deque(self.resource_finders)
+
+        while result is None and finders:
+            finder = finders.popleft()
+            result_set = finder.get_pub_date(id_string)
+            if result_set:
+                result = result_set.pop()
+
+        if result is None:  # Add the empty value in all the finders
+            for finder in self.resource_finders:
+                if finder.is_valid(id_string):
+                    finder.date.add_value(finder.normalise(id_string), "")
+
+        return result
+
+    def share_issn(self, id_string_1, id_string_2):
+        return self.__share_data(id_string_1, id_string_2, "get_container_issn")
+
+    def share_orcid(self, id_string_1, id_string_2):
+        return self.__share_data(id_string_1, id_string_2, "get_orcid")
+
+    def __share_data(self, id_string_1, id_string_2, method):
+        result = False
+        finders = deque(self.resource_finders)
+        set_1 = set()
+        set_2 = set()
+
+        while not result and finders:
+            finder = finders.popleft()
+
+            result_set_1 = getattr(finder, method)(id_string_1)
+            if result_set_1:
+                set_1.update(result_set_1)
+
+            result_set_2 = getattr(finder, method)(id_string_2)
+            if result_set_2:
+                set_2.update(result_set_2)
+
+            result = len(set_1.intersection(set_2)) > 0
+
+        return result
+
+                </pre>
+            </code>
+        </div>
+        
+        <div class="codebg">
+            <code>
+            <pre>
+
+from csv import DictReader
+from io import StringIO
+from os.path import exists, isdir
+from os import walk, sep
+
+
+class CSVManager(object):
+    """This class is able to load a simple CSV composed by two fields, 'id' and
+    'value', and then to index all its items in a structured form so as to be
+    easily queried. In addition, it allows one to store new information in the CSV,
+    if needed."""
+
+    def __init__(self, csv_path=None, line_threshold=10000, store_new=True):
+        self.csv_path = csv_path
+        self.data = {}
+        self.store_new = store_new
+
+        if csv_path is not None and exists(csv_path):
+            CSVManager.__load_all_csv_files([csv_path], self.__load_csv, line_threshold=line_threshold)
+
+    @staticmethod
+    def load_csv_column_as_set(file_or_dir_path, key, line_threshold=10000):
+        result = set()
+
+        if exists(file_or_dir_path):
+            file_to_process = []
+            if isdir(file_or_dir_path):
+                for cur_dir, cur_subdir, cur_files in walk(file_or_dir_path):
+                    for cur_file in cur_files:
+                        if cur_file.endswith(".csv"):
+                            file_to_process.append(cur_dir + sep + cur_file)
+            else:
+                file_to_process.append(file_or_dir_path)
+
+            for item in CSVManager.__load_all_csv_files(file_to_process, CSVManager.__load_csv_by_key,
+                                                        line_threshold=line_threshold, key=key):
+                result.update(item)
+
+        return result
+
+    @staticmethod
+    def __load_csv_by_key(csv_string, key):
+        result = set()
+
+        csv_metadata = DictReader(StringIO(csv_string), delimiter=',')
+        for row in csv_metadata:
+            result.add(row[key])
+
+        return result
+
+    @staticmethod
+    def __load_all_csv_files(list_of_csv_files, fun, line_threshold, **params):
+        result = []
+        header = None
+
+        for csv_path in list_of_csv_files:
+            with open(csv_path, encoding="utf-8") as f:
+                csv_content = ""
+                for idx, line in enumerate(f.readlines()):
+                    if header is None:
+                        header = line
+                        csv_content = header
+                    else:
+                        if idx % line_threshold == 0:
+                            result.append(fun(csv_content, **params))
+                            csv_content = header
+                        csv_content += line
+
+            result.append(fun(csv_content, **params))
+
+        return result
+
+    def get_value(self, id_string):
+        """It returns the set of values associated to the input 'id_string',
+        or None if 'id_string' is not included in the CSV."""
+        if id_string in self.data:
+            return set(self.data[id_string])
+
+    def update_value(self,id_string, value):
+        if id_string not in self.data:
+            self.data[id_string] = value
+        else:
+            if self.data[id_string] != value:
+                self.data[id_string] = value
+
+    def add_value(self, id_string, value):
+        """It adds the value specified in the set of values associated to 'id_string'.
+        If the object was created with the option of storing also the data in a CSV
+        ('store_new' = True, default behaviour), then it also add new data in the CSV."""
+        if id_string not in self.data:
+            self.data[id_string] = set()
+
+        if value not in self.data[id_string]:
+            self.data[id_string].add(value)
+
+            if self.csv_path is not None and self.store_new:
+                if not exists(self.csv_path):
+                    with open(self.csv_path, "w", encoding="utf8") as f:
+                        f.write('"id","value"\n')
+
+                with open(self.csv_path, "a", encoding="utf8") as f:
+                    f.write('"%s","%s"\n' % (id_string.replace('"', '""'),
+                                             value.replace('"', '""')))
+
+    def __load_csv(self, csv_string):
+        csv_metadata = DictReader(StringIO(csv_string), delimiter=',')
+        for row in csv_metadata:
+            cur_id = row["id"]
+            if cur_id not in self.data:
+                self.data[cur_id] = set()
+
+            self.data[cur_id].add(row["value"])
+
+            </pre>
+            </code>
+        </div>
+        
+        <p>Terminal after test run</p>
+        <div class="codebg">
+            <code>
+                <pre>
+
+E:\tesi>python -m unittest index.test.03_resourcefinder
+this is id_string and it is ok if... 10.1108/jd-12-2013-0166
+this is self.orcid and it is ok if... index.storer.csvmanager.CSVManager object at 0x000001D9883F55C0>
+here self._get_item(id_string, self.orcid) None
+here self._get_item(doi:10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+here self._get_item(10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+of_2.get_orcid(10.1108/jd-12-2013-0166) None
+this is id_string and it is ok if... 10.1108/jd-12-2013-0166
+this is self.orcid and it is ok if... index.storer.csvmanager.CSVManager object at 0x000001D9883F55C0>
+here self._get_item(id_string, self.orcid) None
+here self._get_item(doi:10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+here self._get_item(10.1108/jd-12-2013-0166, 0000-0003-0530-4305) None
+E
+======================================================================
+ERROR: test_orcid_get_orcid (index.test.03_resourcefinder.ResourceFinderTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:\tesi\index\test\03_resourcefinder.py", line 82, in test_orcid_get_orcid
+    self.assertIn("0000-0003-0530-4305", of_2.get_orcid("10.1108/jd-12-2013-0166"))
+  File "C:\Program Files\Python36\lib\unittest\case.py", line 1085, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+----------------------------------------------------------------------
+Ran 1 test in 0.077s
+
+FAILED (errors=1)
+
+E:\tesi>
+
+                </pre>
+            </code>
+        </div>
+         
+         
+          
+             
+    </div>
+  </div>
+
+</div>
+
 
 
   </body>

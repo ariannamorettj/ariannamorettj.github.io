@@ -6944,6 +6944,78 @@ E:\tesi>
 
 </div>
 
+    <div class="card">
+    <div class="card-header" id="headingEighteen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseEighteen" aria-expanded="false" aria-controls="collapseEighteen">
+          Week #18 (07-07-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseEighteen" class="collapse" aria-labelledby="headingEighteen" data-parent="#accordion">
+      <div class="card-body">
+          <h2>03_resourcefinder, spotted mistake in orcidresourcefinder.py</h2>
+          <h3>orcidresourcefinder.py</h3>
+          <p> The whole file loading issue was related to a wrong parameter name in <strong> super(ORCIDResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,
+                                                  use_api_service=use_api_service) </strong>, inside the init of ORCIDResourceFinder(ApiIDResourceFinder) class: </p>
+          <div>
+            <code>
+                <pre>
+class ORCIDResourceFinder(ApiIDResourceFinder):
+    def __init__(self, date=None, orcid=None, issn=None, doi=None, use_api_service=True, key=None):
+        self.key = key
+        self.use_api_service = use_api_service
+        self.api = "https://pub.orcid.org/v2.1/search?q="
+        super(ORCIDResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,
+                                                  use_api_service=use_api_service) # HERE doi=doi was changed into id=doi
+
+    def _get_orcid(self, json_obj):
+        result = set()
+        print("IN REALTA' SONO QUI")
+        if json_obj is not None:
+            for item in json_obj:
+                orcid = item.get("orcid-identifier")
+                if orcid is not None:
+                    orcid_norm = self.om.normalise(orcid["path"])
+                    if orcid_norm is not None:
+                        result.add(orcid_norm)
+
+        return result
+
+    def _call_api(self, doi_full):
+        if self.use_api_service:
+            if self.key is not None:
+                self.headers["Authorization"] = "Bearer %s" % self.key
+            self.headers["Content-Type"] = "application/json"
+
+            doi = self.dm.normalise(doi_full)
+            r = get(self.api + quote("doi-self:\"%s\" OR doi-self:\"%s\"" % (doi, doi.upper())),
+                    headers=self.headers, timeout=30)
+            if r.status_code == 200:
+                r.encoding = "utf-8"
+                json_res = loads(r.text)
+                return json_res.get("result")
+
+                </pre>
+            </code>
+          </div>
+          <h3>Issue</h3>
+          <p> Why the wrong parameter name in orcidresourcefinder.py made the whole file loading process fail? The spotted error led to have an empty container in the following test. I don't fully understand the reason.</p>
+          <div>
+            <code>
+                <pre>
+of_2 = ORCIDResourceFinder(orcid=CSVManager(self.orcid_path), doi=CSVManager(self.doi_path), use_api_service=False)
+container = of_2.get_orcid("10.1108/jd-12-2013-0166")
+print("IS CONTAINER NONE?", container)
+self.assertIn("0000-0003-0530-4305", container)
+                </pre>
+            </code>
+          </div>
+    </div>
+  </div>
+
+</div>
+
 
 
   </body>

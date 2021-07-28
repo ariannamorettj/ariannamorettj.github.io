@@ -6958,7 +6958,7 @@ E:\tesi>
           <h3>orcidresourcefinder.py</h3>
           <p> The whole file loading issue was related to a wrong parameter name in <strong> super(ORCIDResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,
                                                   use_api_service=use_api_service) </strong>, inside the init of ORCIDResourceFinder(ApiIDResourceFinder) class: </p>
-          <div>
+          <div class="codebg">
             <code>
                 <pre>
 class ORCIDResourceFinder(ApiIDResourceFinder):
@@ -7001,7 +7001,7 @@ class ORCIDResourceFinder(ApiIDResourceFinder):
           </div>
           <h3>Issue</h3>
           <p> Why the wrong parameter name in orcidresourcefinder.py made the whole file loading process fail? The spotted error led to have an empty container in the following test. I don't fully understand the reason.</p>
-          <div>
+          <div class="codebg">
             <code>
                 <pre>
 of_2 = ORCIDResourceFinder(orcid=CSVManager(self.orcid_path), doi=CSVManager(self.doi_path), use_api_service=False)
@@ -7011,6 +7011,32 @@ self.assertIn("0000-0003-0530-4305", container)
                 </pre>
             </code>
           </div>
+          
+          <h2>Material revision and contents index creation (first Five Weeks)</h2>
+          <ol>
+          <li><strong>Week 1</strong>:UnitTest Introduction, Test code organization and hierarchies</li>
+          <li><strong>Week 2</strong>:NIH library data, open_citation_collection.csv sample, stored as source.csv for NIH in noci_dump in test_data folder (+ correspondent citations.csv ), Data Mapping with external mapping tools (www.pmid2cite.com and www.ncbi.nlm.nih.gov ), test case development : 10_noci.py  on the basis of 09_croci.py, prompt basic commands,  Unittest launch from command line, local OC index cloning, “self citation” concept.  </li>
+          <li><strong>Week 3</strong>:Metadata file download, Correction of 10_noci and source.csv (headers names must be “citing” and “referenced”), nationalinstitutehealthsource.py creation ( PMIDManager(IdentifierManager), Kevin Boyack mapping with related link</li>
+          <li><strong>Week 4</strong>:PMIDManager fix, API request via (https://pubmed.ncbi.nlm.nih.gov/), Status codes, PMIDmanager Test Case (02_identifiermanager.py extension)</li>
+          <li><strong>Week 5</strong>:identifier.pmidmanager.py fix, noci. nationalinstitutehealthsource.py fix, test.10_noci fix, Execution process study (overview: Important for all the workflow), Dynamic requests for CROCI, Analysis of the information retrieved by specifying “? format=pubmed” in the API request. </li>
+          </ol>
+          
+          <h2>Fork update</h2>
+          <p>All the material produced during the first five weeks of work was checked, tested and published.</p>
+          <p>In particular:</p>
+          <ol>
+          <li><strong>citation\oci.py</strong>:  the class OCIManager(object) was added the two variables doi_type ="doi" and pmid_type="pmid"</li>
+          <li><strong>identifier\pmidmanager.py</strong>: file creation</li>
+          <li><strong>noci\nationalinstituteofhealthsource.py</strong>: file creation</li>
+          <li><strong>storer\citationstorer.py</strong>: strftime from self.cur_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') to self.cur_time = datetime.now().strftime('%Y-%m-%dT%H%M%S')</li>
+          <li><strong>test\02_identifiermanager.py</strong>: extension to handle pmid</li>
+          <li><strong>test\03_resourcefinder.py</strong>: temporary update --> much of the tests were commented, so to focus only on one of them at time, i.e. : test_orcid_get_orcid(self) </li>
+          <li><strong>test\10_noci.py</strong>: file creation</li>
+          <li><strong>test_data\noci_dump\citations.csv</strong>: file creation</li>
+          <li><strong>test_data\noci_dump\source.csv</strong>: file creation</li>
+          <li><strong>test_data\valid_pmid.csv</strong> : file creation and manual update</li>
+          </ol>
+          <p>Available at: <a href="https://github.com/ariannamorettj/index"></a>https://github.com/ariannamorettj/index</p>
     </div>
   </div>
 

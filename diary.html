@@ -7012,6 +7012,60 @@ self.assertIn("0000-0003-0530-4305", container)
             </code>
           </div>
           
+          <h2>03_resourcefinder, spotted mistake in crossrefresourcefinder.py</h2>
+          <p>The very same mistake was corrected also in the class CrossrefResourceFinder(ApiIDResourceFinder)</p>
+          <div class="codebg">
+          <code>
+          <pre>
+class CrossrefResourceFinder(ApiIDResourceFinder):
+    def __init__(self, date=None, orcid=None, issn=None, doi=None, use_api_service=True):
+        self.use_api_service = use_api_service
+        self.api = "https://api.crossref.org/works/"
+        super(CrossrefResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,
+                                                     use_api_service=use_api_service)
+          </pre>
+          </code>
+          </div>
+          
+          <h2>03_resourcefinder, spotted mistake in dataciteresourcefinder.py</h2>
+          <p>The very same mistake was corrected also in the class DataCiteResourceFinder(ApiIDResourceFinder)</p>
+          <div class="codebg">
+          <code>
+          <pre>
+class DataCiteResourceFinder(ApiIDResourceFinder):
+    def __init__(self, date=None, orcid=None, issn=None, doi=None, use_api_service=True):
+        self.api = "https://api.datacite.org/dois/"
+        self.use_api_service = use_api_service
+        super(DataCiteResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,
+                                                     use_api_service=use_api_service) #doi=doi corrected: id=doi
+          </pre>
+          </code>
+          </div>
+          
+          <h2>03_resourcefinder, spotted mistake in nihresourcefinder.py</h2>
+          <p>The very same mistake was corrected also in the class NIHResourceFinder(ApiIDResourceFinder)</p>
+          <div class="codebg">
+          <code>
+          <pre>
+class NIHResourceFinder(ApiIDResourceFinder):
+    def __init__(self, date=None, orcid=None, issn=None, pmid=None, use_api_service=True):
+        self.use_api_service = use_api_service
+        self.api = "https://pubmed.ncbi.nlm.nih.gov/"
+        self.baseurl = "https://pubmed.ncbi.nlm.nih.gov/"
+        super(NIHResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=pmid, id_type=OCIManager.pmid_type,
+                                                     use_api_service=use_api_service)
+          </pre>
+          </code>
+          </div>
+          <h2>Further issues</h2>
+          <ul>
+          <li></li>
+          <li> Some similar problems still occur for test_datacite_get_issn(self) and for test_handler_share_issn(self), but not for all tests involving issns in general.</li>
+          <li> Other issues are related to NIH resource finder only, and in particular to the regex structure. Focus on this before the next meeting.</li>
+          </ul>
+          
+
+          
           <h2>Material revision and contents index creation (first Five Weeks)</h2>
           <ol>
           <li><strong>Week 1</strong>:UnitTest Introduction, Test code organization and hierarchies</li>
@@ -7030,7 +7084,7 @@ self.assertIn("0000-0003-0530-4305", container)
           <li><strong>noci\nationalinstituteofhealthsource.py</strong>: file creation</li>
           <li><strong>storer\citationstorer.py</strong>: strftime from self.cur_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') to self.cur_time = datetime.now().strftime('%Y-%m-%dT%H%M%S')</li>
           <li><strong>test\02_identifiermanager.py</strong>: extension to handle pmid</li>
-          <li><strong>test\03_resourcefinder.py</strong>: temporary update --> much of the tests were commented, so to focus only on one of them at time, i.e. : test_orcid_get_orcid(self) </li>
+          <li><strong>test\03_resourcefinder.py</strong>: temporary update --> much of the tests were commented, so to focus only on one of them at time, i.e. : test_orcid_get_orcid(self). Second weekly update: all tests were uncommented and all of them were passed successfully </li>
           <li><strong>test\10_noci.py</strong>: file creation</li>
           <li><strong>test_data\noci_dump\citations.csv</strong>: file creation</li>
           <li><strong>test_data\noci_dump\source.csv</strong>: file creation</li>

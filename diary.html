@@ -7059,7 +7059,6 @@ class NIHResourceFinder(ApiIDResourceFinder):
           </div>
           <h2>Further issues</h2>
           <ul>
-          <li></li>
           <li> Some similar problems still occur for test_datacite_get_issn(self) and for test_handler_share_issn(self), but not for all tests involving issns in general.</li>
           <li> Other issues are related to NIH resource finder only, and in particular to the regex structure. Focus on this before the next meeting.</li>
           </ul>
@@ -7094,6 +7093,93 @@ class NIHResourceFinder(ApiIDResourceFinder):
     </div>
   </div>
 
+</div>
+
+
+    <div class="card">
+    <div class="card-header" id="headingNineteen">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseNineteen" aria-expanded="false" aria-controls="collapseNineteen">
+          Week #19 (07-27-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseNineteen" class="collapse" aria-labelledby="headingNineteen" data-parent="#accordion">
+      <div class="card-body">
+
+          <h2>Revise at least five meetings (6-10) and update the fork accordingly</h2>
+          
+          <ol>
+          <li><strong>Week 6</strong>: os.makedirs() use (applications and examples), croci dynamic request (successful), attempt of orcid-api key request, test.02_identifiermanager.py fix, test.03_resourcefinder.py fail, test.04_oci.py : UnicodeDecodeError detected and solved, test.05_citationstorer.py: isomorphic graphs error spotted (but not fixed), some hints about possible needed integrations in oci.py and contrasts with noci.nationalinstituteofhealthsource.py, test.test.py: extra test spotted. </li>
+          <li><strong>Week 7</strong>: creation of GitHub issues for UnicodeDecodeError, Test 05_citationstorer fail, correction of indentation error on nationalinstituteofhealthsource.py (test.10_noci.py passed), Graphs serialization (g1 and g2 in 05_citationstorer) using n-triple with graph.serialize(format='nt') and rdflib.compare.isomorphic(graph1, graph2),  pmidmanager.py fix (related to the API response format, which is an html and not a string) and correction of the sample invalid pmids used for the tests.</li>
+          <li><strong>Week 8</strong>: oci.py extension to handle pmids (skipping encoding and decoding functions since PMIDs are already numeric strings), isomorphism check between graphs in 05_citationstorer.py by serializing them in nt format and sorting their lines in view of a comparison, valid_pmid.csv correction (manual update), 02_identifiermanager.py extension for pmid.</li>
+          <li><strong>Week 9</strong>: study of the conversion table for doi-oci (opencitations/oci/blob/master/lookup.csv), issue update of 05_citationstorer.py fail, oci.py extension (correction of previous wrong extension, APIManager class update, id_type addition in OCIManager class), cnc.py integration and issues (APIManager import) </li>
+          <li><strong>Week 10</strong>: oci.py update (get_oci(self, doi_1, doi_2, prefix, id_type) : Change argument name to "id_1" and "id_2" instead of doi_1 and doi_2, Create the 2 class variables doi_type and pmid_type in OCIManager), 04_oci test update (add the missing id_type argument where needed), cnc.py update, addition of type information to the six (now seven) elements tuple returned by get_next_citation_data in NationalInstituteHealthSource, CrossrefCitationSource and CrowdSourcedCitationSource, extension of 07_cnc.</li>
+          </ol>
+          
+          <h2>Update the fork with OC changes and the weekly scheduled updates</h2>
+          <p>Here below the list of all the updates which were done in the fork this week:</p>
+          <ol>
+          <li>creation of  finder\nihresourcefinder.py</li>
+          <li>creation of all required csv files containing sample data - in order to run the tests (test_data\cnc_valid_pmid.csv, test_data\id_date_pmid.csv, test_data\id_issn_pmid.csv, test_data\id_orcid_pmid.csv)</li>
+          <li>update of test_data\valid_pmid.csv (with a new pmid included for testing purposes)</li>
+          <li>finder\crossrefresourcefinder.py refactoring of ApiDOIResourceFinder with its new and generalised version: ApiIDResourceFinder, meant to manage pmid too; specification of id_type parameter in  super(CrossrefResourceFinder, self).__init__(date=date, orcid=orcid, issn=issn, id=doi, id_type=OCIManager.doi_type,                            use_api_service=use_api_service)</li>
+          <li>finder\dataciteresourcefinder.py: same updates</li>
+          <li>finder\orcidresourcefinder.py: same updates</li>
+          <li>finder\resourcefinder.py: updates in import, in __init__ parameters, in some variables names, in the name of the class ApiDOIResourceFinder (now ApiIDResourceFinder) and in  __init__ if else structures nested in the main if-else structure starting with if hasattr(self, 'use_api_service'), in order to manage pmid too.</li>
+          <li>identifier\doimanager.py: some prints were removed, since the tests they were added for are now being passed</li>
+          <li>storer\csvmanager.py: addition of some prints for testing purposes</li>
+          <li>test\03_resourcefinder.py: addition of NIHResourceFinder() among the parameters of ResourceFinderHandler, addition of the tests for nih resource finder</li>
+          </ol>
+          
+          <h2>Fix issn issue in resourcefinder tests</h2>
+          <p>The issue was due to some typos, such as the wrong name of a parameter specified in one of the tests ("date" instead of "issn", probably due to the wrong reuse of a an already developed test for get_date functions)</p>
+          <p>The issue is now fixed and all the tests involving issns pass successfully.</p>
+          
+          <h2>Fix NIH issue in resourcefinder tests</h2>
+          <p>The previous structure of the code implicitly gave for granted that the first pattern matching implemented with regex for the dates in their extended format (day, month and year) was always successful, which was a mistake. The current structure works properly: it was tested successfully.</p>
+          
+          <div class="codebg">
+          <code>
+          <pre>
+          
+    def _get_date(self, txt_obj):
+        date = re.search("DP\s+-\s+(\d{4}(\s?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))?(\s?((3[0-1])|([1-2][0-9])|([0]?[1-9])))?)", txt_obj).group(1)
+        print("this is date", date)
+        re_search = re.search("(\d{4})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+((3[0-1])|([1-2][0-9])|([0]?[1-9]))", date)
+        if re_search is not None:
+            print("FULL DATE!")
+            result = re_search.group(0)
+            datetime_object = datetime.strptime(result, '%Y %b %d')
+            return datetime.strftime(datetime_object, '%Y-%m-%d')
+        else:
+            print("NO! DAY MISSING....")
+            re_search = re.search("(\d{4})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)", date)
+            if re_search is not None:
+                result = re_search.group(0)
+                datetime_object = datetime.strptime(result, '%Y %b')
+                return datetime.strftime(datetime_object, '%Y-%m')
+            else:
+                print( "NO! MONTH AND DAY MISSING...." )
+                re_search = re.search("(\d{4})", date)
+                if re_search is not None:
+                    result = re.search("(\d{4})", date).group(0)
+                    datetime_object = datetime.strptime(result, '%Y')
+                    return datetime.strftime(datetime_object, '%Y')
+                else:
+                    return None
+          </pre>
+          </code>
+          </div>
+          
+          <h2>Issues</h2>
+          <ol>
+          <li>Discuss the functioning of the test for shared orcid, issn, dates</li>
+          <li>Discuss how to go on with the work concerning cnc and oci</li>
+          </ol>
+
+    </div>
+  </div>
 </div>
 
 

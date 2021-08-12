@@ -8067,6 +8067,16 @@ if __name__ == '__main__':
         <li>cnc parallel process seems not to be tested, so I tried to modify one parameter in the test for the regular process in oreder to see if the extension worked also for the parallel process. However, I got this message: <em>RuntimeError: Maybe you called ray.init twice by accident? This error can be suppressed by passing in 'ignore_reinit_error=True' or by calling 'ray.shutdown()' prior to 'ray.init()'.</em> </li>
         <li>GitHub Desktop can not locate the repository of my fork, which is strage, since I didn't move it at all. For this reason I could not update the fork properly and further I can not see clearly the changes and the extensions I did this week, which would be necessary in order to comment them in detail. For now I copied the files in an external hard disk, but I really need to solve this problem as soon as possible.</li>
       </ol>
+      
+      <h2>Service call example for NOCI</h2>
+      <p>How to call cnc for NOCI from the terminal</p>
+      <div class="codebg">
+        <code>
+            <pre>
+            # python cnc.py -ib "https://pubmed.ncbi.nlm.nih.gov/" -b "https://w3id.org/oc/index/noci/" -c "csv" -i "index/test_data/citations_partial_pmid.csv" -doi "index/noci_test/pmid.csv" -orcid "index/noci_test/orcid.csv" -date "index/noci_test/date.csv" -issn "index/noci_test/issn.csv" -l "index/test_data/lookup_full.csv" -d "index/noci_test" -px "0160" -a "https://w3id.org/oc/index/prov/ra/1" -s "https://doi.org/10.35092/yhjc.c.4586573.v16" -sv "OpenCitations Index: NOCI" -type "pmid" -v
+            </pre>
+        </code>
+      </div>
           
     </div>
   </div>

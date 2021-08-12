@@ -775,7 +775,34 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
     </div>
   </div>
 </div>
-  
+
+    <div class="card">
+    <div class="card-header" id="headingTwenty">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty" aria-expanded="false" aria-controls="collapseTwenty">
+          Week #20 (08-05-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty" class="collapse" aria-labelledby="headingTwenty" data-parent="#accordion">
+      <div class="card-body">
+          <h2>To do:</h2>
+          <ol>
+              <li>Extend cnc and its test</li>
+              <li>Extend citation storer and source, so to make the whole process work for pmid also</li>
+          </ol>
+          
+          <h2>Notes</h2>
+          <ul>
+              <li>loockup_full should be used for DOIs only, while for PMIDS it should not be used, while for pubmed ids we just put the numeric id after the prefix 0XXX0. So, probably I won't need lookup_full to create my test data at all.</li>
+              <li><strong>Lambda Function:</strong> it is not defined and it allows to define on the fly an anonymous function which is then assigned to a variable. It is a complex topic, which is explained at <a href="https://realpython.com/python-lambda/">https://realpython.com/python-lambda/</a>. All in all, for implementation reasons we need to use different functions when we run the process in parallel, but then the "behaviour" of the two versions (parallel and standard) should be the same. So, we specify which are the needed functions for the process at the moment when we run cnc thanks to the lambda function.</li>
+              <li><strong>Cnc Testing modalities:</strong> The test is to be run in order to be sure that cnc works as expected. Further, cnc is to be executed for the new index, in order to check its functioning also for the new index (noci), also with a limited amount of data.</li>
+              <li>The source for pmids is <a href="https://doi.org/10.35092/yhjc.c.4586573.v16 and it works properly">https://doi.org/10.35092/yhjc.c.4586573.v16 and it works properly.</a> </li>
+          </ul>
+
+    </div>
+  </div>
+</div>
       
       
       

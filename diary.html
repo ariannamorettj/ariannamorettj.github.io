@@ -8190,13 +8190,51 @@ citing,referenced
     </div>
     <div id="collapseTwenty-two" class="collapse" aria-labelledby="headingTwenty-two" data-parent="#accordion">
       <div class="card-body">
+          <h2>noci/glob1.py</h2>
+          <ol>
+              <li>Two new functions (issn_data_recover(directory), issn_data_to_cache(name_issn_dict, directory)) to manage the storage of the data concerning the mapping between journals shortnames and ISSNs. The first function is aimed at recreating a local dictionary of the mapping from the JSON file stored and periodically updated, so to avoid the repetition of API calls for journal names which have already been encountered before an hypotetical run break. The second one is aimed at storing the new information processed periodically, each n rows of csv, where n is a parameter specified by the user. For this reason, the parameter n was added (arg_parser.add_argument( "-n", "--num_lines", dest="n", required=True, help="Number of lines after which the data stored in the dictionary for the mapping between a Journal name and the related issns are passed into a JSON cache file" )). </li>
+              <li>A new iteration for all the rows of all the source file was added, so to check the validity of the referenced pmids of each publication, exploiting the information provided in the field "references" of the csv metadata file by iCite.</li>
+              <li>Thank to the chuncksize parameter, the memory overload issue which occurred when processing a very large csv file with Pandas was overcome.</li>
+              <li>In order to check the correct functioning of the glob, it was run locally using the icite_metadata.csv file as input, and it worked properly.</li>
+            
+          </ol>
+          
+          <iframe src="https://trinket.io/embed/python/a5210b640d" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          
+          <h2>Notes</h2>
+          <ul>
+              <li>----</li>
+          </ul>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-three">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-three" aria-expanded="false" aria-controls="collapseTwenty-three">
+          Week #23 (09-14-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-three" class="collapse" aria-labelledby="headingTwenty-three" data-parent="#accordion">
+      <div class="card-body">
           <h2>To do:</h2>
           <ol>
-              <li>-------</li>
+              <li>-----------</li>
+              <li>-----------</li>
+              <li>-----------</li>
+              <li>-----------</li>
+              <li>-----------</li>
+              <li>-----------</li>
           </ol>
           
           <h2>Notes</h2>
           <ul>
+              <li>----</li>
+              <li>----</li>
               <li>----</li>
           </ul>
 

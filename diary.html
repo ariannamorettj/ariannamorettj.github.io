@@ -8192,9 +8192,9 @@ citing,referenced
       <div class="card-body">
           <h2>noci/glob1.py</h2>
           <ol>
-              <li>Two new functions (issn_data_recover(directory), issn_data_to_cache(name_issn_dict, directory)) to manage the storage of the data concerning the mapping between journals shortnames and ISSNs. The first function is aimed at recreating a local dictionary of the mapping from the JSON file stored and periodically updated, so to avoid the repetition of API calls for journal names which have already been encountered before an hypotetical run break. The second one is aimed at storing the new information processed periodically, each n rows of csv, where n is a parameter specified by the user. For this reason, the parameter n was added (arg_parser.add_argument( "-n", "--num_lines", dest="n", required=True, help="Number of lines after which the data stored in the dictionary for the mapping between a Journal name and the related issns are passed into a JSON cache file" )). </li>
+              <li>Two new functions (issn_data_recover(directory), issn_data_to_cache(name_issn_dict, directory)) were developed to manage the storage of the data concerning the mapping between journals shortnames and ISSNs. The first function is aimed at recreating a local dictionary of the mapping from the JSON file stored and periodically updated, so to avoid the repetition of API calls for journal names which have already been encountered before an hypotetical run break. The second one is aimed at storing the new information processed periodically, each n rows of csv, where n is a parameter specified by the user. For this reason, the parameter n was added (arg_parser.add_argument( "-n", "--num_lines", dest="n", required=True, help="Number of lines after which the data stored in the dictionary for the mapping between a Journal name and the related issns are passed into a JSON cache file" )). </li>
               <li>A new iteration for all the rows of all the source file was added, so to check the validity of the referenced pmids of each publication, exploiting the information provided in the field "references" of the csv metadata file by iCite.</li>
-              <li>Thank to the chuncksize parameter, the memory overload issue which occurred when processing a very large csv file with Pandas was overcome.</li>
+              <li>Thank to the chunksize parameter, the memory overload issue which occurred when processing a very large csv file with Pandas was overcome.</li>
               <li>In order to check the correct functioning of the glob, it was run locally using the icite_metadata.csv file as input, and it worked properly.</li>
             
           </ol>
@@ -8203,7 +8203,8 @@ citing,referenced
           
           <h2>Notes</h2>
           <ul>
-              <li>----</li>
+              <li><strong>if type(row["references"]) is str and row["references"] != "" and row["references"] != " ":</strong> : I'm not sure that it is correct, but without this specification i got an issue with "float" type when the "reference" string was empty</li>
+              <li>For the tar.gz file download problem, I'm trying to download the file again after the log-in, as suggested at <a href="https://support.google.com/chrome/answer/2898334?hl=it#zippy=%2Cvietato-oppure-operazione-non-riuscita---vietato"> Google Chrome assistance page</a> about download errors correction.</li>
           </ul>
 
     </div>

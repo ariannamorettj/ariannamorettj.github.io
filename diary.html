@@ -8248,6 +8248,35 @@ citing,referenced
         <li>remove possible spaces at the beginning and at the end of the string</li>
         <li>using a regex, make sure that no repeated spaces are placed as separators between a pmid and another</li>
       </ul>
+      <div class="codebg">
+        <iframe src="https://trinket.io/embed/python/e492a1e3bc" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      </div>
+      <p>In particular, the piece of code modified is:</p>
+      <div class="codebg">
+        <code>
+            <pre>
+    for file_idx, file in enumerate( all_files, 1 ):
+        df = pd.DataFrame()
+        for chunk in pd.read_csv( file, chunksize=1000 ):
+            f = pd.concat( [df, chunk], ignore_index=True )
+            print( "Open file %s of %s" % (file_idx, len_all_files) )
+            for index, row in f.iterrows():
+                if type(row["references"]) is str and row["references"] != "":
+                    ref_string = row["references"].strip()
+                    ref_string_norm = re.sub("\s\s+", " ", ref_string)
+                else:
+                    print("the type of row reference is", type(row["references"]))
+
+                cited_pmids = set(ref_string_norm.split(" "))
+                for cited_pmid in cited_pmids:
+                    if pmid_manager.is_valid(cited_pmid):
+                        pmid_manager.set_valid(cited_pmid) #is it necessary?
+                        print("valid cited pmid added:", cited_pmid)
+                    else:
+                        print("invalid cited pmid discarded:", cited_pmid)
+            </pre>
+        </code>
+      </div>
 
       <h2>Repeated citations issue</h2>
       <p>Different indexes can share repeated citations. The problem is to be fixed with <strong>URLs of meta ids</strong>. Below, the study of the steps through which this process will be handled computationally:</p>

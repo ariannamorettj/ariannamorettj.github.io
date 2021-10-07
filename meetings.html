@@ -915,11 +915,41 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
     </div>
     <div id="collapseTwenty-four" class="collapse" aria-labelledby="headingTwenty-four" data-parent="#accordion">
       <div class="card-body">
+          <h2>To do (how to fix last week work):</h2>
+          <ol>
+              <li>pandas nan to empty string (df.fillna('', inplace=True))</li>
+              <li>ttl does not linearize in the same order all the times. Since the result is a string of text lines, it is necessary to give the lines a lexographic order (in both files), then the epmty lines should be removed. At this point each line should contain a triple or quadruple, which will differ only for the creation date. Only the files stored in the folder "data" should be compared, in order to see if the software works properly. </li>
+          </ol>
+          
+          <h2>To do (metaid mapping):</h2>
+          <ul>
+              <li>In this first phase it is possible to associate also the identifiers only, without the full urls. For the further steps, the metaid prefix is "060". The formats will be: <strong>https://pubmed.ncbi.nlm.nih.gov/ + pmid</strong>, <strong>https://w3id.org/oc/meta/br/060 + metaid</strong> </li>
+              <li>020 and 0160 identify to oci the provenience of the id: for example nih, or others.</li>
+              <li>Metaids will be associated to citing and cited ids processed in the citations (cnc output). Only one iteration of each csv should be enough: keep track of already processed information.</li>
+              <li><strong>input:</strong> 1) cnc output containing citations, 2) mapping files, 3) a csv where to store metaid mappings. If it exists already, it should be updated. The id type information should be included somehow. In any case the software must be able to handle both doi and pmids. Consider that cnc has the id_type information.</li>
+              <li>The combined mapping doi-pmid-metaid should exploit the information provided in NIH metadata.</li>
+              <li>The rdf must be generated at the end, not updated line by line.</li>
+
+          </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-five">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-five" aria-expanded="false" aria-controls="collapseTwenty-five">
+          Week #25 (10-07-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-five" class="collapse" aria-labelledby="headingTwenty-five" data-parent="#accordion">
+      <div class="card-body">
           <h2>To do:</h2>
           <ol>
-              <li>---</li>
-              <li>---</li>
-              <li>---</li>
+              <li></li>
+              <li></li>
           </ol>
 
     </div>

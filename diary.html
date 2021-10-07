@@ -8384,11 +8384,73 @@ mid.csv" -orcid "index/noci_test/orcid.csv" -date "index/noci_test/date.csv" -is
     </div>
     <div id="collapseTwenty-four" class="collapse" aria-labelledby="headingTwenty-four" data-parent="#accordion">
       <div class="card-body">
+          <h2>Noci Mapping</h2>
+          <p>This file exploits the metadata from NIH to map pmids and doi</p>
+          <iframe src="https://trinket.io/embed/python/446245ed54" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          <p>It generates output csv files looking like this:</p>
+          <div class="codebg">
+            <code>
+                <pre>
+"id","value"
+"pmid:3","doi:10.1016/0006-291x(75)90498-2"
+"pmid:9790254","doi:10.1507/endocrj.45.suppl_s159"
+"pmid:23183539","doi:10.1016/j.nbt.2012.11.016"
+"pmid:1","doi:10.1016/0006-2944(75)90147-7"
+"pmid:19768734","doi:10.1002/mrc.2517"
+"pmid:1854174","doi:10.1002/mrc.2517"
+                </pre>
+            </code>
+          </div>
+          
+          <h2>Metaid Mapping</h2>
+          <p>This file takes in input mapping files, a metaid mapping csv (if it doesn't exist already it generates it), and a cnc output file containing citations. For now, it gives in output an updated version of the input csv file. Later it will give in output also the completed rdf file containing triples.</p>
+          <p>This part of the software considers each id (either cited or citing) and maps it to a metaid. In the case a new mapping file allows in a later moment to assert that two ids already present in the metaid mapping file point to the same publication, the software reassign to the id with he highest metaid assigned the id of the other correspondant id, and allows the deleted metaid to be reassigned. The csv metaid mapping is updated accordingly.</p>
+          <iframe src="https://trinket.io/embed/python/b67a1db282" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          <p>It generates output csv files looking like this:</p>
+          <div class="codebg">
+            <code>
+                <pre>
+id,value
+doi:10.1002/mrc.2517,1
+pmid:2140506,1
+pmid:2942070,2
+pmid:1523579,3
+pmid:7097569,4
+pmid:1509982,1
+pmid:6501574,5
+pmid:1968312,1
+pmid:13673087,6
+pmid:2330868,3
+pmid:3958380,3
+pmid:1854174,1
+pmid:3037997,9
+                </pre>
+            </code>
+          </div>
+          <p><strong>Note:</strong> More than one pmid is assigned the same metaid because the proper functioning of the updating process was tested with fictitious mapping files associating two pmids. </p>
+          
+          <h2>CsvManager extension</h2>
+          <p>In order to handle the possibility to reassign metaid to ids already present in the input csv, I extended the CsvManager with a function called "substitute_value", which changes the value associated to an id in case the previous value is not the expected one (for example in the case a new mapping file reveas that two ids already in the metaid mapping csv point to the same publication, and then must be associated to the same id)</p>
+          <iframe src="https://trinket.io/embed/python/4f32a065de" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+
+    </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-five">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-five" aria-expanded="false" aria-controls="collapseTwenty-five">
+          Week #25 (10-07-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-five" class="collapse" aria-labelledby="headingTwenty-five" data-parent="#accordion">
+      <div class="card-body">
           <h2>To do:</h2>
           <ol>
-              <li>---</li>
-              <li>---</li>
-              <li>---</li>
+              <li></li>
+              <li></li>
           </ol>
 
     </div>

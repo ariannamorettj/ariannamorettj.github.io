@@ -948,8 +948,10 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
       <div class="card-body">
           <h2>To do:</h2>
           <ol>
-              <li></li>
-              <li></li>
+              <li>trovare modo di tenere memoria del fatto che hai cambiato un identificativo </li>
+              <li>Un metaid non può essere riassegnato, deve essere classificato come cancellato</li>
+              <li>Provenance: ogni entità è accompagnata da informazioni di provenance. tiene traccia anche di informazioni di modifica di quel dato nel tempo. la cancellazione è l'eliminazione delle informazioni sull'entità. l'entità continua ad esistere. OC_OCDM (libreria python, si installa con pip, gestisce già tutte quelle cose)</li>
+              <li>Il disallineamento tra quello che abbiamo e quello che è su meta è un po' un problema. Vedi meta e capisci come funziona meta e anche oc_ocdm. Il punto è che i mapping di id che vado a trovare tramite questo sistema, deve succedere qualcosa dentro meta. L'importante è avere l'idea del problema. La conseguenza dell'aggiunta deve andare a cambiare qualcosa in meta. Magari crea un file di mapping in cui aggiungi l'informazione della mappatura, in modo tale da sfruttare ococdm così da fare gestire tutto da questo. un csv in output tra mappatura di metaid. Utilizza il metodo merge di oc_ocdm. Altro software che potrebbe venire utile ocgraph enricher. va alla ricerca tramite sparql query che condividono lo stesso id e fa lui il merge. In caso venga fuori che il mapping era falso, si può tornare allo snapshot precedente tramite meta che tiene conto delle informazioni di provenance. Non è detto che l'ultimo metaid assegnato sia nel mio file. fai in modo di passare in input un file comune contenente l'ultimo metaid. il nome del file deve passare come input obbligatorio. ococdm guardalo più per curiosità che per altro, di meta guarda il codice girato da peroni. Dentro il github di oc c'è anche meta. di meta guarda la logica.  </li>
           </ol>
 
     </div>

@@ -957,6 +957,29 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
     </div>
   </div>
 </div>
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-six">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-six" aria-expanded="false" aria-controls="collapseTwenty-six">
+          Week #26 (10-14-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-six" class="collapse" aria-labelledby="headingTwenty-six" data-parent="#accordion">
+      <div class="card-body">
+          <h2>To do:</h2>
+          <ul>
+              <li> Complete and correct the code of <strong>mapping.py</strong>, so that two new output files are created: one which contains the triples to be removed and the other one which contains the triples to be added. Both files will be in ntriples format. In this way, in the triplestore, as first thing we will remove the invalidated triples, and then we will load the new ones.</li>
+              <li><strong>update.py</strong>: for now it only handles data addition (insertion): until this moment the deletion of a datum had never been required. However, data can be deleted through a query: the triples to be deleted should be a very small number. These triples to be deleted will be included in a file which will be passed as a new argument (something like -d): instead load them, the new query should delete the specified triples. In this way we will obtain a metaid mapping with all the publications included in OC without any ambiguity. It is an issue related to the indexes' API, which can query all of them at once. In this way we will be able to recognise the same citation in two different indexes.</li>
+              <li><strong>Noci recap:</strong>cnc.py is ready. The index could be created also now. mapping.py will be used to create the mapping id-metaid in the triplestore, in order to solve the disambiguation problem in the unifying API. At this point we just need to develop the API in order to query NOCI and the extensions to query the unifying (with more indexes inside). NOCI's API will be develped following the same structure used for COCI. When all of this will be done, there will be the very last step of the thesis project to complete.</li>
+              <li>Read the article about <strong>Ramose</strong> in order to understand how do COCI's APIs work. Ramose is the OC software which was used for all the APIs. It is a kind of tool which works as a proxy between SPARQL and a normal request (http). It is a Rest API. There is a file for the textual interpretation about how this aspect is handled. For next meeting: read the article and the Github repo, where it is possible to find also some examples of its functioning. We need a configuration file for NOCI (noci_v1.hf) which allows the APIs creation. In order to do that, it is necessary to have a triplestore somewhere, with the data within. Create a local blazegraph: a small amount of data is enough. Ramose will allow to test that everything works correctly, when properly configured. Have a look at the article and at github configurations. </li>
+              <li>Have a look at all the API defined for COCI: third link (coci_v1.hf)</li>        
+          </ul>
+
+    </div>
+  </div>
+</div>
       
 
       

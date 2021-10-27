@@ -8477,9 +8477,44 @@ pmid:3037997,9
           </ul>
           
           <h2>Ramose preparatory study:</h2>
-          <li><a href="http://www.semantic-web-journal.net/system/files/swj2752.pdf">Article on Ramose</a></li>
-          <li><a href="https://github.com/opencitations/ramose/blob/master/test/ramose.py">Ramose Python code</a></li>
-          <li><a href="https://github.com/opencitations/api/blob/master/coci_v1.hf">Coci APIconfigurations</a></li>
+          <ul>
+            <li><a href="http://www.semantic-web-journal.net/system/files/swj2752.pdf">Article on Ramose</a></li>
+            <li><a href="https://github.com/opencitations/ramose/blob/master/test/ramose.py">Ramose Python code</a></li>
+            <li><a href="https://github.com/opencitations/api/blob/master/coci_v1.hf">Coci APIconfigurations</a></li>
+          </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-seven">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-seven" aria-expanded="false" aria-controls="collapseTwenty-seven">
+          Week #27 (10-20-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-seven" class="collapse" aria-labelledby="headingTwenty-seven" data-parent="#accordion">
+      <div class="card-body">          
+          <h2>Most recent version of mapping.py and overall description of its overall functioning</h2>
+          <iframe src="https://trinket.io/embed/python/c7b2528dd2" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+          <h3>Notes</h3>
+          <ul>
+              <li>Fix in create_rdf_from_csv(csvfile_add, csvfile_delete): now the function takes in input both the csv files at the same time, so that the triples which should be added and deleted immediatly afterwards are not added at all.</li>
+              <li>Fix of the metaid re-assignation mechanism: A bug in the management of the mapping files for the cited element of the citation led to several and repeated metaid assignation errors. Now the bug is fixed and the procedure works as expected.</li>
+              <li>Fix of metaid association mechanism for already encountered ids: in the previous version of mapping.py, if the code was run with the same input data but with new mapping files, also the ids which shouldn't be reassigned a metaid were given a new one. Now the bug is fixed and only the ids whose metaid should be changed according to the information retrieved from new mapping files are actually updated.</li>
+          </ul>
+          
+          <h2>Ramose preparatory study:</h2>
+            <ol>
+              <li>fix mapping.py code, so to obtain your own triplestore.</li>
+              <li>make your blazegraph with your example data and query it.  After that, it will be possible to understand where to modify the code for coci in order to develop NOCI version. But, in the meantime:</li>
+              <li>get acquainted with ramose. a simplified version of the test was developed for testing purposes and to let new users to get acquainted with ramose. The file name is “m0”, and it allows Ramose execution in shell, and also the creation of a webserver for making requests on browser. M0 queries wikidata, so that it is possible to try it without a local triplestore. This example is in the new updated and fixed version of ramose. Download the most recent one and run python ramose.py -s test/test_m0.hf -w localhost:8080.</li>
+              <li>Use of the existing files. Until now, m2 has been the simplest version. However, it needs some extra functions in external python files. The reason why it is so simple is that it has one implemented operation only. Another option is using COCI APIs and its configuration file (the one previously linked) and run RAMOSE with: : python ramose.py -s ../api/coci_v1.hf -w localhost:8080. Note that “-s” specifies the source of the data used by the API, while “-w” specifies the localhost. Localhost 8080 allows you to use ramose in your browser. So, after having copied and pasted the example after the url, you can call the triplestore and manage the request locally. By pressing enter, without any further specification, the default format of the output will be a JSON. When we want to change something, we intervene on the configuration file. The aim is understanding how does ramose work with an existing triplestore: the endpoint has to be specified at the beginning of the configuration file.</li>
+              <li>Once we have NOCI rdf data on a local triplestore, we replace the OC endpoint with that of our local blazegraph. The various operations must be modified because for now it only received DOIs in input. The idea is that we need to change the input shape, since it is a regex made for matching DOIs instead of PMIDs. Since in the pre and post processing phases there are some encoding/decoding operations specifically meant for DOIs, in the case of PMIDs we can probably skip both passages. The test will then be done by specifying another endpoint (specific for NOCI, to be tested in localhost 8080).  In order to do that, it is necessary to change the base on COCI file (http://.. etc) with: #base http://localhost:8080, before running ramose. All the execution links are clickable and they go to the specific software. </li>
+              <li>In order to realize the main operations for NOCI (all of them except for metadata), simple SPARQL queries will be enough, without any pre and post processing.  The only operation which will require external functions is metadata. We will save metadata of the links by pubmed. The metadata acquisition will be done on the fly, by making requests to PubMed Central. The procedure will be the same performed when we had to get data such as ISSN and so on, from the txt output given by the APIs. citation, reference, citation count, reference count, citations are the base operations which won’t require external functions. Metadata will be the last one to be realised. </li>
+          </ol>
 
 
     </div>

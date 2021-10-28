@@ -8515,6 +8515,14 @@ pmid:3037997,9
               <li>Once we have NOCI rdf data on a local triplestore, we replace the OC endpoint with that of our local blazegraph. The various operations must be modified because for now it only received DOIs in input. The idea is that we need to change the input shape, since it is a regex made for matching DOIs instead of PMIDs. Since in the pre and post processing phases there are some encoding/decoding operations specifically meant for DOIs, in the case of PMIDs we can probably skip both passages. The test will then be done by specifying another endpoint (specific for NOCI, to be tested in localhost 8080).  In order to do that, it is necessary to change the base on COCI file (http://.. etc) with: #base http://localhost:8080, before running ramose. All the execution links are clickable and they go to the specific software. </li>
               <li>In order to realize the main operations for NOCI (all of them except for metadata), simple SPARQL queries will be enough, without any pre and post processing.  The only operation which will require external functions is metadata. We will save metadata of the links by pubmed. The metadata acquisition will be done on the fly, by making requests to PubMed Central. The procedure will be the same performed when we had to get data such as ISSN and so on, from the txt output given by the APIs. citation, reference, citation count, reference count, citations are the base operations which won’t require external functions. Metadata will be the last one to be realised. </li>
           </ol>
+          
+          <h2>Issues:</h2>
+          <ol>
+            <li>How to use blazegraph? Also, I read in a stackoverflow post that "Blazegraph is now deprecated and the develops have joined Amazon and became Amazon Neptune". Should I use Blazegraph anyway?. In case, can I follow this <a href ="https://stackoverflow.com/questions/33368741/docker-container-with-blazegraph-triple-store-not-working-possibly-due-to-networ">stackoverflow post</a> structure?</li>
+            <li>I could not correctly install all the requirements for ramose: ERROR: Cannot install -r Documents\GitHub\ramose\requirements.txt (line 12) and urllib3==1.26.5 because these package versions have conflicting dependencies.</li>
+            <li>Discuss in detail api/blob/master/coci_v1.hf structure</li>
+          
+          </ol>
 
 
     </div>

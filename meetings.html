@@ -1004,7 +1004,64 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
     </div>
   </div>
 </div>
+
+<div class="card">
+    <div class="card-header" id="headingTwenty-eight">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-eight" aria-expanded="false" aria-controls="collapseTwenty-eight">
+          Week #28 (10-28-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-eight" class="collapse" aria-labelledby="headingTwenty-eight" data-parent="#accordion">
+      <div class="card-body">
+          <h2>Last metaid file, structure to correct</h2>
+          <p>The part preceding the metaid number must be deleted, since another part of the code is structured so to work with files containing the number only.</p>
+          
+          <h2>Test the code</h2>
+          <p>Create a class which tests all the functionalities of this part of the code. Add a new test file to the directory "tests". For now test all the existing cases. Then, later, it will be possible to simplify the code and eventually leave out the unnecessary parts (the if-else cases which represent non factual possibilities).</p>
+          
+          <h2>Installation failure</h2>
+          <p>The reasons of the failure of the last attempts was due to the attempt to install all the requirements at once. Now it works.</p>
+          
+          <h2>Download Blazegraph and Java</h2>
+          <p>Blazegraph is part of AN now. Two distinct things are mantained separatedly:</p>
+          <ol>
+              <li>The open source one</li>
+              <li>The internal one</li>
+          </ol>
+          <p>However, Blazegraph still exists. Find at the end of the page (<a href="blazegraph.com">blazegraph.com</a>) and download the file. The file with the extension ".jar" is the triplestore.</p>
+          <p>Go to <a href="https://github.com/opencitations/triplestore-index">https://github.com/opencitations/triplestore-index</a> and clone the repository.</p>
+          <p>Once you are inside the directory which contains the blazegraph file, call <strong>java -server -Xmx1g -Dbigdata.propertyFile=index.properties -Djetty.port=3001 -Djetty.host=127.0.0.1 -jar blazegraph.jar</strong></p>
+          <p>It is advisable to delete the <strong>index.jnl</strong> file which contains triples samples, in order to avoid confusion. It is to be deleted before running blazegraph, since it recreates it automatically each time it is run. </p>
+          <p>This is what we talk about when we say that we create a blazegraph. The crucial point is that of uploading the triples of the index we want to create. In order to do that, we go to index --> storer --> update. This file allows the upload of a file in the triplestore. ttl files are uploaded on the triplestore by using this software, which can be run like this, <strong>python -m index.storer.updatetp -s "http://localhost:3001/blazegraph/sparql" -i (path cartella contenente ttl di dati citazionali) -g "https://w3id.org/oc/index/noci/"</strong>, in order to upload triples on a local triplestore.</p>
+          <p>This command takes what it finds in the directory and it upload it on -g, which is the graph of the triplestore where it places the triples.</p>
+          <p>It may be a good idea to separate the folders where the triples to upload and to remove are stored. 
+              Once you run blazegraph, all the following times it just goes back to the last state. At this point, through the blazegraph interface, you can access your uploaded data. Once you have downloaded Java you can go on and run it from shell.</p>
+
+          <h2>Next Meeting</h2>
+          <p>11-11-21, h. 11.00</p>
+
+
+    </div>
+  </div>
+</div>
       
+<div class="card">
+    <div class="card-header" id="headingTwenty-nine">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwenty-nine" aria-expanded="false" aria-controls="collapseTwenty-nine">
+          Week #29 (11-11-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwenty-nine" class="collapse" aria-labelledby="headingTwenty-nine" data-parent="#accordion">
+      <div class="card-body">
+
+
+    </div>
+  </div>
+</div>
 
       
       

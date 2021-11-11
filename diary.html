@@ -8560,6 +8560,12 @@ pmid:3037997,9
       
       <h4>Note:</h4>
       <p>All tests are passed and during the execution they work as expected. However, at the end of the run, the output files are not the ones I expected. Discuss the functioning of a unittest (consequentiality among the functions)</p>
+      
+      <h3>Issues:</h3>
+      <ul>
+        <li>urllib.error.HTTPError: HTTP Error 503: Service Unavailable, when running python -m index.storer.updatetp -s "http://localhost:3001/blazegraph/sparql" -i (path cartella contenente ttl di dati citazionali) -g "https://w3id.org/oc/index/noci/" with the files containing my triples to upload. I also tried change the files extension but it didn't solve the issue.</li>
+        <li>La pagina non funziona192.168.1.112 non ha inviato dati. ERR_EMPTY_RESPONSE, when running java -server -Xmx1g -Dbigdata.propertyFile=index.properties -Djetty.port=3001 -Djetty.host=127.0.0.1 -jar blazegraph.jar. I think I had problems with the blazegraph.jar file.</li>
+      </ul>
 
 
     </div>

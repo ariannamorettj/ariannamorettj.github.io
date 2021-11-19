@@ -8586,11 +8586,20 @@ pmid:3037997,9
       
       
       <h2>Correct the blazegraph update error: ExecutionException: org.openrdf.query.MalformedQueryException </h2>
-      <p>Tentativo con os.path.join(path, *paths) --> <strong>fallito</strong> </p>
-      <p>Tentativo con (abspath(f_n.__str__())) e (abspath(f_n)).__str__() --> <strong>fallito</strong> </p>
-      <p>Tentativo con normpath(abspath(f_n)) e abspath(normpath(f_n)) --> <strong>fallito</strong> </p>
-      <p>Tentativo con split("\\") e split("/") e os.path.join() --> <strong>fallito</strong> </p>
+      <p>Try: os.path.join(path, *paths) --> <strong>failed</strong> </p>
+      <p>Try: (abspath(f_n.__str__())) e (abspath(f_n)).__str__() --> <strong>failed</strong> </p>
+      <p>Try: normpath(abspath(f_n)) e abspath(normpath(f_n)) --> <strong>failed</strong> </p>
+      <p>Try: split("\\") e split("/") e os.path.join() --> <strong>failed</strong> </p>
+      <p>NOTE: It properly works when the triples file is uploaded from blazegraph interface, with the online path of the file, and also when the local file is uploaded manually.</p>
       
+      <h2>Make independent each test for mapping.py</h2>
+      <iframe src="https://trinket.io/embed/python/475f03f9c3" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+      <h2>Issues</h2>
+      <ul>
+      <li>Why does serviceURL: http://10.201.10.177:3001 does not work, but serviceURL: http://127.0.0.1:3001 does</li>
+      <li>Apparently, I can manually update files on my triplestore on blazegraph and I can then query the triplestore. However, I didn't understand where to see the full triplestore. </li>
+      </ul>
 
 
     </div>

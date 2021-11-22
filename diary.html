@@ -8606,6 +8606,31 @@ pmid:3037997,9
   </div>
 </div>
 
+<div class="card">
+    <div class="card-header" id="headingThirty">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThirty" aria-expanded="false" aria-controls="collapseThirty">
+          Week #30 (19-11-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThirty" class="collapse" aria-labelledby="headingThirty" data-parent="#accordion">
+      <div class="card-body">
+      <h2>To do:</h2>
+      <ol>
+          <li>Split the output folders for the csv to rdf function (mapping.py), so that it becomes easier to upload and remove triples.</li>
+          <li>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</li>
+          <li>Check that - in case a triple should be uploaded and then removed- the extra triple is neither in the upload file nor in the removal one. </li>
+          <li>Revise ramose</li>
+          <li>Create a Glob test file.</li>
+      </ol>
+
+
+    </div>
+  </div>
+</div>
+
+
 
   </body>
 </html>

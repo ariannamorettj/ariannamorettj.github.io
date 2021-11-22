@@ -1078,19 +1078,22 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
     <div id="collapseThirty" class="collapse" aria-labelledby="headingThirty" data-parent="#accordion">
       <div class="card-body">
           
-      <h2>-----------</h2>
-      
-      <h2>-----------</h2>
-      
-      <p>-------------</p>
-        
+          <h2>Windows interoperability issues fixed during the meeting:</h2>
+      <ul>
+          <li>pathlib.Path(abspath(f_n)).as_uri() instead of abspath(f_n), so that the path of the file containing the triples to upload does not create any problems when run in a windows machine </li>
+          <li>date_str = datetime.now().strftime('%Y-%m-%dT%H%M%S') is now without double dots as separators, since it caused problems in Windows. update.py code is now interoperable.</li>
+      </ul>
+
+          <h2>To do:</h2>
+
       <ol>
-          <li></li>
-          <li></li>
-          <li></li>
+          <li>Split the output folders for the csv to rdf function (mapping.py), so that it becomes easier to upload and remove triples.</li>
+          <li>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</li>
+          <li>Check that - in case a triple should be uploaded and then removed- the extra triple is neither in the upload file nor in the removal one. </li>
+          <li>Revise ramose</li>
+          <li>Create a Glob test file.</li>
           <li></li>
       </ol>
-
 
     </div>
   </div>

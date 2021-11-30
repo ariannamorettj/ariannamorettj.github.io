@@ -1088,11 +1088,10 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
 
       <ol>
           <li>Split the output folders for the csv to rdf function (mapping.py), so that it becomes easier to upload and remove triples.</li>
-          <li>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</li>
           <li>Check that - in case a triple should be uploaded and then removed- the extra triple is neither in the upload file nor in the removal one. </li>
-          <li>Revise ramose</li>
           <li>Create a Glob test file.</li>
-          <li></li>
+          <li>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</li>
+          <li>Revise ramose</li>
       </ol>
 
     </div>

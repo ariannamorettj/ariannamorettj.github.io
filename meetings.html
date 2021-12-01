@@ -1082,6 +1082,9 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
       <ul>
           <li>pathlib.Path(abspath(f_n)).as_uri() instead of abspath(f_n), so that the path of the file containing the triples to upload does not create any problems when run in a windows machine </li>
           <li>date_str = datetime.now().strftime('%Y-%m-%dT%H%M%S') is now without double dots as separators, since it caused problems in Windows. update.py code is now interoperable.</li>
+          <li>    #URLLIB.PARSE ha una funzione che si chiama quote che fa l'escaping di tutti i carattri unicode sopra l'asci. SERVE SOLO PER IL RDF.
+    #NECESSARIO SOLO PER I DOI -- guarda QUOTE di CNC. usa quote per avere l'encoding pulito. Ci sono dei dei DOI brutti che hanno bisogno
+    #di un escaping pazzesco. L'altra cosa, per il doi</li>
       </ul>
 
           <h2>To do:</h2>
@@ -1094,6 +1097,28 @@ SO  - Bol Oficina Sanit Panam. 1975 Apr;78(4):318-22.
           <li>Revise ramose</li>
       </ol>
 
+    </div>
+  </div>
+</div>
+      
+<div class="card">
+    <div class="card-header" id="headingThirty-One">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThirty-One" aria-expanded="false" aria-controls="collapseThirty-One">
+          Week #31 (31-11-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThirty-One" class="collapse" aria-labelledby="headingThirty-One" data-parent="#accordion">
+      <div class="card-body">
+      <h2>To do:</h2>
+      <ol>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      </ol>
     </div>
   </div>
 </div>

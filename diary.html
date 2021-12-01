@@ -8619,15 +8619,34 @@ pmid:3037997,9
       
       <h2>Split of the output folders for the triples to add and the ones to remove</h2>
       <p>Split the output folders for the csv to rdf function (in mapping.py), so that it becomes easier to upload and remove triples, since the update function takes in input a folder and not a file.</p>
+      <h3>mapping.py, fixed code</h3>
+      <p>A new argument is passed in input, which is the output folder which is going to contain both of the subfolders.</p>
+      <iframe src="https://trinket.io/embed/python/cb4548112b" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      <h4>Issue:</h4>
+      <p>Ask whether the subfolders for the storage of the files of the triples to add and to remove should be emptied or not before each run</p>
       
+      <h3>12_mapping.py (test), fixed code</h3>
+      <p>The code of the two functions affected by the new organization in subfolders of the files containing the triples to upload and remove.</p>
+      <iframe src="https://trinket.io/embed/python/2b9245eb18" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+      <iframe src="https://trinket.io/embed/python/11aecfa1a6" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+    
       <h2>Avoid extra triples addition in the remove file</h2>
-      <p>Check that - in case a triple should be uploaded and then removed - the extra triple is neither in the upload file nor in the remotion one.</p>
-      
-      <h2>update.py extension to remove triples</h2>
-      <p>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</p>
+      <p>Check that - in the case a triple should be uploaded and then removed during the same updating cycle - the extra triple is neither in the upload file nor in the remotion one.</p>
+      <ul>
+      <li>The problem was handled with the creation of a list of the triples which are contained in both the addition and in the deletion csv file, and - at the moment of the creation of the graphs which are going to be stored in the ttl files - the triples which were present in both of the csv files aren't added to none of the output ttl files (see create_rdf_from_csv(csvfile_add, csvfile_delete, output_dir) in mapping.py).  </li>
+      <li>This functionality is then tested in the function test_create_rdf_from_csv(self), in 12_mapping.py </li>
+      </ul>
       
       <h2>Glob test file</h2>
       <p>glob1.py (glob for noci) should be revised and tested, so to check that it works as it should.</p>
+
+
+      <h2>update.py extension to remove triples</h2>
+      <p>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</p>
+      
+
             
       
       <h2>Ramose revision</h2>
@@ -8645,32 +8664,23 @@ pmid:3037997,9
 </div>
 
 <div class="card">
-    <div class="card-header" id="headingThirty">
+    <div class="card-header" id="headingThirty-One">
       <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThirty" aria-expanded="false" aria-controls="collapseThirty">
-          Week #30 (19-11-21)
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThirty-One" aria-expanded="false" aria-controls="collapseThirty-One">
+          Week #31 (31-11-21)
         </button>
       </h5>
     </div>
-    <div id="collapseThirty" class="collapse" aria-labelledby="headingThirty" data-parent="#accordion">
+    <div id="collapseThirty-One" class="collapse" aria-labelledby="headingThirty-One" data-parent="#accordion">
       <div class="card-body">
-          
-          <h2>Windows interoperability issues fixed during the meeting:</h2>
-      <ul>
-          <li>pathlib.Path(abspath(f_n)).as_uri() instead of abspath(f_n), so that the path of the file containing the triples to upload does not create any problems when run in a windows machine </li>
-          <li>date_str = datetime.now().strftime('%Y-%m-%dT%H%M%S') is now without double dots as separators, since it caused problems in Windows. update.py code is now interoperable.</li>
-      </ul>
-
-          <h2>To do:</h2>
-
+      <h2>To do:</h2>
       <ol>
-          <li>Split the output folders for the csv to rdf function (mapping.py), so that it becomes easier to upload and remove triples.</li>
-          <li>Check that - in case a triple should be uploaded and then removed- the extra triple is neither in the upload file nor in the removal one. </li>
-          <li>Create a Glob test file.</li>
-          <li>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</li>
-          <li>Revise ramose</li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
       </ol>
-
     </div>
   </div>
 </div>

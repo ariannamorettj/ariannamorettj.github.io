@@ -8644,10 +8644,12 @@ pmid:3037997,9
 
 
       <h2>update.py extension to remove triples</h2>
-      <p>Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</p>
+      <p>Suggestion: Update update.py with the function for removing triples. If not, ask if you should do it. We need a query sparql which does the opposite of loading. There is the possibility that the only way to do that is to use "delete data", specifying the triples to remove after having read the file. The query may be too big to be handled in input. So, it may be necessary to split the query in more queries.</p>
+      <h3>UNLOAD - for Neptune only (?)</h3>
+      <p>Execution: There is the possibility to perform the LOAD opposite action with "UNLOAD INTO GRAPH", but it seems to be for NEPTUNE only. So I parsed the ttl file containing the triples to delete into a graph and I deleted each of them with DELETE DATA. I added a new argument (which is the folder containing the files with the triples to remove) and added a part of code in order to handle properly the newly added "remove" function.</p>
       
-
-            
+      <iframe src="https://trinket.io/embed/python/b55b07f8d5" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
       
       <h2>Ramose revision</h2>
       <h3>Notes and Questions:</h3>

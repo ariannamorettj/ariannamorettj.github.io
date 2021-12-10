@@ -8677,22 +8677,28 @@ pmid:3037997,9
       <h2>Ramose revision</h2>
       <h3>Notes and Questions:</h3>
       <ul>
-      <li></li>
-      <li></li>
-      <li></li>
+      <li>call /references/10.1186/1756-8722-6-59?</li>
+      <li>encode/decode is to be left out or just escaped?</li>
+      <li>discuss difference test and configuration file</li>
       <li></li>
       </ul>
+      
+      <h2>nocimapping.py fix</h2>
+      <p>Previous version</p>
+      <iframe src="https://trinket.io/embed/python/efccce304a" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      <p>Current fixed version, exploiting the normalise function for both pmids and dois, setting the parameter include_prefix to True</p>
+      <iframe src="https://trinket.io/embed/python/4576d1b133" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+      <h2>13_glob.py</h2>
+      <p>Last functionality tested: association publication id - author's orcid</p>
+      <iframe src="https://trinket.io/embed/python/00b9e85ca5" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+      <h2>update.py: query concatenation</h2>
+      <p>Since having access to the triplestore database can be time consuming, it is convenient to update a group of triples each time, and avoiding updating triple by triple. A new parameter was added, so to give the possibility to choose after how many triples the trascription to the triplestore is performed.</p>
+      
+      <iframe src="https://trinket.io/embed/python/ee9065a789" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 
-
-      <h2>To do:</h2>
-      <ol>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      </ol>
     </div>
   </div>
 </div>

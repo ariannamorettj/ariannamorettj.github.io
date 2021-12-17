@@ -8680,7 +8680,6 @@ pmid:3037997,9
       <li>call /references/10.1186/1756-8722-6-59?</li>
       <li>encode/decode is to be left out or just escaped?</li>
       <li>discuss difference test and configuration file</li>
-      <li></li>
       </ul>
       
       <h2>nocimapping.py fix</h2>
@@ -8703,7 +8702,42 @@ pmid:3037997,9
   </div>
 </div>
 
+<div class="card">
+    <div class="card-header" id="headingThirty-Two">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThirty-Two" aria-expanded="false" aria-controls="collapseThirty-Two">
+          Week #32 (17-12-21)
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThirty-One" class="collapse" aria-labelledby="headingThirty-Two" data-parent="#accordion">
+      <div class="card-body">
+      
+      <h2>update.py: query concatenation fix</h2>
+      <p>Fixed code: Now, in the case the number of triples to delete can be divided by the integer in input, no empty operation is performed (since there is the possibility that an operation trying to delete no triples  causes some issues).</p>
+      <iframe src="https://trinket.io/embed/python/a9f1cf329a" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+      
+      <h2>Ramose and Configuration File</h2>
+      <h3>Preliminary steps:</h3>
+      <ol>
+      <li>get acquainted with ramose. a simplified version of the test was developed for testing purposes and to let new users to get acquainted with ramose. The file name is “m0”, and it allows Ramose execution in shell, and also the creation of a webserver for making requests on browser. M0 queries wikidata, so that it is possible to try it without a local triplestore. This example is in the new updated and fixed version of ramose. Download the most recent one and run <strong>python ramose.py -s test/test_m0.hf -w localhost:8080</strong></li>
+      <li>COCI APIs + its configuration file to run RAMOSE with: <strong>python ramose.py -s ../api/coci_v1.hf -w localhost:8080</strong>. <strong>“-s”</strong>  specifies the source of the data used by the API, <strong>“-w” </strong>specifies the localhost. Triplestore is defined in the configuration file. Localhost 8080 allows you to use ramose in your browser. So, after having copied and pasted the example after the url, you can call the triplestore and manage the request locally. <strong>By pressing enter, without any further specification, the default format of the output will be a JSON. When we want to change something, we intervene on the configuration file. The endpoint has to be specified at the beginning of the configuration file.</strong></li>
+      <li>For PMIDs, we need to <strong>change the input shape</strong>, since it is a regex made for matching DOIs. Since in the pre and post processing phases there are some <strong>encoding/decoding</strong> operations specifically meant for DOIs, in the case of PMIDs we can probably <strong>skip both passages</strong>. The test will then be done by specifying another endpoint (specific for NOCI, to be tested in localhost 8080). In order to do that, it is necessary to change the base on COCI file (http://.. etc) with: #base http://localhost:8080, before running ramose. <strong>All the execution links are clickable and they go to the specific software.</strong></li>
+      <li>To manage addition and remotion of triples from the triplestore: <strong>python -m index.storer.updatetp -s "http://localhost:3001/blazegraph/sparql" -i "index/test_data/mapping_test_output_1/triples_to_add" -i_r "index/test_data/mapping_test_output_1/triples_to_remove" -g "https://w3id.org/oc/index/noci/" -n 3</strong>. Where <strong>-s</strong> is the source data (triplestore used by the API),  <strong>-i</strong> is the folder containing the file with the triples to add,  <strong>- i_r</strong> the folder containing the file with the triples to delete,  <strong>-n</strong> the number of triples after which the deletion operation is performed.</li>
+      <li>To manage the triplestore: <strong>C:\Users\arimoretti\Documents\GitHub\triplestore-index>java -server -Xmx1g -Dbigdata.propertyFile=index.properties -Djetty.port=3001 -Djetty.host=127.0.0.1 -jar blazegraph.jar</strong>, Then click on: <strong><a href="http://127.0.0.1:3001/blazegraph">http://127.0.0.1:3001/blazegraph</a></strong>.</li>
+      <li>What is Ramose? OC software for all the APIs. It is a kind of <strong>tool which works as a proxy between SPARQL and a normal request (http).</strong> It is a Rest API. There is a file for the textual interpretation about how this aspect is handled: We need a configuration file for NOCI (noci_v1.hf) which allows the APIs creation. In order to do that, it is necessary to have a triplestore somewhere, with the data within: the local blazegraph: a small amount of data is enough. Ramose will allow to test that everything works correctly, when properly configured.</li>
+      </ol>
 
+      
+      <h2>update.py: query concatenation</h2>
+      <p>Since having access to the triplestore database can be time consuming, it is convenient to update a group of triples each time, and avoiding updating triple by triple. A new parameter was added, so to give the possibility to choose after how many triples the trascription to the triplestore is performed.</p>
+      
+      <iframe src="https://trinket.io/embed/python/ee9065a789" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+
+
+    </div>
+  </div>
+</div>
 
   </body>
 </html>
